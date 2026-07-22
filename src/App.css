@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #F7F9FC;
+}
+
+.ant-layout,
+.ant-menu,
+.ant-typography {
+  font-family: "Poppins", sans-serif !important;
+}
+
+@page {
+  size: A5;
+  margin: 0;
+}
+
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* In your src/App.css or src/index.css */
+.payment-details {
+  margin-bottom: 8px;
+}
+
+.payment-details .label {
+  display: inline-block;
+  width: 70px;
+  font-weight: 500;
+}
+
+.payment-details .value {
+  font-weight: 600;
+}

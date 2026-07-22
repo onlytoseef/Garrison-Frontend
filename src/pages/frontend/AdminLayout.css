@@ -1,0 +1,57 @@
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Menu Item Hover Effect */
+.ant-menu-item:hover {
+    background-color: rgba(255, 215, 0, 0.1) !important;
+    /* Gold with 10% opacity */
+    transform: translateX(5px);
+    transition: all 0.3s ease;
+}
+
+/* Avatar Hover Effect */
+.ant-avatar:hover {
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+}
+
+/* Responsive Content Padding */
+.admin-content {
+    padding: 12px;
+    margin: 8px;
+    background: #fff;
+    min-height: 85vh;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+}
+
+@media (min-width: 640px) {
+    .admin-content {
+        padding: 16px;
+        margin: 12px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .admin-content {
+        padding: 24px;
+        margin: 16px;
+    }
+}
