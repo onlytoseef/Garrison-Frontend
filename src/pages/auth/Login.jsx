@@ -16,7 +16,11 @@ const Login = () => {
       const result = await dispatch(loginUser(values)).unwrap();
       if (result.user) {
         toast.success("Login successful!");
-        navigate("/");
+        if (result.user.role === "parent") {
+          navigate("/parent");
+        } else {
+          navigate("/");
+        }
       }
     } catch (err) {
       toast.error(err.message || "Login failed");

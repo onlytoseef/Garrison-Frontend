@@ -86,6 +86,14 @@ export const API_ENDPOINTS = {
   CLASS_RESULTS: (examId) => `${API_BASE_URL}/api/result/class/${examId}`,
   STUDENT_RESULT: (examId, studentId) => `${API_BASE_URL}/api/result/student/${examId}/${studentId}`,
   STUDENT_RESULT_HISTORY: (studentId) => `${API_BASE_URL}/api/result/student-history/${studentId}`,
+
+  // Parent
+  PARENT_DASHBOARD: `${API_BASE_URL}/api/parent/dashboard`,
+  PARENT_RESULTS: `${API_BASE_URL}/api/parent/results`,
+  PARENT_ATTENDANCE: `${API_BASE_URL}/api/parent/attendance`,
+  PARENT_DIARY: `${API_BASE_URL}/api/parent/diary`,
+  PARENT_NOTIFICATIONS: `${API_BASE_URL}/api/parent/notifications`,
+  PARENT_NOTIFICATIONS_READ: `${API_BASE_URL}/api/parent/notifications/read-all`,
 };
 
 export default API_BASE_URL;

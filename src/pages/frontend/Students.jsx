@@ -9,7 +9,7 @@ import {
 import { fetchClasses } from "../../store/slices/classSlice";
 import { API_BASE_URL, API_ENDPOINTS } from "../../config/api";
 import axios from "axios";
-import { FaTrash, FaEdit, FaPlus, FaDownload, FaUser, FaUserTie, FaPhone, FaHome, FaMale, FaFemale, FaUserPlus, FaSearch, FaQrcode, FaCamera, FaImage, FaEye, FaPrint } from "react-icons/fa";
+import { FaTrash, FaEdit, FaPlus, FaDownload, FaUser, FaUserTie, FaPhone, FaHome, FaMale, FaFemale, FaUserPlus, FaSearch, FaQrcode, FaCamera, FaImage, FaEye, FaPrint, FaKey } from "react-icons/fa";
 import { MdSchool, MdDelete, MdNumbers } from "react-icons/md";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { toast } from "react-hot-toast";
@@ -98,7 +98,7 @@ const SkeletonTable = () => (
           </th>
           <th className="px-6 py-3 text-left text-sm font-semibold">Gender</th>
           <th className="px-6 py-3 text-left text-sm font-semibold">Phone</th>
-          <th className="px-6 py-3 text-left text-sm font-semibold">Address</th>
+          <th className="px-6 py-3 text-left text-sm font-semibold">Parent Login</th>
           <th className="px-6 py-3 text-left text-sm font-semibold">
             Class & Section
           </th>
@@ -163,6 +163,7 @@ const Students = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState(null);
   const [cardStudent, setCardStudent] = useState(null); // student whose ID card modal is open
+  const [credStudent, setCredStudent] = useState(null); // student whose parent credentials modal is open
   const [editingStudent, setEditingStudent] = useState(null);
   const [filterClass, setFilterClass] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -642,7 +643,7 @@ const Students = () => {
                       Phone
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold">
-                      Address
+                      Parent Login
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold">
                       Class & Section
@@ -710,7 +711,18 @@ const Students = () => {
                         {student.guardianPhone}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-700">
-                        {student.address}
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => setCredStudent(student)}
+                            title="View Parent Login"
+                            className="p-2.5 rounded-lg transition-all duration-300 hover:scale-110 shadow-sm"
+                            style={{
+                              background: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)'
+                            }}
+                          >
+                            <FaKey className="text-white" />
+                          </button>
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-700">
                         {student.classId ? (
@@ -1201,6 +1213,58 @@ const Students = () => {
                   }}
                 >
                   Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Parent Credentials Modal */}
+      {credStudent && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md animate-fadeIn overflow-hidden">
+            <div
+              className="flex items-center justify-between px-6 py-4 text-white"
+              style={{ background: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)' }}
+            >
+              <h2 className="text-lg font-bold flex items-center gap-2">
+                <FaKey /> Parent Login Credentials
+              </h2>
+              <button onClick={() => setCredStudent(null)} className="text-white/80 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <FaUser className="text-[#243F73] text-lg" />
+                <div>
+                  <p className="text-xs text-gray-400 font-medium">Student Name</p>
+                  <p className="text-gray-800 font-semibold">{credStudent.name}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
+                <span className="text-[#243F73] text-lg font-bold">@</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-gray-400 font-medium">Email</p>
+                  <p className="text-gray-800 font-semibold break-all">{credStudent.parentEmail || "N/A"}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-amber-50 rounded-xl">
+                <FaKey className="text-amber-600 text-lg" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-gray-400 font-medium">Password</p>
+                  <p className="text-gray-800 font-semibold tracking-widest">{credStudent.parentPassword || "N/A"}</p>
+                </div>
+              </div>
+              {(!credStudent.parentEmail || !credStudent.parentPassword) && (
+                <p className="text-xs text-red-500 text-center">Parent account was not created for this student. This may be an older record.</p>
+              )}
+              <div className="flex justify-end pt-2">
+                <button
+                  onClick={() => setCredStudent(null)}
+                  className="px-6 py-2.5 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                  style={{ background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)' }}
+                >
+                  Close
                 </button>
               </div>
             </div>

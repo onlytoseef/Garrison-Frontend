@@ -29,6 +29,7 @@ const loadStateFromLocalStorage = () => {
 // Load initial state from localStorage
 const initialState = loadStateFromLocalStorage() || {
   user: null,
+  token: null,
   loading: false,
   error: null,
   isAuthenticated: false,
@@ -70,8 +71,9 @@ const authSlice = createSlice({
   reducers: {
     logoutUser: (state) => {
       state.user = null;
+      state.token = null;
       state.isAuthenticated = false;
-      localStorage.removeItem("authState"); // Clear localStorage on logout
+      localStorage.removeItem("authState");
     },
   },
   extraReducers: (builder) => {
@@ -83,8 +85,9 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
+        state.token = action.payload.token;
         state.isAuthenticated = true;
-        saveStateToLocalStorage(state); // Save state to localStorage
+        saveStateToLocalStorage(state);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;

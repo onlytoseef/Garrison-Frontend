@@ -25,7 +25,7 @@ import Diary from "./Diary";
 export default function AdminRoutes() {
   return (
     <Routes>
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute allowedRoles={["user", "admin"]} />}>
         <Route element={<AdminLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/staff/:id" element={<StaffDetails />} />

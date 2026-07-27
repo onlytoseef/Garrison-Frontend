@@ -1,21 +1,32 @@
 import React, { useEffect } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { loginUser } from "../store/slices/authSlice";
 
-const ProtectedRoute = () => {
+const ProtectedRoute = ({ allowedRoles }) => {
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const location = useLocation();
 
-  // Check localStorage for authentication data on component mount
   useEffect(() => {
     const authState = JSON.parse(localStorage.getItem("authState"));
     if (authState?.isAuthenticated) {
-      dispatch(loginUser.fulfilled(authState)); // Restore state from localStorage
+      dispatch(loginUser.fulfilled(authState));
     }
   }, [dispatch]);
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/auth/login" replace />;
+  if (!isAuthenticated) {
+    return <Navigate to="/auth/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+    const redirectTo = user?.role === "parent" ? "/parent" : "/";
+    if (location.pathname !== redirectTo) {
+      return <Navigate to={redirectTo} replace />;
+    }
+  }
+
+  return <Outlet />;
 };
 
 export default ProtectedRoute;
