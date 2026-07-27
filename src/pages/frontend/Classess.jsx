@@ -20,6 +20,7 @@ const Classess = () => {
     (state) => state.classes
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [teachers, setTeachers] = useState([]);
   const [classDetailsModal, setClassDetailsModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -46,6 +47,16 @@ const Classess = () => {
   useEffect(() => {
     dispatch(fetchClasses());
   }, [dispatch]);
+
+  const openAddModal = async () => {
+    setIsModalOpen(true);
+    try {
+      const res = await axios.get(API_ENDPOINTS.STAFF);
+      setTeachers((res.data.staff || res.data || []).filter((s) => s.role === "teacher"));
+    } catch {
+      setTeachers([]);
+    }
+  };
 
   const handleAddClass = () => {
     dispatch(addClass(formData));
@@ -266,7 +277,7 @@ const Classess = () => {
                 Promote Students
               </button>
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => openAddModal()}
                 className="w-full sm:w-auto flex items-center justify-center gap-2 text-white px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg"
                 style={{
                   background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
@@ -476,16 +487,21 @@ const Classess = () => {
                     <FaUserTie className="text-purple-600" />
                     In-charge Name
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Enter In-charge Name"
+                  <select
                     value={formData.inCharge}
                     onChange={(e) =>
                       setFormData({ ...formData, inCharge: e.target.value })
                     }
                     className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
                     required
-                  />
+                  >
+                    <option value="">Select Teacher</option>
+                    {teachers.map((t) => (
+                      <option key={t._id} value={t.name}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="flex justify-end gap-3 mt-6">
                   <button

@@ -19,6 +19,8 @@ import {
   FaTimes,
   FaBook,
 } from "react-icons/fa";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../config/api";
 
 const NAVY = "#243F73";
 const currentYear = new Date().getFullYear();
@@ -47,12 +49,37 @@ const Exams = () => {
     examType: "midterm",
     subjects: [emptySubject()],
   });
+  const [subjectsLoading, setSubjectsLoading] = useState(false);
 
   useEffect(() => {
     dispatch(fetchExams());
     if (classes.length === 0) dispatch(fetchClasses());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
+
+  const handleClassChange = async (classId) => {
+    setForm((f) => ({ ...f, classId, subjects: [emptySubject()] }));
+    if (!classId) return;
+    setSubjectsLoading(true);
+    try {
+      const res = await axios.get(API_ENDPOINTS.CLASS_SUBJECTS(classId));
+      const classSubjects = res.data.subjects || [];
+      if (classSubjects.length > 0) {
+        setForm((f) => ({
+          ...f,
+          subjects: classSubjects.map((name) => ({
+            subjectName: name,
+            totalMarks: 100,
+            passingMarks: 33,
+          })),
+        }));
+      }
+    } catch {
+      // keep empty subjects row if fetch fails
+    } finally {
+      setSubjectsLoading(false);
+    }
+  };
 
   const applyFilters = () => {
     const params = {};
@@ -351,7 +378,7 @@ const Exams = () => {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Class</label>
                   <select
                     value={form.classId}
-                    onChange={(e) => setForm({ ...form, classId: e.target.value })}
+                    onChange={(e) => handleClassChange(e.target.value)}
                     required
                     className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-[#243F73] rounded-xl outline-none"
                   >
@@ -382,15 +409,27 @@ const Exams = () => {
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-sm font-semibold text-gray-700">Subjects</label>
-                  <button
-                    type="button"
-                    onClick={addSubjectRow}
-                    className="flex items-center gap-1 text-sm text-white px-3 py-1.5 rounded-lg"
-                    style={{ background: NAVY }}
-                  >
-                    <FaPlus /> Add Subject
-                  </button>
+                  {subjectsLoading ? (
+                    <span className="text-sm text-gray-500 flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#243F73] border-t-transparent"></div>
+                      Loading subjects...
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={addSubjectRow}
+                      className="flex items-center gap-1 text-sm text-white px-3 py-1.5 rounded-lg"
+                      style={{ background: NAVY }}
+                    >
+                      <FaPlus /> Add Subject
+                    </button>
+                  )}
                 </div>
+                {form.classId && !subjectsLoading && form.subjects.length > 0 && form.subjects[0].subjectName && (
+                  <p className="text-xs text-green-600 mb-2">
+                    Subjects auto-loaded from class. You can adjust marks.
+                  </p>
+                )}
                 <div className="space-y-2">
                   <div className="hidden sm:grid grid-cols-12 gap-2 text-xs font-semibold text-gray-500 px-1">
                     <span className="col-span-6">Subject Name</span>

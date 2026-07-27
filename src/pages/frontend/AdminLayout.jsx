@@ -14,6 +14,8 @@ import {
   DollarOutlined,
   CloseOutlined,
   SolutionOutlined,
+  EditOutlined,
+  BookOutlined,
 } from "@ant-design/icons";
 
 import { AiOutlineRobot } from "react-icons/ai";
@@ -53,6 +55,12 @@ const menuItems = [
     path: "/attendance-record",
   },
   {
+    key: "/manual-attendance",
+    icon: <EditOutlined />,
+    label: "Manual Attendance",
+    path: "/manual-attendance",
+  },
+  {
     key: "/student-list",
     icon: <DollarOutlined />,
     label: "Fee Management",
@@ -63,6 +71,12 @@ const menuItems = [
     icon: <SolutionOutlined />,
     label: "Examinations",
     path: "/exams",
+  },
+  {
+    key: "/diary",
+    icon: <BookOutlined />,
+    label: "Homework Diary",
+    path: "/diary",
   },
   {
     key: "/chatbot",

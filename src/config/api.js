@@ -45,6 +45,8 @@ export const API_ENDPOINTS = {
   ATTENDANCE: `${API_BASE_URL}/api/attendance`,
   MARK_ATTENDANCE: `${API_BASE_URL}/api/attendance/mark`,
   ATTENDANCE_STATS: `${API_BASE_URL}/api/attendance/stats`,
+  MARK_CLASS_ATTENDANCE: `${API_BASE_URL}/api/attendance/mark-class`,
+  CLASS_ATTENDANCE: `${API_BASE_URL}/api/attendance/class-attendance`,
   
   // Dashboard
   DASHBOARD_SUMMARY: `${API_BASE_URL}/api/dashboard-summary`,
@@ -64,6 +66,12 @@ export const API_ENDPOINTS = {
   EDIT_MONTHLY_FEE: (studentId, voucherNumber) => `${API_BASE_URL}/api/student-fee/edit-monthly/${studentId}/${voucherNumber}`,
   PARTIAL_PAYMENT: (studentId, voucherNumber) => `${API_BASE_URL}/api/student-fee/partial-payment/${studentId}/${voucherNumber}`,
   WHATSAPP_CLASS_MESSAGE: `${API_BASE_URL}/api/whatsapp/class-message`,
+
+  // Diary
+  CLASS_SUBJECTS: (id) => `${API_BASE_URL}/api/class/${id}/subjects`,
+  DIARY: `${API_BASE_URL}/api/diary`,
+  DIARY_BULK: `${API_BASE_URL}/api/diary/bulk`,
+  DIARY_BY_ID: (id) => `${API_BASE_URL}/api/diary/${id}`,
 
   // Exams
   EXAMS: `${API_BASE_URL}/api/exams`,
