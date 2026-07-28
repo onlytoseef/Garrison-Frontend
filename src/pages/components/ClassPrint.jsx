@@ -27,11 +27,11 @@ const ClassPrint = ({ classData }) => {
           style={{
             fontSize: "18px",
             fontWeight: "bold",
-            color: "#243F73",
+            color: "#2F5DAA",
             margin: "5px 0",
           }}
         >
-          GARRISON SCHOOL SYSTEM
+          THE QUAID-E-AZAM GROUP OF SCHOOLS & COLLEGES
         </h1>
         <p style={{ fontSize: "12px", color: "#4b5563", margin: 0 }}>
           SHERONWALA PULL, JARANWALA
@@ -43,7 +43,7 @@ const ClassPrint = ({ classData }) => {
           style={{
             fontSize: "16px",
             fontWeight: "bold",
-            backgroundColor: "#243F73",
+            backgroundColor: "#2F5DAA",
             color: "#ffffff",
             padding: "4px 0",
             display: "inline-block",
@@ -106,7 +106,7 @@ const ClassPrint = ({ classData }) => {
           }}
         >
           <thead>
-            <tr style={{ backgroundColor: "#243F73", color: "#ffffff" }}>
+            <tr style={{ backgroundColor: "#2F5DAA", color: "#ffffff" }}>
               <th style={{ padding: "5px", width: "5%" }}>S.No</th>
               <th style={{ padding: "5px", width: "10%" }}>Roll No</th>
               <th style={{ padding: "5px", width: "15%" }}>Student ID</th>

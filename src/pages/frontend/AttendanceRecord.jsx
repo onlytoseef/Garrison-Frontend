@@ -114,12 +114,12 @@ const AttendanceRecord = () => {
             placeholder="Enter Student ID"
             value={studentId}
             onChange={(e) => setStudentId(e.target.value)}
-            className="w-full sm:flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#243F73] focus:border-transparent"
+            className="w-full sm:flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F5DAA] focus:border-transparent"
           />
           <button
             onClick={fetchStudentData}
             disabled={loading}
-            className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#243F73] to-[#1B315D] text-white rounded-lg hover:from-[#1B315D] hover:to-[#243F73] transition-all shadow-lg cursor-pointer"
+            className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#2F5DAA] to-[#1E3F72] text-white rounded-lg hover:from-[#1E3F72] hover:to-[#2F5DAA] transition-all shadow-lg cursor-pointer"
           >
             {loading ? (
               <div className="flex items-center justify-center">
@@ -155,7 +155,7 @@ const AttendanceRecord = () => {
             onClick={() => setDateRange("currentMonth")}
             className={`px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base ${
               dateRange === "currentMonth"
-                ? "bg-[#243F73] text-white"
+                ? "bg-[#2F5DAA] text-white"
                 : "bg-gray-200"
             }`}
           >
@@ -165,7 +165,7 @@ const AttendanceRecord = () => {
             onClick={() => setDateRange("lastMonth")}
             className={`px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base ${
               dateRange === "lastMonth"
-                ? "bg-[#243F73] text-white"
+                ? "bg-[#2F5DAA] text-white"
                 : "bg-gray-200"
             }`}
           >
@@ -175,7 +175,7 @@ const AttendanceRecord = () => {
             onClick={() => setDateRange("lastWeek")}
             className={`px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base ${
               dateRange === "lastWeek"
-                ? "bg-[#243F73] text-white"
+                ? "bg-[#2F5DAA] text-white"
                 : "bg-gray-200"
             }`}
           >
@@ -194,7 +194,7 @@ const AttendanceRecord = () => {
               <img
                 src={`${API_BASE_URL}${studentInfo.photo}`}
                 alt="Student Photo"
-                className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg border-4 border-[#243F73]"
+                className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg border-4 border-[#2F5DAA]"
               />
             )}
             <h3 className="text-2xl font-bold text-gray-800">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { createRoot } from "react-dom/client";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -250,6 +250,27 @@ const Classess = () => {
     }, 200);
   };
 
+  const groupedClasses = useMemo(() => {
+    const map = {};
+    classes.forEach((cls) => {
+      const g = cls.grade ?? "Other";
+      if (!map[g]) map[g] = [];
+      map[g].push(cls);
+    });
+    // sort sections within each grade
+    Object.values(map).forEach((arr) =>
+      arr.sort((x, y) => String(x.section ?? "").localeCompare(String(y.section ?? "")))
+    );
+    // sort grades ascending (numeric-aware, e.g. 1, 2, 10)
+    return Object.entries(map).sort(([a], [b]) => {
+      const na = parseFloat(a), nb = parseFloat(b);
+      if (!isNaN(na) && !isNaN(nb)) return na - nb;
+      if (!isNaN(na)) return -1;
+      if (!isNaN(nb)) return 1;
+      return String(a).localeCompare(String(b));
+    });
+  }, [classes]);
+
   return (
     <div className="min-h-screen bg-white p-3 sm:p-4 md:p-6">
       <div className="max-w-7xl 2xl:max-w-full mx-auto animate-fadeIn">
@@ -257,7 +278,7 @@ const Classess = () => {
         <div className="glass-card p-4 sm:p-5 md:p-6 mb-4 sm:mb-5 md:mb-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-2 sm:p-3 rounded-xl">
+              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-2 sm:p-3 rounded-xl">
                 <MdClass className="text-2xl sm:text-3xl text-white" />
               </div>
               <div>
@@ -270,7 +291,7 @@ const Classess = () => {
                 onClick={() => setPromoteModal(true)}
                 className="w-full sm:w-auto flex items-center justify-center gap-2 text-white px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg"
                 style={{
-                  background: 'linear-gradient(135deg, #15803D 0%, #22C55E 100%)'
+                  background: 'linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)'
                 }}
               >
                 <FaArrowRight className="text-base sm:text-lg" />
@@ -280,7 +301,7 @@ const Classess = () => {
                 onClick={() => openAddModal()}
                 className="w-full sm:w-auto flex items-center justify-center gap-2 text-white px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg"
                 style={{
-                  background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                  background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
                 }}
               >
                 <FaPlus className="text-base sm:text-lg" />
@@ -296,7 +317,7 @@ const Classess = () => {
             <div 
               className="p-3 sm:p-4 rounded-xl"
               style={{
-                background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
               }}
             >
               <MdSchool className="text-2xl sm:text-3xl text-white" />
@@ -308,109 +329,115 @@ const Classess = () => {
           </div>
         </div>
 
-        {/* Classes Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
-          {loading ? (
-            <div className="col-span-full flex justify-center py-12">
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200 border-t-purple-600"></div>
+        {/* Classes grouped by grade */}
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
+          </div>
+        ) : classes.length === 0 ? (
+          <div className="glass-card p-12 text-center">
+            <div className="inline-block p-6 bg-blue-100 rounded-full mb-4">
+              <MdClass className="text-6xl text-blue-600" />
             </div>
-          ) : classes.length === 0 ? (
-            <div className="col-span-full glass-card p-12 text-center">
-              <div className="inline-block p-6 bg-purple-100 rounded-full mb-4">
-                <MdClass className="text-6xl text-purple-600" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">No Classes Found</h3>
-              <p className="text-gray-600 mb-6">Get started by adding your first class</p>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105"
-                style={{
-                  background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
-                }}
-              >
-                <FaPlus />
-                Add Your First Class
-              </button>
-            </div>
-          ) : (
-            classes.map((cls, index) => (
-              <div
-                key={cls._id}
-                className="glass-card hover:shadow-2xl transition-all duration-300 overflow-hidden group hover:-translate-y-1"
-              >
-                <div 
-                  className="p-4"
-                  style={{
-                    background: index % 4 === 0 
-                      ? 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
-                      : index % 4 === 1
-                      ? 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
-                      : index % 4 === 2
-                      ? 'linear-gradient(135deg, #365896 0%, #6C8BC4 100%)'
-                      : 'linear-gradient(135deg, #15803D 0%, #22C55E 100%)'
-                  }}
-                >
-                  <div className="flex items-center justify-between text-white">
-                    <div className="flex items-center gap-2">
-                      <FaGraduationCap className="text-2xl" />
-                      <h3 className="text-xl font-bold">
-                        {cls.grade} - {cls.section}
-                      </h3>
-                    </div>
-                    <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg">
-                      <span className="text-sm font-semibold">{cls.studentCount || 0} Students</span>
-                    </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">No Classes Found</h3>
+            <p className="text-gray-600 mb-6">Get started by adding your first class</p>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+              style={{ background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)' }}
+            >
+              <FaPlus />
+              Add Your First Class
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {groupedClasses.map(([grade, sections]) => (
+              <div key={grade}>
+                {/* Grade heading */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 rounded-lg" style={{ background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)' }}>
+                    <FaGraduationCap className="text-white text-lg" />
                   </div>
+                  <h3 className="text-xl font-bold text-gray-800">Grade {grade}</h3>
+                  <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    {sections.length} {sections.length === 1 ? "section" : "sections"}
+                  </span>
+                  <div className="flex-1 h-px bg-gray-200 ml-2" />
                 </div>
-                
-                <div className="p-5 space-y-3">
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <FaDoorOpen className="text-purple-600" />
-                    <span className="text-sm"><strong>Room:</strong> {cls.roomNumber}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <FaUserTie className="text-purple-600" />
-                    <span className="text-sm"><strong>In-charge:</strong> {cls.inCharge}</span>
-                  </div>
-                  
-                  <div className="flex gap-2 pt-3 border-t border-gray-100">
-                    <button
-                      onClick={() => handleViewClass(cls._id)}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-105 text-white"
-                      style={{
-                        background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
-                      }}
+
+                {/* Sections grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
+                  {sections.map((cls, index) => (
+                    <div
+                      key={cls._id}
+                      className="glass-card hover:shadow-2xl transition-all duration-300 overflow-hidden group hover:-translate-y-1"
                     >
-                      <FaEye />
-                      View
-                    </button>
-                    <button
-                      onClick={() => {
-                        setDeleteId(cls._id);
-                        setDeleteModal(true);
-                      }}
-                      className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-110 text-white"
-                      style={{
-                        background: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)'
-                      }}
-                    >
-                      <FaTrash />
-                    </button>
-                    <button
-                      onClick={() => handleOpenWhatsAppModal(cls)}
-                      className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-110 text-white"
-                      style={{
-                        background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)'
-                      }}
-                    >
-                      <FaWhatsapp />
-                    </button>
-                  </div>
+                      <div
+                        className="p-4"
+                        style={{
+                          background: index % 4 === 3
+                            ? 'linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)'
+                            : index % 4 === 2
+                            ? 'linear-gradient(135deg, #1E3F72 0%, #6C8BC4 100%)'
+                            : 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
+                        }}
+                      >
+                        <div className="flex items-center justify-between text-white">
+                          <div className="flex items-center gap-2">
+                            <FaGraduationCap className="text-2xl" />
+                            <h3 className="text-xl font-bold">
+                              {cls.grade} - {cls.section}
+                            </h3>
+                          </div>
+                          <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg">
+                            <span className="text-sm font-semibold">{cls.studentCount || 0} Students</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-5 space-y-3">
+                        <div className="flex items-center gap-3 text-gray-700">
+                          <FaDoorOpen className="text-blue-600" />
+                          <span className="text-sm"><strong>Room:</strong> {cls.roomNumber}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-gray-700">
+                          <FaUserTie className="text-blue-600" />
+                          <span className="text-sm"><strong>In-charge:</strong> {cls.inCharge}</span>
+                        </div>
+
+                        <div className="flex gap-2 pt-3 border-t border-gray-100">
+                          <button
+                            onClick={() => handleViewClass(cls._id)}
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-105 text-white"
+                            style={{ background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)' }}
+                          >
+                            <FaEye />
+                            View
+                          </button>
+                          <button
+                            onClick={() => { setDeleteId(cls._id); setDeleteModal(true); }}
+                            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-110 text-white"
+                            style={{ background: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)' }}
+                          >
+                            <FaTrash />
+                          </button>
+                          <button
+                            onClick={() => handleOpenWhatsAppModal(cls)}
+                            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-110 text-white"
+                            style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}
+                          >
+                            <FaWhatsapp />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Add Class Modal */}
         {isModalOpen && (
@@ -419,7 +446,7 @@ const Classess = () => {
               <div 
                 className="p-6 rounded-t-2xl"
                 style={{
-                  background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                  background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
                 }}
               >
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -436,7 +463,7 @@ const Classess = () => {
               >
                 <div className="mb-4">
                   <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <FaBook className="text-purple-600" />
+                    <FaBook className="text-blue-600" />
                     Grade
                   </label>
                   <input
@@ -446,13 +473,13 @@ const Classess = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, grade: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                     required
                   />
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <FaGraduationCap className="text-purple-600" />
+                    <FaGraduationCap className="text-blue-600" />
                     Section
                   </label>
                   <input
@@ -462,13 +489,13 @@ const Classess = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, section: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                     required
                   />
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <FaDoorOpen className="text-purple-600" />
+                    <FaDoorOpen className="text-blue-600" />
                     Room Number
                   </label>
                   <input
@@ -478,13 +505,13 @@ const Classess = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, roomNumber: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                     required
                   />
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <FaUserTie className="text-purple-600" />
+                    <FaUserTie className="text-blue-600" />
                     In-charge Name
                   </label>
                   <select
@@ -492,7 +519,7 @@ const Classess = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, inCharge: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                     required
                   >
                     <option value="">Select Teacher</option>
@@ -515,7 +542,7 @@ const Classess = () => {
                     type="submit"
                     className="px-6 py-2.5 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'linear-gradient(135deg, #15803D 0%, #22C55E 100%)'
+                      background: 'linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)'
                     }}
                   >
                     Add Class
@@ -529,11 +556,11 @@ const Classess = () => {
         {/* Class Details Modal */}
         {classDetailsModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto animate-fadeIn">
-              <div 
-                className="p-6 rounded-t-2xl"
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-fadeIn">
+              <div
+                className="p-6 rounded-t-2xl flex-shrink-0"
                 style={{
-                  background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                  background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
                 }}
               >
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -541,19 +568,19 @@ const Classess = () => {
                   Class Details
                 </h2>
               </div>
-              
-              <div className="p-6">
+
+              <div className="p-6 flex-1 overflow-y-auto">
                 {loading ? (
                   <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-200 border-t-purple-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600"></div>
                   </div>
                 ) : selectedClass ? (
                   <>
                     {/* Class Info Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                      <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-4 rounded-xl border-2 border-purple-200">
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border-2 border-blue-200">
                         <div className="flex items-center gap-3">
-                          <div className="bg-purple-500 p-3 rounded-lg">
+                          <div className="bg-blue-500 p-3 rounded-lg">
                             <FaBook className="text-white text-xl" />
                           </div>
                           <div>
@@ -617,7 +644,7 @@ const Classess = () => {
                       <div 
                         className="px-6 py-4"
                         style={{
-                          background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                          background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
                         }}
                       >
                         <h3 className="text-xl font-bold text-white flex items-center gap-2">
@@ -651,7 +678,7 @@ const Classess = () => {
                                   <td className="px-6 py-4 whitespace-nowrap">
                                     <span className="px-3 py-1 text-sm font-semibold text-white rounded-lg"
                                       style={{
-                                        background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                                        background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
                                       }}
                                     >
                                       {student.rollNumber || "N/A"}
@@ -698,7 +725,7 @@ const Classess = () => {
                     onClick={handlePrint}
                     className="flex items-center gap-2 px-6 py-2.5 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'linear-gradient(135deg, #365896 0%, #6C8BC4 100%)'
+                      background: 'linear-gradient(135deg, #1E3F72 0%, #6C8BC4 100%)'
                     }}
                   >
                     <FaPrint />
@@ -826,7 +853,7 @@ const Classess = () => {
               <div
                 className="p-6 rounded-t-2xl"
                 style={{
-                  background: 'linear-gradient(135deg, #15803D 0%, #22C55E 100%)'
+                  background: 'linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)'
                 }}
               >
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -988,7 +1015,7 @@ const Classess = () => {
                     disabled={!sourceClassId || !destClassId || promoteLoading || promoteStudents.length === 0}
                     className="px-6 py-2.5 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     style={{
-                      background: 'linear-gradient(135deg, #15803D 0%, #22C55E 100%)'
+                      background: 'linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)'
                     }}
                   >
                     {promoteLoading ? (

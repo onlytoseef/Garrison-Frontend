@@ -5,11 +5,11 @@ import { fetchStudentResult } from "../../store/slices/resultSlice";
 import { FaArrowLeft, FaPrint } from "react-icons/fa";
 import logo from "../../assets/images/logo.png";
 
-const NAVY = "#243F73";
+const NAVY = "#2F5DAA";
 
 const gradeColor = (grade) => {
   if (["A+", "A"].includes(grade)) return "text-green-700 bg-green-100";
-  if (["B", "C"].includes(grade)) return "text-[#243F73] bg-blue-100";
+  if (["B", "C"].includes(grade)) return "text-[#2F5DAA] bg-blue-100";
   if (["D", "E"].includes(grade)) return "text-orange-600 bg-orange-100";
   return "text-red-600 bg-red-100";
 };
@@ -75,7 +75,7 @@ const ResultCard = () => {
           <button
             onClick={printCard}
             className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all"
-            style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #365896 100%)` }}
+            style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
           >
             <FaPrint /> Print
           </button>
@@ -87,7 +87,7 @@ const ResultCard = () => {
           <div className="flex flex-col items-center border-b-2 pb-4 mb-4" style={{ borderColor: NAVY }}>
             <img src={logo} alt="Logo" style={{ width: 70, marginBottom: 8 }} />
             <h1 className="text-2xl font-bold" style={{ color: NAVY }}>
-              GARRISON SCHOOL SYSTEM
+              THE QUAID-E-AZAM GROUP OF SCHOOLS & COLLEGES
             </h1>
             <p className="text-sm text-gray-500">Student Report Card</p>
           </div>

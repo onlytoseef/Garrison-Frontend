@@ -173,7 +173,7 @@ const ManualAttendance = () => {
                   className="p-2 rounded-xl"
                   style={{
                     background:
-                      "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                      "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
                   }}
                 >
                   <MdHowToReg className="text-white text-xl sm:text-2xl" />
@@ -185,12 +185,12 @@ const ManualAttendance = () => {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <FaCalendarAlt className="text-[#243F73]" />
+              <FaCalendarAlt className="text-[#2F5DAA]" />
               <input
                 type="date"
                 value={selectedDate}
                 onChange={handleDateChange}
-                className="px-4 py-2.5 border-2 border-gray-200 focus:border-[#243F73] rounded-xl outline-none transition-all duration-300 text-gray-700"
+                className="px-4 py-2.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-xl outline-none transition-all duration-300 text-gray-700"
               />
             </div>
           </div>
@@ -232,7 +232,7 @@ const ManualAttendance = () => {
                   className="p-4 sm:p-5"
                   style={{
                     background:
-                      "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                      "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
                   }}
                 >
                   <div className="flex items-center justify-between">
@@ -246,17 +246,17 @@ const ManualAttendance = () => {
                 </div>
                 <div className="p-4 sm:p-5 space-y-3">
                   <div className="flex items-center gap-2 text-gray-600">
-                    <FaDoorOpen className="text-[#243F73]" />
+                    <FaDoorOpen className="text-[#2F5DAA]" />
                     <span className="text-sm">
                       Room: {cls.roomNumber}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
-                    <FaChalkboardTeacher className="text-[#243F73]" />
+                    <FaChalkboardTeacher className="text-[#2F5DAA]" />
                     <span className="text-sm">{cls.inCharge}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
-                    <FaUserGraduate className="text-[#243F73]" />
+                    <FaUserGraduate className="text-[#2F5DAA]" />
                     <span className="text-sm">
                       {cls.studentCount || 0} Students
                     </span>
@@ -267,7 +267,7 @@ const ManualAttendance = () => {
                     className="w-full py-2.5 rounded-xl text-white font-semibold transition-all duration-300 hover:shadow-lg"
                     style={{
                       background:
-                        "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                        "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
                     }}
                   >
                     Mark Attendance
@@ -293,7 +293,7 @@ const ManualAttendance = () => {
               className="p-2.5 rounded-xl text-white hover:shadow-lg transition-all duration-300"
               style={{
                 background:
-                  "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                  "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
               }}
             >
               <FaArrowLeft />
@@ -308,12 +308,12 @@ const ManualAttendance = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <FaCalendarAlt className="text-[#243F73]" />
+            <FaCalendarAlt className="text-[#2F5DAA]" />
             <input
               type="date"
               value={selectedDate}
               onChange={handleDateChange}
-              className="px-4 py-2.5 border-2 border-gray-200 focus:border-[#243F73] rounded-xl outline-none transition-all duration-300 text-gray-700"
+              className="px-4 py-2.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-xl outline-none transition-all duration-300 text-gray-700"
             />
           </div>
         </div>
@@ -362,7 +362,7 @@ const ManualAttendance = () => {
           onClick={() => markAll("Present")}
           className="px-4 py-2 rounded-xl text-white font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:scale-105"
           style={{
-            background: "linear-gradient(135deg, #15803D 0%, #22C55E 100%)",
+            background: "linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)",
           }}
         >
           <FaCheck className="inline mr-2" />
@@ -419,7 +419,7 @@ const ManualAttendance = () => {
                 <tr
                   style={{
                     background:
-                      "linear-gradient(135deg, #243F73 0%, #1B315D 100%)",
+                      "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
                   }}
                 >
                   <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-white">
@@ -470,7 +470,7 @@ const ManualAttendance = () => {
                               attendanceData[student.studentId] === "Present"
                                 ? {
                                     background:
-                                      "linear-gradient(135deg, #15803D 0%, #22C55E 100%)",
+                                      "linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)",
                                   }
                                 : {}
                             }
@@ -533,7 +533,7 @@ const ManualAttendance = () => {
               className="w-full sm:w-auto px-8 py-3 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               style={{
                 background:
-                  "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                  "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
               }}
             >
               {submitting ? (

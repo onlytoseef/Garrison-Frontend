@@ -19,7 +19,7 @@ const SalarySlip = ({ staffDetails, month, year, payment }) => {
         style={{
           textAlign: "center",
           marginBottom: "8mm",
-          borderBottom: "1mm solid #243F73",
+          borderBottom: "1mm solid #2F5DAA",
           paddingBottom: "3mm",
         }}
       >
@@ -40,11 +40,11 @@ const SalarySlip = ({ staffDetails, month, year, payment }) => {
             style={{
               fontSize: "6mm",
               fontWeight: "bold",
-              color: "#243F73",
+              color: "#2F5DAA",
               margin: "0",
             }}
           >
-            GARRISON SCHOOL SYSTEM
+            THE QUAID-E-AZAM GROUP OF SCHOOLS & COLLEGES
           </h1>
         </div>
         <p
@@ -64,11 +64,11 @@ const SalarySlip = ({ staffDetails, month, year, payment }) => {
           textAlign: "center",
           fontSize: "5mm",
           fontWeight: "600",
-          color: "#243F73",
+          color: "#2F5DAA",
           margin: "0 0 5mm 0",
           padding: "1.5mm 0",
-          borderBottom: "0.5mm solid #243F73",
-          borderTop: "0.5mm solid #243F73",
+          borderBottom: "0.5mm solid #2F5DAA",
+          borderTop: "0.5mm solid #2F5DAA",
         }}
       >
         SALARY SLIP - {month}/{year}

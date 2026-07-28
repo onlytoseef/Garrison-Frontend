@@ -54,12 +54,12 @@ const BulkUnpaidVoucher = memo(({ student, unpaidFees }) => {
           style={{
             fontSize: "22px",
             fontWeight: "bold",
-            color: "#243F73",
+            color: "#2F5DAA",
             margin: "0",
             textAlign: "center",
           }}
         >
-          GARRISON SCHOOL SYSTEM
+          THE QUAID-E-AZAM GROUP OF SCHOOLS & COLLEGES
         </h1>
         <p
           style={{
@@ -153,7 +153,7 @@ const BulkUnpaidVoucher = memo(({ student, unpaidFees }) => {
         }}
       >
         <thead>
-          <tr style={{ backgroundColor: "#243F73", color: "#ffffff" }}>
+          <tr style={{ backgroundColor: "#2F5DAA", color: "#ffffff" }}>
             <th
               style={{
                 border: "1px solid #000",
@@ -249,7 +249,7 @@ const BulkUnpaidVoucher = memo(({ student, unpaidFees }) => {
                     border: "1px solid #000",
                     padding: "6px",
                     textAlign: "right",
-                    color: paidAmount > 0 ? "#22C55E" : "#6b7280",
+                    color: paidAmount > 0 ? "#3AC97C" : "#6b7280",
                   }}
                 >
                   {paidAmount > 0 ? `Rs. ${paidAmount.toLocaleString()}` : "-"}
@@ -298,7 +298,7 @@ const BulkUnpaidVoucher = memo(({ student, unpaidFees }) => {
                 padding: "8px",
                 textAlign: "right",
                 fontSize: "13px",
-                color: "#22C55E",
+                color: "#3AC97C",
               }}
             >
               Rs. {totalPaid.toLocaleString()}

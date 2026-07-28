@@ -8,7 +8,7 @@ import { bulkEnterMarks, fetchClassResults } from "../../store/slices/resultSlic
 import { toast } from "react-hot-toast";
 import { FaArrowLeft, FaSave } from "react-icons/fa";
 
-const NAVY = "#243F73";
+const NAVY = "#2F5DAA";
 
 const MarksEntry = () => {
   const { examId } = useParams();
@@ -144,7 +144,7 @@ const MarksEntry = () => {
             onClick={handleSave}
             disabled={saving || loading || students.length === 0}
             className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-60"
-            style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #365896 100%)` }}
+            style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
           >
             <FaSave /> {saving ? "Saving..." : "Save All Marks"}
           </button>
@@ -162,7 +162,7 @@ const MarksEntry = () => {
               <thead>
                 <tr
                   className="text-white"
-                  style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #365896 100%)` }}
+                  style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
                 >
                   <th className="px-4 py-3 text-left text-sm font-semibold whitespace-nowrap">Roll</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold whitespace-nowrap">Student</th>
@@ -208,7 +208,7 @@ const MarksEntry = () => {
                             onChange={(e) =>
                               handleMarkChange(st._id, sub, e.target.value)
                             }
-                            className="w-16 px-2 py-1.5 text-center border-2 border-gray-200 focus:border-[#243F73] rounded-lg outline-none"
+                            className="w-16 px-2 py-1.5 text-center border-2 border-gray-200 focus:border-[#2F5DAA] rounded-lg outline-none"
                           />
                         </td>
                       ))}
@@ -226,7 +226,7 @@ const MarksEntry = () => {
                             setRemarks((prev) => ({ ...prev, [st._id]: e.target.value }))
                           }
                           placeholder="Optional"
-                          className="w-32 px-2 py-1.5 border-2 border-gray-200 focus:border-[#243F73] rounded-lg outline-none text-sm"
+                          className="w-32 px-2 py-1.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-lg outline-none text-sm"
                         />
                       </td>
                     </tr>

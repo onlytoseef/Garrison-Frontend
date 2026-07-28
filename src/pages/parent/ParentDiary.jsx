@@ -37,7 +37,7 @@ const ParentDiary = () => {
   return (
     <div className="p-4 sm:p-6 min-h-screen">
       <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-3 mb-6">
-        <div className="p-2 rounded-xl" style={{ background: "linear-gradient(135deg, #243F73 0%, #365896 100%)" }}>
+        <div className="p-2 rounded-xl" style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}>
           <MdMenuBook className="text-white text-xl" />
         </div>
         Homework Diary {studentName && `— ${studentName}`}
@@ -45,12 +45,12 @@ const ParentDiary = () => {
 
       {/* Date picker */}
       <div className="flex items-center gap-2 mb-6">
-        <FaCalendarAlt className="text-[#243F73]" />
+        <FaCalendarAlt className="text-[#2F5DAA]" />
         <input
           type="date"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
-          className="px-4 py-2.5 border-2 border-gray-200 focus:border-[#243F73] rounded-xl outline-none transition-all duration-300 text-gray-700"
+          className="px-4 py-2.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-xl outline-none transition-all duration-300 text-gray-700"
         />
       </div>
 
@@ -72,7 +72,7 @@ const ParentDiary = () => {
       ) : (
         <div className="glass-card overflow-hidden">
           {/* Header */}
-          <div className="px-5 sm:px-6 py-4 flex items-center justify-between" style={{ background: "linear-gradient(135deg, #243F73 0%, #365896 100%)" }}>
+          <div className="px-5 sm:px-6 py-4 flex items-center justify-between" style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}>
             <h3 className="text-white font-bold text-lg flex items-center gap-2">
               <MdMenuBook className="text-xl" /> Daily Diary
             </h3>
@@ -95,16 +95,16 @@ const ParentDiary = () => {
               {entries.map((entry, idx) => (
                 <div key={entry._id} className="grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-3 items-center p-3 rounded-xl bg-gray-50 hover:bg-blue-50/50 transition-colors">
                   <div className="hidden sm:flex col-span-1 items-center">
-                    <span className="w-8 h-8 flex items-center justify-center rounded-lg text-white text-sm font-bold" style={{ background: "linear-gradient(135deg, #243F73 0%, #365896 100%)" }}>
+                    <span className="w-8 h-8 flex items-center justify-center rounded-lg text-white text-sm font-bold" style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}>
                       {idx + 1}
                     </span>
                   </div>
                   <div className="sm:col-span-3 flex items-center gap-2">
-                    <span className="sm:hidden w-7 h-7 flex items-center justify-center rounded-lg text-white text-xs font-bold" style={{ background: "linear-gradient(135deg, #243F73 0%, #365896 100%)" }}>
+                    <span className="sm:hidden w-7 h-7 flex items-center justify-center rounded-lg text-white text-xs font-bold" style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}>
                       {idx + 1}
                     </span>
                     <span className="font-semibold text-gray-800 text-sm flex items-center gap-1.5">
-                      <FaBook className="text-[#243F73] text-sm" />
+                      <FaBook className="text-[#2F5DAA] text-sm" />
                       {entry.subject}
                     </span>
                   </div>
@@ -121,7 +121,7 @@ const ParentDiary = () => {
             {attachment && (
               <div className="mt-6 pt-5 border-t-2 border-gray-100">
                 <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                  <FaPaperclip className="text-[#243F73]" />
+                  <FaPaperclip className="text-[#2F5DAA]" />
                   Class Attachment
                 </label>
                 <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-xl">

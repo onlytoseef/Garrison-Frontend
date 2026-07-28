@@ -4,11 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchClassResults } from "../../store/slices/resultSlice";
 import { FaArrowLeft, FaPrint, FaTrophy, FaUsers, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
-const NAVY = "#243F73";
+const NAVY = "#2F5DAA";
 
 const gradeColor = (grade) => {
   if (["A+", "A"].includes(grade)) return "text-green-700 bg-green-100";
-  if (["B", "C"].includes(grade)) return "text-[#243F73] bg-blue-100";
+  if (["B", "C"].includes(grade)) return "text-[#2F5DAA] bg-blue-100";
   if (["D", "E"].includes(grade)) return "text-orange-600 bg-orange-100";
   return "text-red-600 bg-red-100";
 };
@@ -78,7 +78,7 @@ const ClassResultSheet = () => {
             onClick={printSheet}
             disabled={!classResults || classResults.length === 0}
             className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-60"
-            style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #365896 100%)` }}
+            style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
           >
             <FaPrint /> Print Sheet
           </button>
@@ -96,7 +96,7 @@ const ClassResultSheet = () => {
             {classSummary && (
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div className="glass-card p-4 flex items-center gap-3 border border-gray-100">
-                  <div className="p-3 rounded-full bg-blue-100 text-[#243F73]"><FaUsers /></div>
+                  <div className="p-3 rounded-full bg-blue-100 text-[#2F5DAA]"><FaUsers /></div>
                   <div>
                     <p className="text-sm text-gray-500">Total Students</p>
                     <p className="text-2xl font-bold text-gray-800">{classSummary.totalStudents}</p>
@@ -132,7 +132,7 @@ const ClassResultSheet = () => {
                 <thead>
                   <tr
                     className="text-white"
-                    style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #365896 100%)` }}
+                    style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
                   >
                     <th className="px-4 py-3 text-left text-sm font-semibold">Position</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold">Roll</th>
@@ -189,7 +189,7 @@ const ClassResultSheet = () => {
 
             {/* Hidden printable version */}
             <div id="result-sheet-print" style={{ display: "none" }}>
-              <h1>GARRISON SCHOOL SYSTEM</h1>
+              <h1>THE QUAID-E-AZAM GROUP OF SCHOOLS & COLLEGES</h1>
               <p className="sub">
                 {exam?.name} ({exam?.examType}) — {exam?.classId?.grade} {exam?.classId?.section} — {exam?.academicYear}
               </p>

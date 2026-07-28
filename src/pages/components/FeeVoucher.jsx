@@ -251,12 +251,12 @@ const FeeVoucher = memo(({ student, fee, isBulkPrint, index, total }) => {
           style={{
             fontSize: "18px",
             fontWeight: "bold",
-            color: "#243F73",
+            color: "#2F5DAA",
             margin: "0",
             textAlign: "center",
           }}
         >
-          GARRISON SCHOOL SYSTEM
+          THE QUAID-E-AZAM GROUP OF SCHOOLS & COLLEGES
         </h1>
         <p
           style={{
@@ -275,7 +275,7 @@ const FeeVoucher = memo(({ student, fee, isBulkPrint, index, total }) => {
           style={{
             fontSize: "16px",
             fontWeight: "bold",
-            backgroundColor: "#243F73",
+            backgroundColor: "#2F5DAA",
             color: "#ffffff",
             padding: "4px 0",
             display: "inline-block",
@@ -365,7 +365,7 @@ const FeeVoucher = memo(({ student, fee, isBulkPrint, index, total }) => {
         }}
       >
         <thead>
-          <tr style={{ backgroundColor: "#243F73", color: "#ffffff" }}>
+          <tr style={{ backgroundColor: "#2F5DAA", color: "#ffffff" }}>
             <th style={{ border: "1px solid #000", padding: "5px" }}>
               Description
             </th>
@@ -512,7 +512,7 @@ const FeeVoucher = memo(({ student, fee, isBulkPrint, index, total }) => {
             left: "50%",
             transform: "translate(-50%, -50%)",
             fontSize: "72px",
-            color: "#22C55E",
+            color: "#3AC97C",
             opacity: "0.2",
             zIndex: "1000",
             pointerEvents: "none",

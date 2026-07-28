@@ -43,7 +43,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-100">
       {/* Sidebar */}
-      <div className="w-full md:w-64 bg-gradient-to-b from-[#243F73] to-[#1B315D] p-6">
+      <div className="w-full md:w-64 bg-gradient-to-b from-[#2F5DAA] to-[#1E3F72] p-6">
         <div className="flex items-center justify-center mb-4 md:mb-8">
           <HiUserCircle className="h-16 w-16 text-white" />
         </div>
@@ -51,7 +51,7 @@ const Profile = () => {
           <h2 className="text-xl font-bold text-white">
             {user.firstName} {user.lastName}
           </h2>
-          <p className="text-sm text-[#365896]">{user.email}</p>
+          <p className="text-sm text-[#1E3F72]">{user.email}</p>
         </div>
       </div>
 
@@ -91,12 +91,12 @@ const Profile = () => {
                 <Input
                   type={showCurrentPassword ? "text" : "password"}
                   placeholder="Enter current password"
-                  className="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#243F73] focus:border-[#243F73] hover:border-[#365896] transition-all duration-300"
+                  className="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F5DAA] focus:border-[#2F5DAA] hover:border-[#1E3F72] transition-all duration-300"
                 />
                 <button
                   type="button"
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  className="absolute right-3 top-3.5 text-gray-400 hover:text-[#243F73] transition-all duration-300"
+                  className="absolute right-3 top-3.5 text-gray-400 hover:text-[#2F5DAA] transition-all duration-300"
                 >
                   {showCurrentPassword ? <HiEyeOff /> : <HiEye />}
                 </button>
@@ -114,12 +114,12 @@ const Profile = () => {
                 <Input
                   type={showNewPassword ? "text" : "password"}
                   placeholder="Enter new password"
-                  className="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#243F73] focus:border-[#243F73] hover:border-[#365896] transition-all duration-300"
+                  className="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F5DAA] focus:border-[#2F5DAA] hover:border-[#1E3F72] transition-all duration-300"
                 />
                 <button
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute right-3 top-3.5 text-gray-400 hover:text-[#243F73] transition-all duration-300"
+                  className="absolute right-3 top-3.5 text-gray-400 hover:text-[#2F5DAA] transition-all duration-300"
                 >
                   {showNewPassword ? <HiEyeOff /> : <HiEye />}
                 </button>
@@ -148,12 +148,12 @@ const Profile = () => {
                 <Input
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm new password"
-                  className="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#243F73] focus:border-[#243F73] hover:border-[#365896] transition-all duration-300"
+                  className="w-full py-3 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F5DAA] focus:border-[#2F5DAA] hover:border-[#1E3F72] transition-all duration-300"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-3.5 text-gray-400 hover:text-[#243F73] transition-all duration-300"
+                  className="absolute right-3 top-3.5 text-gray-400 hover:text-[#2F5DAA] transition-all duration-300"
                 >
                   {showConfirmPassword ? <HiEyeOff /> : <HiEye />}
                 </button>
@@ -166,7 +166,7 @@ const Profile = () => {
                 type="primary"
                 htmlType="submit"
                 loading={loading}
-                style={{ backgroundColor: "#243F73" }}
+                style={{ backgroundColor: "#2F5DAA" }}
                 className="w-full text-white py-3 px-4 rounded-lg hover:bg-opacity-90 transition-all duration-300 cursor-pointer"
               >
                 Update Password

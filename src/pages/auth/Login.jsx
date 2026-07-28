@@ -35,7 +35,7 @@ const Login = () => {
           "url(https://app.awferalms.com/assets/LMS-BkumTRus.png)",
       }}
     >
-      <div className="absolute inset-0 bg-[#1B315D] bg-opacity-50"></div>
+      <div className="absolute inset-0 bg-[#1E3F72] bg-opacity-50"></div>
       <motion.div
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -97,7 +97,7 @@ const Login = () => {
 
           <button
             type="submit"
-            style={{ backgroundColor: "#243F73" }}
+            style={{ backgroundColor: "#2F5DAA" }}
             className="w-full text-white py-2.5 sm:py-3 px-4 text-sm sm:text-base rounded-md hover:bg-opacity-90 transition-all duration-300 cursor-pointer font-medium"
           >
             Sign in

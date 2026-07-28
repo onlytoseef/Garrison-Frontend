@@ -52,7 +52,7 @@ const ParentDashboard = () => {
     <div className="p-4 sm:p-6 min-h-screen">
       {/* Student Info Card */}
       <div className="glass-card overflow-hidden mb-6">
-        <div className="p-6" style={{ background: "linear-gradient(135deg, #243F73 0%, #365896 100%)" }}>
+        <div className="p-6" style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}>
           <div className="flex items-center gap-4">
             {student.photo ? (
               <img src={`${API_BASE_URL}${student.photo}`} alt={student.name} className="w-16 h-16 rounded-full object-cover border-3 border-white/30" />
@@ -112,8 +112,8 @@ const ParentDashboard = () => {
 
         <div className="glass-card p-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-purple-100">
-              <FaChartBar className="text-purple-600 text-xl" />
+            <div className="p-3 rounded-xl bg-blue-100">
+              <FaChartBar className="text-blue-600 text-xl" />
             </div>
             <div>
               <p className="text-xs text-gray-500 font-medium">Published Exams</p>

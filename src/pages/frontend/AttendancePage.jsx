@@ -132,7 +132,7 @@ const AttendancePage = () => {
               handleScan(value.trim());
             }
           }}
-          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#243F73]"
+          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F5DAA]"
         />
         <p className="mt-2 text-xs sm:text-sm text-gray-600">
           Scanned Student ID: {scannedData}
@@ -180,7 +180,7 @@ const AttendancePage = () => {
             )}
             <button
               onClick={handleModalClose}
-              className="mt-4 sm:mt-6 px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base bg-gradient-to-r from-[#243F73] to-[#1B315D] text-white rounded-lg hover:from-[#1B315D] hover:to-[#243F73] transition-all"
+              className="mt-4 sm:mt-6 px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base bg-gradient-to-r from-[#2F5DAA] to-[#1E3F72] text-white rounded-lg hover:from-[#1E3F72] hover:to-[#2F5DAA] transition-all"
             >
               Close
             </button>
@@ -207,7 +207,7 @@ const AttendancePage = () => {
             </p>
             <button
               onClick={handleModalClose}
-              className="mt-4 sm:mt-6 px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base bg-gradient-to-r from-[#243F73] to-[#1B315D] text-white rounded-lg hover:from-[#1B315D] hover:to-[#243F73] transition-all"
+              className="mt-4 sm:mt-6 px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base bg-gradient-to-r from-[#2F5DAA] to-[#1E3F72] text-white rounded-lg hover:from-[#1E3F72] hover:to-[#2F5DAA] transition-all"
             >
               Close
             </button>
@@ -234,7 +234,7 @@ const AttendancePage = () => {
             </p>
             <button
               onClick={handleModalClose}
-              className="mt-4 sm:mt-6 px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base bg-gradient-to-r from-[#243F73] to-[#1B315D] text-white rounded-lg hover:from-[#1B315D] hover:to-[#243F73] transition-all"
+              className="mt-4 sm:mt-6 px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base bg-gradient-to-r from-[#2F5DAA] to-[#1E3F72] text-white rounded-lg hover:from-[#1E3F72] hover:to-[#2F5DAA] transition-all"
             >
               Close
             </button>
@@ -248,7 +248,7 @@ const AttendancePage = () => {
         </h2>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-transparent">
-            <thead className="bg-gradient-to-r from-[#243F73] to-[#1B315D] text-white">
+            <thead className="bg-gradient-to-r from-[#2F5DAA] to-[#1E3F72] text-white">
               <tr>
                 <th className="py-2 sm:py-3 px-2 sm:px-4 text-left text-xs sm:text-sm">Name</th>
                 <th className="py-2 sm:py-3 px-2 sm:px-4 text-left text-xs sm:text-sm">Class & Section</th>

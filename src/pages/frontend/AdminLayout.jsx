@@ -60,12 +60,7 @@ const menuItems = [
     label: "Manual Attendance",
     path: "/manual-attendance",
   },
-  {
-    key: "/student-list",
-    icon: <DollarOutlined />,
-    label: "Fee Management",
-    path: "/student-list",
-  },
+  // { key: "/student-list", icon: <DollarOutlined />, label: "Fee Management", path: "/student-list" },
   {
     key: "/exams",
     icon: <SolutionOutlined />,
@@ -78,12 +73,7 @@ const menuItems = [
     label: "Homework Diary",
     path: "/diary",
   },
-  {
-    key: "/chatbot",
-    icon: <AiOutlineRobot />,
-    label: "Garrison Assistant",
-    path: "/chatbot",
-  },
+  // { key: "/chatbot", icon: <AiOutlineRobot />, label: "QA Assistant", path: "/chatbot" },
 ];
 
 const AdminLayout = () => {
@@ -131,7 +121,7 @@ const AdminLayout = () => {
           collapsedWidth={80}
           trigger={null}
           style={{
-            background: "#1B315D",
+            background: "var(--sidebar-bg, #1E3F72)",
             boxShadow: "2px 0 8px rgba(0, 0, 0, 0.15)",
             display: "flex",
             flexDirection: "column",
@@ -149,26 +139,26 @@ const AdminLayout = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              padding: "20px 0",
-              height: "64px",
+              padding: "16px 0",
+              minHeight: "100px",
             }}
           >
             {collapsed ? (
               <img
                 src={logo}
-                alt="AFS Logo"
+                alt="Logo"
                 style={{
-                  width: "30px",
-                  height: "30px",
+                  width: "40px",
+                  height: "40px",
                   transition: "all 0.3s ease",
                 }}
               />
             ) : (
               <img
                 src={logo}
-                alt="Garrison School System Logo"
+                alt="Logo"
                 style={{
-                  width: "150px",
+                  width: "130px",
                   height: "auto",
                   transition: "all 0.3s ease",
                 }}
@@ -194,7 +184,7 @@ const AdminLayout = () => {
                   borderRadius: "8px",
                   transition: "all 0.3s ease",
                   backgroundColor:
-                    location.pathname === item.path ? "#243F73" : "transparent",
+                    location.pathname === item.path ? "var(--sidebar-active, #2F5DAA)" : "transparent",
                 }}
               >
                 <Link to={item.path}>{item.label}</Link>
@@ -204,7 +194,7 @@ const AdminLayout = () => {
           <div
             style={{
               padding: "16px",
-              background: "#DC2626",
+              background: "var(--sidebar-active, #2F5DAA)",
               textAlign: "center",
               cursor: "pointer",
               transition: "all 0.3s ease",
@@ -228,8 +218,8 @@ const AdminLayout = () => {
         placement="left"
         onClose={() => setMobileDrawerOpen(false)}
         open={mobileDrawerOpen}
-        bodyStyle={{ padding: 0, background: "#1B315D" }}
-        headerStyle={{ background: "#1B315D", borderBottom: "1px solid #365896" }}
+        bodyStyle={{ padding: 0, background: "#1E3F72" }}
+        headerStyle={{ background: "var(--sidebar-bg, #1E3F72)", borderBottom: "1px solid var(--sidebar-active, #2F5DAA)" }}
         width={220}
         className="lg:hidden"
       >
@@ -239,16 +229,16 @@ const AdminLayout = () => {
             justifyContent: "center",
             alignItems: "center",
             padding: "20px 0",
-            background: "#1B315D",
+            background: "var(--sidebar-bg, #1E3F72)",
           }}
         >
-          <img src={logo} alt="Garrison School System Logo" style={{ width: "150px", height: "auto" }} />
+          <img src={logo} alt="Logo" style={{ width: "150px", height: "auto" }} />
         </div>
         <Menu
           theme="dark"
           mode="inline"
           selectedKeys={[location.pathname]}
-          style={{ background: "#1B315D", borderRight: "none" }}
+          style={{ background: "#1E3F72", borderRight: "none" }}
           onClick={() => setMobileDrawerOpen(false)}
         >
           {menuItems.map((item) => (
@@ -258,7 +248,7 @@ const AdminLayout = () => {
               style={{
                 margin: "8px 0",
                 borderRadius: "8px",
-                backgroundColor: location.pathname === item.path ? "#243F73" : "transparent",
+                backgroundColor: location.pathname === item.path ? "#2F5DAA" : "transparent",
               }}
             >
               <Link to={item.path}>{item.label}</Link>
@@ -268,7 +258,7 @@ const AdminLayout = () => {
         <div
           style={{
             padding: "16px",
-            background: "#DC2626",
+            background: "var(--sidebar-active, #2F5DAA)",
             textAlign: "center",
             cursor: "pointer",
             position: "absolute",
@@ -299,7 +289,7 @@ const AdminLayout = () => {
             justifyContent: "space-between",
             alignItems: "center",
             padding: "0 12px",
-            background: "#1B315D",
+            background: "var(--sidebar-bg, #1E3F72)",
             color: "#fff",
             boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
             position: "sticky",
@@ -353,7 +343,7 @@ const AdminLayout = () => {
               icon={<UserOutlined />}
               style={{
                 cursor: "pointer",
-                backgroundColor: "#243F73",
+                backgroundColor: "var(--color-primary, #2F5DAA)",
                 color: "#fff",
               }}
             />
@@ -365,7 +355,7 @@ const AdminLayout = () => {
         <Footer
           style={{
             textAlign: "center",
-            background: "#1B315D",
+            background: "var(--sidebar-bg, #1E3F72)",
             color: "#fff",
             padding: "16px",
             boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.1)",
@@ -373,7 +363,7 @@ const AdminLayout = () => {
           }}
         >
           <div onClick={showCopyrightModal} style={{ cursor: "pointer" }}>
-            © 2025 Garrison School System
+            © 2025 The Quaid-e-Azam Group of Schools & Colleges
           </div>
         </Footer>
 
@@ -382,7 +372,7 @@ const AdminLayout = () => {
           visible={isCopyrightModalVisible}
           onCancel={handleCopyrightModalClose}
           footer={null}
-          closeIcon={<CloseOutlined style={{ color: "#243F73" }} />}
+          closeIcon={<CloseOutlined style={{ color: "var(--color-primary, #2F5DAA)" }} />}
           centered
           width={window.innerWidth < 768 ? "95%" : 800}
           bodyStyle={{ padding: 0 }}
@@ -398,7 +388,7 @@ const AdminLayout = () => {
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
                   Copyright Information
                 </h2>
-                <div className="w-16 sm:w-20 h-1 bg-[#243F73] mx-auto mt-2"></div>
+                <div className="w-16 sm:w-20 h-1 bg-[#2F5DAA] mx-auto mt-2"></div>
               </div>
 
               <div className="prose prose-sm sm:prose-lg text-gray-700">
@@ -409,7 +399,7 @@ const AdminLayout = () => {
                 <ul className="list-disc pl-4 sm:pl-6 space-y-1 sm:space-y-2 text-xs sm:text-base">
                   <li>
                     All content, design, graphics, and software associated with
-                    Garrison School System are protected under copyright law.
+                    The Quaid-e-Azam Group of Schools & Colleges are protected under copyright law.
                   </li>
                   <li>
                     Unauthorized reproduction, distribution, or modification of
@@ -417,7 +407,7 @@ const AdminLayout = () => {
                   </li>
                   <li>
                     The school's name, logo, and all related indicia are
-                    trademarks of Garrison School System.
+                    trademarks of The Quaid-e-Azam Group of Schools & Colleges.
                   </li>
                   <li>
                     Legal action may be taken against any infringement of these
@@ -434,7 +424,7 @@ const AdminLayout = () => {
                     school administration at:
                     <br />
                     <span className="font-medium">
-                      info@alfalahschool.edu.pk
+                      info@quaideazamschools.edu.pk
                     </span>
                   </p>
                 </div>
@@ -455,7 +445,7 @@ const AdminLayout = () => {
               <div className="mt-6 sm:mt-8 flex justify-center">
                 <button
                   onClick={handleCopyrightModalClose}
-                  className="px-4 sm:px-6 py-2 bg-[#243F73] text-white text-sm sm:text-base rounded-md hover:bg-[#1B315D] transition-colors"
+                  className="px-4 sm:px-6 py-2 bg-[#2F5DAA] text-white text-sm sm:text-base rounded-md hover:bg-[#1E3F72] transition-colors"
                 >
                   Close
                 </button>

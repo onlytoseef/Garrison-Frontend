@@ -3,7 +3,7 @@
 
 body {
   font-family: "Poppins", sans-serif;
-  background-color: #F7F9FC;
+  background-color: var(--color-background, #F6F9FC);
 }
 
 .ant-layout,

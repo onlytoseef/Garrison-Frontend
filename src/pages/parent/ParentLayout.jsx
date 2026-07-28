@@ -106,7 +106,7 @@ const ParentLayout = () => {
           collapsedWidth={80}
           trigger={null}
           style={{
-            background: "#1B315D",
+            background: "var(--sidebar-bg, #1E3F72)",
             boxShadow: "2px 0 8px rgba(0, 0, 0, 0.15)",
             position: "fixed",
             left: 0,
@@ -116,18 +116,18 @@ const ParentLayout = () => {
             height: "100vh",
           }}
         >
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "20px 0", height: "64px" }}>
-            <img src={logo} alt="Logo" style={{ width: collapsed ? "30px" : "150px", height: "auto", transition: "all 0.3s ease" }} />
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "16px 0", minHeight: "100px" }}>
+            <img src={logo} alt="Logo" style={{ width: collapsed ? "40px" : "130px", height: "auto", transition: "all 0.3s ease" }} />
           </div>
           <Menu theme="dark" mode="inline" selectedKeys={[location.pathname]} style={{ background: "transparent", borderRight: "none", flex: 1 }}>
             {menuItems.map((item) => (
-              <Menu.Item key={item.path} icon={item.icon} style={{ margin: "8px 0", borderRadius: "8px", backgroundColor: location.pathname === item.path ? "#243F73" : "transparent" }}>
+              <Menu.Item key={item.path} icon={item.icon} style={{ margin: "8px 0", borderRadius: "8px", backgroundColor: location.pathname === item.path ? "var(--sidebar-active, #2F5DAA)" : "transparent" }}>
                 <Link to={item.path}>{item.label}</Link>
               </Menu.Item>
             ))}
           </Menu>
           <div
-            style={{ padding: "16px", background: "#DC2626", textAlign: "center", cursor: "pointer", position: "sticky", bottom: 0 }}
+            style={{ padding: "16px", background: "var(--sidebar-active, #2F5DAA)", textAlign: "center", cursor: "pointer", position: "sticky", bottom: 0 }}
             onClick={handleLogout}
           >
             <LogoutOutlined style={{ color: "#fff", fontSize: "18px" }} />
@@ -136,25 +136,25 @@ const ParentLayout = () => {
         </Sider>
       )}
 
-      <Drawer placement="left" onClose={() => setMobileDrawerOpen(false)} open={mobileDrawerOpen} bodyStyle={{ padding: 0, background: "#1B315D" }} headerStyle={{ background: "#1B315D", borderBottom: "1px solid #365896" }} width={220}>
-        <div style={{ display: "flex", justifyContent: "center", padding: "20px 0", background: "#1B315D" }}>
+      <Drawer placement="left" onClose={() => setMobileDrawerOpen(false)} open={mobileDrawerOpen} bodyStyle={{ padding: 0, background: "#1E3F72" }} headerStyle={{ background: "#1E3F72", borderBottom: "1px solid var(--sidebar-active, #2F5DAA)" }} width={220}>
+        <div style={{ display: "flex", justifyContent: "center", padding: "20px 0", background: "#1E3F72" }}>
           <img src={logo} alt="Logo" style={{ width: "150px", height: "auto" }} />
         </div>
-        <Menu theme="dark" mode="inline" selectedKeys={[location.pathname]} style={{ background: "#1B315D", borderRight: "none" }} onClick={() => setMobileDrawerOpen(false)}>
+        <Menu theme="dark" mode="inline" selectedKeys={[location.pathname]} style={{ background: "#1E3F72", borderRight: "none" }} onClick={() => setMobileDrawerOpen(false)}>
           {menuItems.map((item) => (
-            <Menu.Item key={item.path} icon={item.icon} style={{ margin: "8px 0", borderRadius: "8px", backgroundColor: location.pathname === item.path ? "#243F73" : "transparent" }}>
+            <Menu.Item key={item.path} icon={item.icon} style={{ margin: "8px 0", borderRadius: "8px", backgroundColor: location.pathname === item.path ? "var(--sidebar-active, #2F5DAA)" : "transparent" }}>
               <Link to={item.path}>{item.label}</Link>
             </Menu.Item>
           ))}
         </Menu>
-        <div style={{ padding: "16px", background: "#DC2626", textAlign: "center", cursor: "pointer", position: "absolute", bottom: 0, left: 0, right: 0 }} onClick={() => { setMobileDrawerOpen(false); handleLogout(); }}>
+        <div style={{ padding: "16px", background: "var(--sidebar-active, #2F5DAA)", textAlign: "center", cursor: "pointer", position: "absolute", bottom: 0, left: 0, right: 0 }} onClick={() => { setMobileDrawerOpen(false); handleLogout(); }}>
           <LogoutOutlined style={{ color: "#fff", fontSize: "18px" }} />
           <span style={{ color: "#fff", marginLeft: "8px" }}>Logout</span>
         </div>
       </Drawer>
 
       <Layout className="site-layout transition-all duration-300" style={{ minHeight: "100vh", marginLeft: isMobile ? 0 : (collapsed ? 80 : 250) }}>
-        <Header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 12px", background: "#1B315D", color: "#fff", boxShadow: "0 2px 8px rgba(0,0,0,0.15)", position: "sticky", top: 0, zIndex: 99 }}>
+        <Header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 12px", background: "#1E3F72", color: "#fff", boxShadow: "0 2px 8px rgba(0,0,0,0.15)", position: "sticky", top: 0, zIndex: 99 }}>
           <div className="flex items-center gap-2">
             <Button
               type="text"
@@ -184,7 +184,7 @@ const ParentLayout = () => {
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowNotifDropdown(false)} />
                   <div className="absolute right-0 top-12 w-80 sm:w-96 bg-white rounded-xl shadow-2xl z-50 overflow-hidden border border-gray-100">
-                    <div className="px-4 py-3 flex items-center justify-between" style={{ background: "linear-gradient(135deg, #243F73 0%, #365896 100%)" }}>
+                    <div className="px-4 py-3 flex items-center justify-between" style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}>
                       <span className="text-white font-bold text-sm">Notifications</span>
                       {unreadCount > 0 && (
                         <button onClick={markAllRead} className="text-white/80 hover:text-white text-xs">
@@ -218,14 +218,14 @@ const ParentLayout = () => {
               )}
             </div>
 
-            <Avatar icon={<UserOutlined />} style={{ cursor: "pointer", backgroundColor: "#243F73", color: "#fff" }} />
+            <Avatar icon={<UserOutlined />} style={{ cursor: "pointer", backgroundColor: "var(--color-primary, #2F5DAA)", color: "#fff" }} />
           </div>
         </Header>
         <Content className="admin-content">
           <Outlet />
         </Content>
-        <Footer style={{ textAlign: "center", background: "#1B315D", color: "#fff", padding: "16px", fontSize: "14px" }}>
-          © 2025 Garrison School System — Parent Portal
+        <Footer style={{ textAlign: "center", background: "#1E3F72", color: "#fff", padding: "16px", fontSize: "14px" }}>
+          © 2025 The Quaid-e-Azam Group of Schools & Colleges — Parent Portal
         </Footer>
       </Layout>
     </Layout>

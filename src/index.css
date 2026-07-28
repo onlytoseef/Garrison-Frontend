@@ -1,5 +1,49 @@
 @import "tailwindcss";
 
+/* ===== Brand Design Tokens ===== */
+:root {
+  /* Primary */
+  --color-primary: #2F5DAA;
+  --color-primary-dark: #1E3F72;
+  --color-primary-light: #5B8EE8;
+
+  /* Secondary (Green accent) */
+  --color-secondary: #0A8F4F;
+  --color-secondary-dark: #06683A;
+  --color-secondary-light: #3AC97C;
+
+  /* Status */
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-pending: #F59E0B;
+  --color-danger: #DC2626;
+  --color-info: #2F5DAA;
+
+  /* Surfaces */
+  --color-background: #F6F9FC;
+  --color-surface: #FFFFFF;
+  --color-border: #DCE5F2;
+
+  /* Text */
+  --text-primary: #24324A;
+  --text-secondary: #6B7280;
+
+  /* Sidebar */
+  --sidebar-bg: #1E3F72;
+  --sidebar-active: #2F5DAA;
+  --sidebar-hover: #3D6EC2;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%);
+  --gradient-success: linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%);
+  --gradient-info: linear-gradient(135deg, #5B8EE8 0%, #2F5DAA 100%);
+  --gradient-pending: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+  --gradient-danger: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+
+  /* Focus */
+  --focus-ring: rgba(47, 93, 170, 0.18);
+}
+
 /* Glassmorphism Card */
 .glass-card {
   background: rgba(255, 255, 255, 0.72);

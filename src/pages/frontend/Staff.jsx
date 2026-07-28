@@ -140,7 +140,7 @@ const Staff = () => {
         className="text-center mb-6 sm:mb-8"
       >
         <button
-          className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg shadow-lg hover:from-blue-600 hover:to-purple-600 transition-all flex items-center space-x-2 mx-auto"
+          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all flex items-center space-x-2 mx-auto"
           onClick={handleAdd}
         >
           <FaPlus />
@@ -155,7 +155,7 @@ const Staff = () => {
       >
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-gradient-to-r from-[#243F73] to-[#1B315D] text-white">
+            <thead className="bg-gradient-to-r from-[#2F5DAA] to-[#1E3F72] text-white">
               <tr>
                 {columns.map((column) => (
                   <th

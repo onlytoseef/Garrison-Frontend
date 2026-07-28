@@ -78,7 +78,7 @@ const Users = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gradient-to-br from-blue-50 to-[#365896]/10 p-6"
+      className="min-h-screen bg-gradient-to-br from-blue-50 to-[#1E3F72]/10 p-6"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}

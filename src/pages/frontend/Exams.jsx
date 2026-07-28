@@ -22,7 +22,7 @@ import {
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
 
-const NAVY = "#243F73";
+const NAVY = "#2F5DAA";
 const currentYear = new Date().getFullYear();
 
 const emptySubject = () => ({
@@ -200,7 +200,7 @@ const Exams = () => {
           <button
             onClick={openAdd}
             className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all"
-            style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #365896 100%)` }}
+            style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
           >
             <FaPlus /> Create Exam
           </button>
@@ -213,7 +213,7 @@ const Exams = () => {
             <select
               value={filterClass}
               onChange={(e) => setFilterClass(e.target.value)}
-              className="px-3 py-2 border-2 border-gray-200 rounded-lg outline-none focus:border-[#243F73]"
+              className="px-3 py-2 border-2 border-gray-200 rounded-lg outline-none focus:border-[#2F5DAA]"
             >
               <option value="">All Classes</option>
               {classes.map((c) => (
@@ -228,7 +228,7 @@ const Exams = () => {
             <select
               value={filterYear}
               onChange={(e) => setFilterYear(e.target.value)}
-              className="px-3 py-2 border-2 border-gray-200 rounded-lg outline-none focus:border-[#243F73]"
+              className="px-3 py-2 border-2 border-gray-200 rounded-lg outline-none focus:border-[#2F5DAA]"
             >
               <option value="">All Years</option>
               {years.map((y) => (
@@ -308,7 +308,7 @@ const Exams = () => {
                   </button>
                   <button
                     onClick={() => navigate(`/exams/${exam._id}/results`)}
-                    className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-[#365896] text-white font-medium"
+                    className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-[#1E3F72] text-white font-medium"
                   >
                     <FaListOl /> Results
                   </button>
@@ -342,7 +342,7 @@ const Exams = () => {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fadeIn">
             <div
               className="flex items-center justify-between px-6 py-4 rounded-t-2xl text-white"
-              style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #365896 100%)` }}
+              style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
             >
               <h2 className="text-lg font-bold flex items-center gap-2">
                 <FaPlus /> Create Exam
@@ -361,7 +361,7 @@ const Exams = () => {
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="e.g. Midterm"
                     required
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-[#243F73] rounded-xl outline-none"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-xl outline-none"
                   />
                 </div>
                 <div>
@@ -371,7 +371,7 @@ const Exams = () => {
                     value={form.academicYear}
                     onChange={(e) => setForm({ ...form, academicYear: e.target.value })}
                     required
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-[#243F73] rounded-xl outline-none"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-xl outline-none"
                   />
                 </div>
                 <div>
@@ -380,7 +380,7 @@ const Exams = () => {
                     value={form.classId}
                     onChange={(e) => handleClassChange(e.target.value)}
                     required
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-[#243F73] rounded-xl outline-none"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-xl outline-none"
                   >
                     <option value="">Select class</option>
                     {classes.map((c) => (
@@ -395,7 +395,7 @@ const Exams = () => {
                   <select
                     value={form.examType}
                     onChange={(e) => setForm({ ...form, examType: e.target.value })}
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-[#243F73] rounded-xl outline-none"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-xl outline-none"
                   >
                     <option value="midterm">Midterm</option>
                     <option value="final">Final Term</option>
@@ -411,7 +411,7 @@ const Exams = () => {
                   <label className="text-sm font-semibold text-gray-700">Subjects</label>
                   {subjectsLoading ? (
                     <span className="text-sm text-gray-500 flex items-center gap-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#243F73] border-t-transparent"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#2F5DAA] border-t-transparent"></div>
                       Loading subjects...
                     </span>
                   ) : (
@@ -444,21 +444,21 @@ const Exams = () => {
                         value={s.subjectName}
                         onChange={(e) => updateSubject(idx, "subjectName", e.target.value)}
                         placeholder="e.g. Mathematics"
-                        className="col-span-12 sm:col-span-6 px-3 py-2 border-2 border-gray-200 focus:border-[#243F73] rounded-lg outline-none"
+                        className="col-span-12 sm:col-span-6 px-3 py-2 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-lg outline-none"
                       />
                       <input
                         type="number"
                         value={s.totalMarks}
                         onChange={(e) => updateSubject(idx, "totalMarks", e.target.value)}
                         placeholder="Total"
-                        className="col-span-6 sm:col-span-3 px-3 py-2 border-2 border-gray-200 focus:border-[#243F73] rounded-lg outline-none"
+                        className="col-span-6 sm:col-span-3 px-3 py-2 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-lg outline-none"
                       />
                       <input
                         type="number"
                         value={s.passingMarks}
                         onChange={(e) => updateSubject(idx, "passingMarks", e.target.value)}
                         placeholder="Pass"
-                        className="col-span-5 sm:col-span-2 px-3 py-2 border-2 border-gray-200 focus:border-[#243F73] rounded-lg outline-none"
+                        className="col-span-5 sm:col-span-2 px-3 py-2 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-lg outline-none"
                       />
                       <button
                         type="button"
@@ -484,7 +484,7 @@ const Exams = () => {
                 <button
                   type="submit"
                   className="px-6 py-2.5 text-white rounded-xl font-medium"
-                  style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #365896 100%)` }}
+                  style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
                 >
                   Create Exam
                 </button>

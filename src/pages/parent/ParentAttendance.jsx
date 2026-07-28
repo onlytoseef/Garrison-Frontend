@@ -81,7 +81,7 @@ const ParentAttendance = () => {
   const getCellStyle = (day) => {
     if (!day) return {};
     const status = statusMap[day];
-    if (status === "Present") return { background: "linear-gradient(135deg, #15803D 0%, #22C55E 100%)", color: "white" };
+    if (status === "Present") return { background: "linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)", color: "white" };
     if (status === "Absent") return { background: "linear-gradient(135deg, #DC2626 0%, #EF4444 100%)", color: "white" };
     if (status === "Leave") return { background: "linear-gradient(135deg, #D97706 0%, #FBBF24 100%)", color: "white" };
     return {};
@@ -91,14 +91,14 @@ const ParentAttendance = () => {
     if (!day) return "";
     const status = statusMap[day];
     if (status) return "shadow-md";
-    if (isCurrentMonth && day === today.getDate()) return "ring-2 ring-[#243F73]";
+    if (isCurrentMonth && day === today.getDate()) return "ring-2 ring-[#2F5DAA]";
     return "";
   };
 
   return (
     <div className="p-4 sm:p-6 min-h-screen">
       <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-3 mb-6">
-        <div className="p-2 rounded-xl" style={{ background: "linear-gradient(135deg, #243F73 0%, #365896 100%)" }}>
+        <div className="p-2 rounded-xl" style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}>
           <FaCalendarAlt className="text-white text-xl" />
         </div>
         Attendance History {studentName && `— ${studentName}`}
@@ -123,7 +123,7 @@ const ParentAttendance = () => {
       {/* Calendar */}
       <div className="glass-card overflow-hidden">
         {/* Calendar Header */}
-        <div className="px-5 sm:px-6 py-4 flex items-center justify-between" style={{ background: "linear-gradient(135deg, #243F73 0%, #365896 100%)" }}>
+        <div className="px-5 sm:px-6 py-4 flex items-center justify-between" style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}>
           <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-white/20 transition-colors text-white">
             <FaChevronLeft />
           </button>
@@ -186,7 +186,7 @@ const ParentAttendance = () => {
               {/* Legend */}
               <div className="flex flex-wrap items-center justify-center gap-4 mt-6 pt-4 border-t border-gray-100">
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-md" style={{ background: "linear-gradient(135deg, #15803D 0%, #22C55E 100%)" }}></div>
+                  <div className="w-4 h-4 rounded-md" style={{ background: "linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)" }}></div>
                   <span className="text-xs font-medium text-gray-600">Present</span>
                 </div>
                 <div className="flex items-center gap-2">

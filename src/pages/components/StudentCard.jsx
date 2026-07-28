@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 import Barcode from "react-barcode";
 import { API_BASE_URL } from "../../config/api";
 
-const NAVY = "#243F73";
-const NAVY_DARK = "#1B315D";
-const NAVY_LIGHT = "#365896";
+const NAVY = "#2F5DAA";
+const NAVY_DARK = "#1E3F72";
+const NAVY_LIGHT = "#1E3F72";
 
 // Professional portrait ID card — CR80 scale (54mm x 85.6mm) enlarged for print clarity.
 const StudentCard = ({ student }) => {
@@ -44,7 +44,7 @@ const StudentCard = ({ student }) => {
         }}
       >
         <div style={{ fontSize: "3mm", fontWeight: 700, letterSpacing: "0.3px", lineHeight: 1.1 }}>
-          GARRISON SCHOOL SYSTEM
+          THE QUAID-E-AZAM GROUP OF SCHOOLS & COLLEGES
         </div>
         <div style={{ fontSize: "1.9mm", opacity: 0.9, marginTop: "0.5mm" }}>
           STUDENT IDENTITY CARD

@@ -219,7 +219,7 @@ const Diary = () => {
               className="p-2 rounded-xl"
               style={{
                 background:
-                  "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                  "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
               }}
             >
               <MdMenuBook className="text-white text-xl sm:text-2xl" />
@@ -260,7 +260,7 @@ const Diary = () => {
                   className="p-4 sm:p-5"
                   style={{
                     background:
-                      "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                      "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
                   }}
                 >
                   <div className="flex items-center justify-between">
@@ -274,15 +274,15 @@ const Diary = () => {
                 </div>
                 <div className="p-4 sm:p-5 space-y-3">
                   <div className="flex items-center gap-2 text-gray-600">
-                    <FaDoorOpen className="text-[#243F73]" />
+                    <FaDoorOpen className="text-[#2F5DAA]" />
                     <span className="text-sm">Room: {cls.roomNumber}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
-                    <FaChalkboardTeacher className="text-[#243F73]" />
+                    <FaChalkboardTeacher className="text-[#2F5DAA]" />
                     <span className="text-sm">{cls.inCharge}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
-                    <FaUserGraduate className="text-[#243F73]" />
+                    <FaUserGraduate className="text-[#2F5DAA]" />
                     <span className="text-sm">
                       {cls.studentCount || 0} Students
                     </span>
@@ -293,7 +293,7 @@ const Diary = () => {
                     className="w-full py-2.5 rounded-xl text-white font-semibold transition-all duration-300 hover:shadow-lg"
                     style={{
                       background:
-                        "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                        "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
                     }}
                   >
                     Open Diary
@@ -319,7 +319,7 @@ const Diary = () => {
               className="p-2.5 rounded-xl text-white hover:shadow-lg transition-all duration-300"
               style={{
                 background:
-                  "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                  "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
               }}
             >
               <FaArrowLeft />
@@ -343,13 +343,13 @@ const Diary = () => {
           className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${
             activeTab === "subjects"
               ? "text-white shadow-lg"
-              : "text-[#243F73] bg-white border-2 border-[#243F73]/20 hover:border-[#243F73]/40"
+              : "text-[#2F5DAA] bg-white border-2 border-[#2F5DAA]/20 hover:border-[#2F5DAA]/40"
           }`}
           style={
             activeTab === "subjects"
               ? {
                   background:
-                    "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                    "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
                 }
               : {}
           }
@@ -362,13 +362,13 @@ const Diary = () => {
           className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${
             activeTab === "diary"
               ? "text-white shadow-lg"
-              : "text-[#243F73] bg-white border-2 border-[#243F73]/20 hover:border-[#243F73]/40"
+              : "text-[#2F5DAA] bg-white border-2 border-[#2F5DAA]/20 hover:border-[#2F5DAA]/40"
           }`}
           style={
             activeTab === "diary"
               ? {
                   background:
-                    "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                    "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
                 }
               : {}
           }
@@ -382,7 +382,7 @@ const Diary = () => {
       {activeTab === "subjects" && (
         <div className="glass-card p-5 sm:p-6">
           <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <MdSubject className="text-[#243F73] text-xl" />
+            <MdSubject className="text-[#2F5DAA] text-xl" />
             Manage Subjects
           </h2>
 
@@ -394,14 +394,14 @@ const Diary = () => {
               onChange={(e) => setNewSubject(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addSubject()}
               placeholder="Enter subject name (e.g. Urdu, English, Math)"
-              className="flex-1 px-4 py-2.5 border-2 border-gray-200 focus:border-[#243F73] rounded-xl outline-none transition-all duration-300"
+              className="flex-1 px-4 py-2.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-xl outline-none transition-all duration-300"
             />
             <button
               onClick={addSubject}
               className="px-4 py-2.5 rounded-xl text-white font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105"
               style={{
                 background:
-                  "linear-gradient(135deg, #15803D 0%, #22C55E 100%)",
+                  "linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)",
               }}
             >
               <FaPlus className="inline mr-1" /> Add
@@ -424,7 +424,7 @@ const Diary = () => {
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 flex items-center justify-center rounded-lg text-white text-sm font-bold" style={{ background: "linear-gradient(135deg, #243F73 0%, #365896 100%)" }}>
+                    <span className="w-8 h-8 flex items-center justify-center rounded-lg text-white text-sm font-bold" style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}>
                       {idx + 1}
                     </span>
                     <span className="font-medium text-gray-800">{sub}</span>
@@ -447,7 +447,7 @@ const Diary = () => {
             className="px-6 py-3 rounded-xl text-white font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
               background:
-                "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
             }}
           >
             {savingSubjects ? (
@@ -469,12 +469,12 @@ const Diary = () => {
         <div>
           {/* Date picker */}
           <div className="flex items-center gap-2 mb-6">
-            <FaCalendarAlt className="text-[#243F73]" />
+            <FaCalendarAlt className="text-[#2F5DAA]" />
             <input
               type="date"
               value={selectedDate}
               onChange={handleDateChange}
-              className="px-4 py-2.5 border-2 border-gray-200 focus:border-[#243F73] rounded-xl outline-none transition-all duration-300 text-gray-700"
+              className="px-4 py-2.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-xl outline-none transition-all duration-300 text-gray-700"
             />
           </div>
 
@@ -503,7 +503,7 @@ const Diary = () => {
                 className="px-5 sm:px-6 py-4 flex items-center justify-between"
                 style={{
                   background:
-                    "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                    "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
                 }}
               >
                 <h3 className="text-white font-bold text-lg flex items-center gap-2">
@@ -546,7 +546,7 @@ const Diary = () => {
                             className="w-8 h-8 flex items-center justify-center rounded-lg text-white text-sm font-bold"
                             style={{
                               background:
-                                "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                                "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
                             }}
                           >
                             {idx + 1}
@@ -559,13 +559,13 @@ const Diary = () => {
                             className="sm:hidden w-7 h-7 flex items-center justify-center rounded-lg text-white text-xs font-bold"
                             style={{
                               background:
-                                "linear-gradient(135deg, #243F73 0%, #365896 100%)",
+                                "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
                             }}
                           >
                             {idx + 1}
                           </span>
                           <div className="flex items-center gap-2 min-h-[40px]">
-                            <FaBook className="text-[#243F73] text-sm flex-shrink-0" />
+                            <FaBook className="text-[#2F5DAA] text-sm flex-shrink-0" />
                             <span className="font-semibold text-gray-800 text-sm">
                               {subject}
                             </span>
@@ -584,7 +584,7 @@ const Diary = () => {
                               updateDiaryForm(subject, e.target.value)
                             }
                             placeholder={`Enter ${subject} homework...`}
-                            className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-[#243F73] rounded-xl outline-none transition-all duration-300 text-sm"
+                            className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-xl outline-none transition-all duration-300 text-sm"
                           />
                         </div>
                       </div>
@@ -595,7 +595,7 @@ const Diary = () => {
                 {/* Class-level attachment */}
                 <div className="mt-6 pt-5 border-t-2 border-gray-100">
                   <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                    <FaPaperclip className="text-[#243F73]" />
+                    <FaPaperclip className="text-[#2F5DAA]" />
                     Class Attachment (Image or PDF)
                   </label>
 
@@ -619,7 +619,7 @@ const Diary = () => {
                   )}
 
                   <div className="flex items-center gap-3">
-                    <label className="cursor-pointer px-5 py-2.5 border-2 border-dashed border-gray-300 rounded-xl hover:border-[#243F73] transition-all duration-300 text-sm text-gray-600 hover:text-[#243F73] flex items-center gap-2">
+                    <label className="cursor-pointer px-5 py-2.5 border-2 border-dashed border-gray-300 rounded-xl hover:border-[#2F5DAA] transition-all duration-300 text-sm text-gray-600 hover:text-[#2F5DAA] flex items-center gap-2">
                       <FaPaperclip />
                       {classAttachment
                         ? classAttachment.name
@@ -652,7 +652,7 @@ const Diary = () => {
                     className="px-6 py-3 rounded-xl text-white font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                       background:
-                        "linear-gradient(135deg, #15803D 0%, #22C55E 100%)",
+                        "linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)",
                     }}
                   >
                     {savingAll ? (

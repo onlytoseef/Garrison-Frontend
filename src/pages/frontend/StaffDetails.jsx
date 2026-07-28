@@ -164,7 +164,7 @@ const StaffDetails = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="p-8 bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen"
+      className="p-8 bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen"
     >
       <motion.div
         initial={{ y: -50, opacity: 0 }}

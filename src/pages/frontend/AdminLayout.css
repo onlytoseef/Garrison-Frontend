@@ -19,8 +19,7 @@
 
 /* Menu Item Hover Effect */
 .ant-menu-item:hover {
-    background-color: rgba(255, 215, 0, 0.1) !important;
-    /* Gold with 10% opacity */
+    background-color: rgba(47, 93, 170, 0.1) !important;
     transform: translateX(5px);
     transition: all 0.3s ease;
 }

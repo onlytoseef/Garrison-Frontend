@@ -15,6 +15,10 @@ import {
   FaHandHoldingUsd,
   FaCalendarDay,
   FaNewspaper,
+  FaSchool,
+  FaUserCheck,
+  FaUserTimes,
+  FaUserClock,
 } from "react-icons/fa";
 
 Chart.register(...registerables);
@@ -55,7 +59,10 @@ const Home = () => {
   const dailyChartRef = useRef(null);
   const [totalStudents, setTotalStudents] = useState(0);
   const [presentStudents, setPresentStudents] = useState(0);
+  const [absentStudents, setAbsentStudents] = useState(0);
+  const [onLeaveStudents, setOnLeaveStudents] = useState(0);
   const [totalStaff, setTotalStaff] = useState(0);
+  const [totalClasses, setTotalClasses] = useState(0);
   const [monthlyPaid, setMonthlyPaid] = useState(0);
   const [monthlyPending, setMonthlyPending] = useState(0);
   const [monthlyPaidStudents, setMonthlyPaidStudents] = useState(0);
@@ -110,7 +117,10 @@ const Home = () => {
 
       setTotalStudents(data.totalStudents);
       setPresentStudents(data.presentStudents);
+      setAbsentStudents(data.absentStudents || 0);
+      setOnLeaveStudents(data.onLeaveStudents || 0);
       setTotalStaff(data.totalStaff);
+      setTotalClasses(data.totalClasses || 0);
 
       setMonthlyPaid(data.monthlyFee.paid);
       setMonthlyPending(data.monthlyFee.pending);
@@ -423,7 +433,7 @@ const Home = () => {
       {loading ? (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 md:mb-8">
-            {[...Array(10)].map((_, i) => (
+            {[...Array(6)].map((_, i) => (
               <SkeletonCard key={i} />
             ))}
           </div>
@@ -437,6 +447,8 @@ const Home = () => {
                 <SkeletonChart />
               </div>
             </div>
+            {/* Monthly Fee Collection skeleton — HIDDEN */}
+            {false && (
             <div className="glass-card p-4 sm:p-5 md:p-6">
               <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3 md:mb-4">
                 Monthly Fee Collection ({moment().year()})
@@ -445,8 +457,12 @@ const Home = () => {
                 <SkeletonChart />
               </div>
             </div>
+            )}
           </div>
 
+          {/* ===== Finance skeleton sections — HIDDEN ===== */}
+          {false && (
+          <>
           <div className="glass-card p-4 sm:p-5 md:p-6 mb-4 sm:mb-6 md:mb-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 sm:mb-3 md:mb-4 gap-2">
               <h2 className="text-base sm:text-lg md:text-xl font-semibold">
@@ -499,6 +515,8 @@ const Home = () => {
               </div>
             </div>
           </div>
+          </>
+          )}
         </>
       ) : (
         <>
@@ -526,23 +544,106 @@ const Home = () => {
             {/* Total Staff Card */}
             <motion.div
               whileHover={{ y: -5 }}
-              className="glass-card p-4 sm:p-5 md:p-6 border-l-4 border-purple-500"
+              className="glass-card p-4 sm:p-5 md:p-6 border-l-4 border-blue-500"
             >
               <div className="flex items-center">
-                <div className="p-2 sm:p-3 rounded-full bg-purple-100 text-purple-600 mr-3 sm:mr-4">
+                <div className="p-2 sm:p-3 rounded-full bg-blue-100 text-blue-600 mr-3 sm:mr-4">
                   <FaChalkboardTeacher className="text-xl sm:text-2xl" />
                 </div>
                 <div>
                   <h3 className="text-xs sm:text-sm md:text-base text-gray-600 font-medium">
                     Total Staff
                   </h3>
-                  <p className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-600">
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600">
                     {totalStaff.toLocaleString()}
                   </p>
                 </div>
               </div>
             </motion.div>
 
+            {/* Total Classes Card */}
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="glass-card p-4 sm:p-5 md:p-6 border-l-4 border-indigo-500"
+            >
+              <div className="flex items-center">
+                <div className="p-2 sm:p-3 rounded-full bg-indigo-100 text-indigo-600 mr-3 sm:mr-4">
+                  <FaSchool className="text-xl sm:text-2xl" />
+                </div>
+                <div>
+                  <h3 className="text-xs sm:text-sm md:text-base text-gray-600 font-medium">
+                    Total Classes
+                  </h3>
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold text-indigo-600">
+                    {totalClasses.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Present Today Card */}
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="glass-card p-4 sm:p-5 md:p-6 border-l-4 border-green-500"
+            >
+              <div className="flex items-center">
+                <div className="p-2 sm:p-3 rounded-full bg-green-100 text-green-600 mr-3 sm:mr-4">
+                  <FaUserCheck className="text-xl sm:text-2xl" />
+                </div>
+                <div>
+                  <h3 className="text-xs sm:text-sm md:text-base text-gray-600 font-medium">
+                    Present Today
+                  </h3>
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold text-green-600">
+                    {presentStudents.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Absent Today Card */}
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="glass-card p-4 sm:p-5 md:p-6 border-l-4 border-red-500"
+            >
+              <div className="flex items-center">
+                <div className="p-2 sm:p-3 rounded-full bg-red-100 text-red-600 mr-3 sm:mr-4">
+                  <FaUserTimes className="text-xl sm:text-2xl" />
+                </div>
+                <div>
+                  <h3 className="text-xs sm:text-sm md:text-base text-gray-600 font-medium">
+                    Absent Today
+                  </h3>
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">
+                    {absentStudents.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* On Leave Today Card */}
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="glass-card p-4 sm:p-5 md:p-6 border-l-4 border-yellow-500"
+            >
+              <div className="flex items-center">
+                <div className="p-2 sm:p-3 rounded-full bg-yellow-100 text-yellow-600 mr-3 sm:mr-4">
+                  <FaUserClock className="text-xl sm:text-2xl" />
+                </div>
+                <div>
+                  <h3 className="text-xs sm:text-sm md:text-base text-gray-600 font-medium">
+                    On Leave Today
+                  </h3>
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-600">
+                    {onLeaveStudents.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ===== FINANCE / ERP CARDS — HIDDEN (not needed on dashboard) ===== */}
+            {false && (
+            <>
             {/* Monthly Paid Card */}
             <motion.div
               whileHover={{ y: -5 }}
@@ -726,6 +827,8 @@ const Home = () => {
                 </div>
               </div>
             </motion.div>
+            </>
+            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
@@ -739,7 +842,8 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Fee Collection Chart */}
+            {/* Fee Collection Chart — HIDDEN (not needed) */}
+            {false && (
             <div className="glass-card p-4 sm:p-5 md:p-6">
               <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4">
                 Monthly Fee Collection ({moment().year()})
@@ -748,8 +852,12 @@ const Home = () => {
                 <canvas ref={barChartRef}></canvas>
               </div>
             </div>
+            )}
           </div>
 
+          {/* ===== Daily fee chart, daily fee table & financial summary — HIDDEN (not needed) ===== */}
+          {false && (
+          <>
           {/* Daily Fee Collection Chart */}
           <div className="glass-card p-4 sm:p-5 md:p-6 mb-6 sm:mb-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 sm:mb-4 gap-2">
@@ -868,7 +976,7 @@ const Home = () => {
                       <td className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-cyan-600 font-medium">
                         {(dailyFeeData.paperFund[index] || 0).toLocaleString()}
                       </td>
-                      <td className="px-4 xl:px-6 py-3 xl:py-4 whitespace-nowrap text-xs xl:text-sm text-purple-600 font-medium">
+                      <td className="px-4 xl:px-6 py-3 xl:py-4 whitespace-nowrap text-xs xl:text-sm text-blue-600 font-medium">
                         {dailyFeeData.partialPayments[index].toLocaleString()}
                       </td>
                       <td className="px-4 xl:px-6 py-3 xl:py-4 whitespace-nowrap text-xs xl:text-sm font-bold text-gray-900">
@@ -902,7 +1010,7 @@ const Home = () => {
                     .reduce((a, b) => a + b, 0)
                     .toLocaleString()}
                 </span>
-                <span className="text-purple-600">
+                <span className="text-blue-600">
                   Partial: Rs.{" "}
                   {dailyFeeData.partialPayments
                     .reduce((a, b) => a + b, 0)
@@ -995,6 +1103,8 @@ const Home = () => {
               </div>
             </div>
           </div>
+          </>
+          )}
         </>
       )}
     </div>

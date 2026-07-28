@@ -86,7 +86,7 @@ const SkeletonCard = () => (
 const SkeletonTable = () => (
   <div className="overflow-x-auto rounded-lg shadow-md">
     <table className="min-w-full bg-transparent">
-      <thead className="bg-gradient-to-r from-[#243F73] to-[#1B315D] text-white">
+      <thead className="bg-gradient-to-r from-[#2F5DAA] to-[#1E3F72] text-white">
         <tr>
           <th className="px-6 py-3 text-left text-sm font-semibold">Photo</th>
           <th className="px-6 py-3 text-left text-sm font-semibold">
@@ -481,7 +481,7 @@ const Students = () => {
   const photoBlock = (
     <div className="mb-4">
       <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-        <FaCamera className="text-purple-600" />
+        <FaCamera className="text-blue-600" />
         Photo <span className="text-xs font-normal text-gray-400">(optional)</span>
       </label>
       <div className="flex items-center gap-4">
@@ -539,7 +539,7 @@ const Students = () => {
           <button
             type="button"
             onClick={capturePhoto}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-[#243F73] hover:bg-[#1B315D] rounded-lg transition-all"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-[#2F5DAA] hover:bg-[#1E3F72] rounded-lg transition-all"
           >
             <FaCamera /> Capture
           </button>
@@ -568,7 +568,7 @@ const Students = () => {
                 <div 
                   className="px-6 py-3 rounded-xl shadow-sm transition-all duration-300 hover:scale-105"
                   style={{
-                    background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                    background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
                   }}
                 >
                   <p className="text-lg font-bold text-white">
@@ -619,7 +619,7 @@ const Students = () => {
               <table className="min-w-full bg-transparent">
                 <thead 
                   style={{
-                    background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                    background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
                   }}
                   className="text-white"
                 >
@@ -681,7 +681,7 @@ const Students = () => {
                         <span
                           className="px-3 py-1.5 rounded-full font-semibold"
                           style={{
-                            background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)',
+                            background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)',
                             color: 'white'
                           }}
                         >
@@ -699,8 +699,8 @@ const Students = () => {
                           className="px-3 py-1.5 rounded-full font-medium"
                           style={{
                             background: student.gender === "Male"
-                              ? 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
-                              : 'linear-gradient(135deg, #243F73 0%, #365896 100%)',
+                              ? 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
+                              : 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)',
                             color: 'white'
                           }}
                         >
@@ -729,7 +729,7 @@ const Students = () => {
                           <span 
                             className="px-3 py-1.5 rounded-full font-semibold"
                             style={{
-                              background: 'linear-gradient(135deg, #15803D 0%, #22C55E 100%)',
+                              background: 'linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)',
                               color: 'white'
                             }}
                           >
@@ -746,7 +746,7 @@ const Students = () => {
                             title="View Student Card"
                             className="p-2.5 rounded-lg transition-all duration-300 hover:scale-110 shadow-sm"
                             style={{
-                              background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                              background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
                             }}
                           >
                             <FaEye className="text-white" />
@@ -758,7 +758,7 @@ const Students = () => {
                           <button
                             className="p-2.5 rounded-lg transition-all duration-300 hover:scale-110 shadow-sm"
                             style={{
-                              background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                              background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
                             }}
                             onClick={() => handleEdit(student)}
                           >
@@ -812,7 +812,7 @@ const Students = () => {
                               : 'bg-gray-100 hover:bg-gray-200'
                           }`}
                           style={currentPage === pageNum ? {
-                            background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                            background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
                           } : {}}
                         >
                           {pageNum}
@@ -851,7 +851,7 @@ const Students = () => {
             <div 
               className="p-6 rounded-t-2xl"
               style={{
-                background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
               }}
             >
               <h2 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -862,7 +862,7 @@ const Students = () => {
             <form onSubmit={handleAdd} className="p-6">
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <FaUser className="text-purple-600" />
+                  <FaUser className="text-blue-600" />
                   Name
                 </label>
                 <input
@@ -873,12 +873,12 @@ const Students = () => {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   required
-                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                 />
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <FaUserTie className="text-purple-600" />
+                  <FaUserTie className="text-blue-600" />
                   Guardian Name
                 </label>
                 <input
@@ -889,12 +889,12 @@ const Students = () => {
                     setFormData({ ...formData, guardianName: e.target.value })
                   }
                   required
-                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                 />
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <MdSchool className="text-purple-600" />
+                  <MdSchool className="text-blue-600" />
                   Class
                 </label>
                 <select
@@ -904,7 +904,7 @@ const Students = () => {
                     setFormData({ ...formData, classId: e.target.value })
                   }
                   required
-                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                 >
                   <option value="">Select Class</option>
                   {classes.map((cls) => (
@@ -916,7 +916,7 @@ const Students = () => {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <BiSolidUserDetail className="text-purple-600" />
+                  <BiSolidUserDetail className="text-blue-600" />
                   Gender
                 </label>
                 <div className="flex gap-6">
@@ -930,7 +930,7 @@ const Students = () => {
                         setFormData({ ...formData, gender: e.target.value })
                       }
                       required
-                      className="mr-2 w-4 h-4 text-purple-600"
+                      className="mr-2 w-4 h-4 text-blue-600"
                     />
                     <FaMale className="mr-1 text-blue-600" />
                     <span className="text-gray-700">Male</span>
@@ -945,7 +945,7 @@ const Students = () => {
                         setFormData({ ...formData, gender: e.target.value })
                       }
                       required
-                      className="mr-2 w-4 h-4 text-purple-600"
+                      className="mr-2 w-4 h-4 text-blue-600"
                     />
                     <FaFemale className="mr-1 text-pink-600" />
                     <span className="text-gray-700">Female</span>
@@ -954,7 +954,7 @@ const Students = () => {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <FaPhone className="text-purple-600" />
+                  <FaPhone className="text-blue-600" />
                   Guardian Phone
                 </label>
                 <input
@@ -968,12 +968,12 @@ const Students = () => {
                     })
                   }
                   required
-                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                 />
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <FaHome className="text-purple-600" />
+                  <FaHome className="text-blue-600" />
                   Address
                 </label>
                 <input
@@ -984,7 +984,7 @@ const Students = () => {
                     setFormData({ ...formData, address: e.target.value })
                   }
                   required
-                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                 />
               </div>
               {photoBlock}
@@ -1000,7 +1000,7 @@ const Students = () => {
                   type="submit"
                   className="px-6 py-2.5 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105"
                   style={{
-                    background: 'linear-gradient(135deg, #15803D 0%, #22C55E 100%)'
+                    background: 'linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)'
                   }}
                 >
                   Add Student
@@ -1017,7 +1017,7 @@ const Students = () => {
             <div 
               className="p-6 rounded-t-2xl"
               style={{
-                background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
               }}
             >
               <h2 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -1028,7 +1028,7 @@ const Students = () => {
             <form onSubmit={handleUpdate} className="p-6">
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <FaUser className="text-purple-600" />
+                  <FaUser className="text-blue-600" />
                   Name
                 </label>
                 <input
@@ -1039,12 +1039,12 @@ const Students = () => {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   required
-                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                 />
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <FaUserTie className="text-purple-600" />
+                  <FaUserTie className="text-blue-600" />
                   Guardian Name
                 </label>
                 <input
@@ -1055,12 +1055,12 @@ const Students = () => {
                     setFormData({ ...formData, guardianName: e.target.value })
                   }
                   required
-                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                 />
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <MdSchool className="text-purple-600" />
+                  <MdSchool className="text-blue-600" />
                   Class
                 </label>
                 <select
@@ -1070,7 +1070,7 @@ const Students = () => {
                     setFormData({ ...formData, classId: e.target.value })
                   }
                   required
-                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                 >
                   <option value="">Select Class</option>
                   {classes.map((cls) => (
@@ -1082,7 +1082,7 @@ const Students = () => {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <BiSolidUserDetail className="text-purple-600" />
+                  <BiSolidUserDetail className="text-blue-600" />
                   Gender
                 </label>
                 <div className="flex gap-6">
@@ -1096,7 +1096,7 @@ const Students = () => {
                         setFormData({ ...formData, gender: e.target.value })
                       }
                       required
-                      className="mr-2 w-4 h-4 text-purple-600"
+                      className="mr-2 w-4 h-4 text-blue-600"
                     />
                     <FaMale className="mr-1 text-blue-600" />
                     <span className="text-gray-700">Male</span>
@@ -1111,7 +1111,7 @@ const Students = () => {
                         setFormData({ ...formData, gender: e.target.value })
                       }
                       required
-                      className="mr-2 w-4 h-4 text-purple-600"
+                      className="mr-2 w-4 h-4 text-blue-600"
                     />
                     <FaFemale className="mr-1 text-pink-600" />
                     <span className="text-gray-700">Female</span>
@@ -1120,7 +1120,7 @@ const Students = () => {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <FaPhone className="text-purple-600" />
+                  <FaPhone className="text-blue-600" />
                   Guardian Phone
                 </label>
                 <input
@@ -1134,12 +1134,12 @@ const Students = () => {
                     })
                   }
                   required
-                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                 />
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <FaHome className="text-purple-600" />
+                  <FaHome className="text-blue-600" />
                   Address
                 </label>
                 <input
@@ -1150,7 +1150,7 @@ const Students = () => {
                     setFormData({ ...formData, address: e.target.value })
                   }
                   required
-                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-purple-500 rounded-xl outline-none transition-all duration-300"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                 />
               </div>
               {photoBlock}
@@ -1166,7 +1166,7 @@ const Students = () => {
                   type="submit"
                   className="px-6 py-2.5 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105"
                   style={{
-                    background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)'
+                    background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
                   }}
                 >
                   Update
@@ -1235,14 +1235,14 @@ const Students = () => {
             </div>
             <div className="p-6 space-y-4">
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                <FaUser className="text-[#243F73] text-lg" />
+                <FaUser className="text-[#2F5DAA] text-lg" />
                 <div>
                   <p className="text-xs text-gray-400 font-medium">Student Name</p>
                   <p className="text-gray-800 font-semibold">{credStudent.name}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
-                <span className="text-[#243F73] text-lg font-bold">@</span>
+                <span className="text-[#2F5DAA] text-lg font-bold">@</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-gray-400 font-medium">Email</p>
                   <p className="text-gray-800 font-semibold break-all">{credStudent.parentEmail || "N/A"}</p>
@@ -1262,7 +1262,7 @@ const Students = () => {
                 <button
                   onClick={() => setCredStudent(null)}
                   className="px-6 py-2.5 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105"
-                  style={{ background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)' }}
+                  style={{ background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)' }}
                 >
                   Close
                 </button>
@@ -1278,7 +1278,7 @@ const Students = () => {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm animate-fadeIn overflow-hidden">
             <div
               className="flex items-center justify-between px-6 py-4 text-white"
-              style={{ background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)' }}
+              style={{ background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)' }}
             >
               <h2 className="text-lg font-bold flex items-center gap-2">
                 <FaEye /> Student Card
@@ -1299,7 +1299,7 @@ const Students = () => {
                 <button
                   onClick={handlePrintCard}
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-white rounded-xl font-medium transition-all"
-                  style={{ background: 'linear-gradient(135deg, #243F73 0%, #365896 100%)' }}
+                  style={{ background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)' }}
                 >
                   <FaPrint /> Print Card
                 </button>

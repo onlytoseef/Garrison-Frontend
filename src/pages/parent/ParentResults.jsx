@@ -38,7 +38,7 @@ const ParentResults = () => {
     return (
       <div className="p-6 min-h-screen">
         <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-3 mb-6">
-          <div className="p-2 rounded-xl" style={{ background: "linear-gradient(135deg, #243F73 0%, #365896 100%)" }}>
+          <div className="p-2 rounded-xl" style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}>
             <FaChartBar className="text-white text-xl" />
           </div>
           Exam Results
@@ -54,7 +54,7 @@ const ParentResults = () => {
   return (
     <div className="p-4 sm:p-6 min-h-screen">
       <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-3 mb-6">
-        <div className="p-2 rounded-xl" style={{ background: "linear-gradient(135deg, #243F73 0%, #365896 100%)" }}>
+        <div className="p-2 rounded-xl" style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}>
           <FaChartBar className="text-white text-xl" />
         </div>
         Exam Results — {data.studentName}
@@ -63,7 +63,7 @@ const ParentResults = () => {
       <div className="space-y-5">
         {data.results.map(({ exam, result }) => (
           <div key={exam._id} className="glass-card overflow-hidden">
-            <div className="px-5 py-4 flex items-center justify-between" style={{ background: "linear-gradient(135deg, #243F73 0%, #365896 100%)" }}>
+            <div className="px-5 py-4 flex items-center justify-between" style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}>
               <div>
                 <h3 className="text-white font-bold text-lg">{exam.name}</h3>
                 <p className="text-white/70 text-sm capitalize">{exam.examType} — {exam.academicYear}</p>
@@ -88,7 +88,7 @@ const ParentResults = () => {
                       <p className="text-xs text-gray-500">Total</p>
                       <p className="text-lg font-bold text-gray-800">{result.obtainedMarks}/{result.totalMarks}</p>
                     </div>
-                    <div className="bg-purple-50 p-3 rounded-xl text-center">
+                    <div className="bg-blue-50 p-3 rounded-xl text-center">
                       <p className="text-xs text-gray-500">Percentage</p>
                       <p className="text-lg font-bold text-gray-800">{result.percentage}%</p>
                     </div>

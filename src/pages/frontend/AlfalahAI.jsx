@@ -10,7 +10,7 @@ const AlfalahAI = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([
     {
-      text: "Hello! I'm your Garrison AI Assistant. How can I help you with your educational journey today?",
+      text: "Hello! I'm your Quaid-e-Azam AI Assistant. How can I help you with your educational journey today?",
       sender: "ai",
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",
@@ -85,12 +85,12 @@ const AlfalahAI = () => {
 
   // Color palette
   const colors = {
-    primary: "from-[#243F73] to-[#365896]",
+    primary: "from-[#2F5DAA] to-[#1E3F72]",
     secondary: "from-blue-400 to-cyan-400",
-    userBg: "from-[#365896] to-[#243F73]",
+    userBg: "from-[#1E3F72] to-[#2F5DAA]",
     aiBg: "bg-white",
     text: "text-gray-800",
-    highlight: "text-[#243F73]",
+    highlight: "text-[#2F5DAA]",
   };
 
   return (
@@ -122,7 +122,7 @@ const AlfalahAI = () => {
             <IoSchoolOutline className="text-2xl" />
           </motion.div>
           <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
-            Garrison AI Assistant
+            Quaid-e-Azam AI Assistant
           </h1>
           <p className="text-sm text-gray-500 font-medium">
             Your intelligent learning companion
@@ -237,8 +237,8 @@ const AlfalahAI = () => {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask me anything about Garrison..."
-              className="w-full border-0 rounded-2xl pl-5 pr-14 py-4 focus:outline-none focus:ring-4 focus:ring-[#243F73]/20 text-[15px] shadow-lg bg-white/90 placeholder-gray-400"
+              placeholder="Ask me anything about Quaid-e-Azam Schools..."
+              className="w-full border-0 rounded-2xl pl-5 pr-14 py-4 focus:outline-none focus:ring-4 focus:ring-[#2F5DAA]/20 text-[15px] shadow-lg bg-white/90 placeholder-gray-400"
               disabled={isLoading}
               autoFocus
             />
@@ -258,13 +258,13 @@ const AlfalahAI = () => {
           </motion.div>
         </form>
         <p className="text-center text-xs text-gray-400 mt-3 font-medium">
-          Garrison AI Assistant may produce inaccurate information •{" "}
+          Quaid-e-Azam AI Assistant may produce inaccurate information •{" "}
           <span className={colors.highlight}>v2.0</span>
         </p>
       </motion.div>
 
       {/* Decorative elements */}
-      <div className="fixed -bottom-20 -right-20 w-64 h-64 rounded-full bg-[#243F73]/10 blur-3xl -z-10"></div>
+      <div className="fixed -bottom-20 -right-20 w-64 h-64 rounded-full bg-[#2F5DAA]/10 blur-3xl -z-10"></div>
       <div className="fixed -top-40 left-1/4 w-80 h-80 rounded-full bg-blue-400/10 blur-3xl -z-10"></div>
     </div>
   );

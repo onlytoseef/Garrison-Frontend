@@ -76,7 +76,7 @@ const StudentCard = React.memo(
                 <Tag 
                   className="font-bold shadow-md px-3 py-1"
                   style={{ 
-                    background: 'linear-gradient(135deg, #15803D 0%, #22C55E 100%)',
+                    background: 'linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)',
                     border: 'none',
                     borderRadius: '8px',
                     color: '#ffffff'
@@ -99,7 +99,7 @@ const StudentCard = React.memo(
                     loading="lazy"
                   />
                 ) : (
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[#243F73]/10 flex items-center justify-center shadow-md">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[#2F5DAA]/10 flex items-center justify-center shadow-md">
                     <IoIosSchool className="text-xl sm:text-3xl text-blue-600" />
                   </div>
                 )}
@@ -118,7 +118,7 @@ const StudentCard = React.memo(
                   <span 
                     className="inline-block mt-1 sm:mt-2 px-3 py-1 text-xs font-semibold rounded-full shadow-sm"
                     style={{
-                      background: '#243F73',
+                      background: '#2F5DAA',
                       color: 'white'
                     }}
                   >
@@ -130,7 +130,7 @@ const StudentCard = React.memo(
           </div>
 
           <div
-            className={`absolute inset-0 bg-[#243F73]/90 rounded-2xl flex items-end justify-center p-3 sm:p-4 cursor-pointer transition-opacity duration-300 ${
+            className={`absolute inset-0 bg-[#2F5DAA]/90 rounded-2xl flex items-end justify-center p-3 sm:p-4 cursor-pointer transition-opacity duration-300 ${
               isHovered === student._id ? 'opacity-100' : 'opacity-0 pointer-events-none'
             }`}
             onClick={() => navigate(`/students/${student._id}`)}
@@ -336,7 +336,7 @@ const StudentListPage = () => {
                 onClick={() => setIsBulkModalOpen(true)}
                 size="large"
                 className="w-full sm:w-auto border-0 transition-all duration-300 hover:scale-105 shadow-md"
-                style={{ background: '#243F73' }}
+                style={{ background: '#2F5DAA' }}
               >
                 <span className="hidden sm:inline">Bulk Generate Fees</span>
                 <span className="sm:hidden">Generate Fees</span>
@@ -347,7 +347,7 @@ const StudentListPage = () => {
                   icon={<FaChartBar />}
                   size="large"
                   className="w-full sm:w-auto flex items-center justify-center text-white border-0 transition-all duration-300 hover:scale-105 shadow-md"
-                  style={{ background: '#243F73', color: 'white' }}
+                  style={{ background: '#2F5DAA', color: 'white' }}
                 >
                   <span className="hidden sm:inline">Class Summary</span>
                   <span className="sm:hidden">Summary</span>
@@ -363,7 +363,7 @@ const StudentListPage = () => {
               <GiGraduateCap 
                 className="text-6xl sm:text-8xl" 
                 style={{ 
-                  background: '#243F73',
+                  background: '#2F5DAA',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent'
                 }} 
@@ -435,7 +435,7 @@ const StudentListPage = () => {
         <div className="space-y-5 py-2">
           <div>
             <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
-              <FaBook className="text-[#243F73]" /> Select Class
+              <FaBook className="text-[#2F5DAA]" /> Select Class
             </label>
             <Select
               placeholder="Choose a class..."
@@ -455,7 +455,7 @@ const StudentListPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
-                <FaCalendarAlt className="text-[#243F73]" /> Month
+                <FaCalendarAlt className="text-[#2F5DAA]" /> Month
               </label>
               <Select 
                 value={month} 
@@ -473,7 +473,7 @@ const StudentListPage = () => {
 
             <div>
               <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
-                <FaCalendarAlt className="text-[#243F73]" /> Year
+                <FaCalendarAlt className="text-[#2F5DAA]" /> Year
               </label>
               <Select 
                 value={year} 
@@ -490,7 +490,7 @@ const StudentListPage = () => {
 
           <div>
             <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
-              <FaMoneyBillWave className="text-[#243F73]" /> Amount per Student
+              <FaMoneyBillWave className="text-[#2F5DAA]" /> Amount per Student
             </label>
             <Input
               type="number"

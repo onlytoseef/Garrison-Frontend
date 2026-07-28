@@ -578,7 +578,7 @@ const StudentFeePage = () => {
 
     return [
       "========================",
-      "🏫 *GARRISON SCHOOL SYSTEM*",
+      "🏫 *THE QUAID-E-AZAM GROUP OF SCHOOLS & COLLEGES*",
       "========================",
       `👤 *Student:* ${studentInfo.name}`,
       `🎓 *Class:* ${studentInfo.classId?.grade || ""}-${studentInfo.classId?.section || ""}`,
@@ -694,7 +694,7 @@ const StudentFeePage = () => {
                   percent={percentPaid}
                   size="small"
                   status={percentPaid > 0 ? "active" : "normal"}
-                  strokeColor={percentPaid > 0 ? "#22C55E" : "#F97316"}
+                  strokeColor={percentPaid > 0 ? "#3AC97C" : "#F97316"}
                 />
               </>
             )}
@@ -874,7 +874,7 @@ const StudentFeePage = () => {
                   className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md transition-transform duration-300 hover:scale-105"
                 />
               ) : (
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center shadow-md">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center shadow-md">
                   <UserOutlined className="text-4xl text-blue-600" />
                 </div>
               )}
@@ -901,7 +901,7 @@ const StudentFeePage = () => {
 
                 {student.student.classId && (
                   <div className="flex items-center bg-gray-50 p-3 rounded-lg">
-                    <FileTextOutlined className="text-purple-500 mr-2" />
+                    <FileTextOutlined className="text-blue-500 mr-2" />
                     <div>
                       <div className="text-sm text-gray-500">Class</div>
                       <div className="font-medium">
@@ -1018,8 +1018,8 @@ const StudentFeePage = () => {
                   </span>
                 </div>
               </div>
-              <div className="bg-purple-100 p-3 rounded-full">
-                <FileTextOutlined className="text-purple-600 text-xl" />
+              <div className="bg-blue-100 p-3 rounded-full">
+                <FileTextOutlined className="text-blue-600 text-xl" />
               </div>
             </div>
             <div className="mt-4">

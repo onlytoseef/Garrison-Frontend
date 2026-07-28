@@ -663,8 +663,8 @@ const ClassFeeSummaryPage = () => {
       <!-- Header Section -->
       <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 15px;">
         <img src="/src/assets/images/logo.png" alt="School Logo" style="width: 70px; margin-bottom: 8px;" />
-        <h1 style="font-size: 22px; font-weight: bold; color: #243F73; margin: 0; text-align: center;">
-          GARRISON SCHOOL SYSTEM
+        <h1 style="font-size: 22px; font-weight: bold; color: #2F5DAA; margin: 0; text-align: center;">
+          THE QUAID-E-AZAM GROUP OF SCHOOLS & COLLEGES
         </h1>
         <p style="font-size: 13px; color: #4b5563; margin: 3px 0 0 0; text-align: center;">
           SHERONWALA PULL, JARANWALA
@@ -690,7 +690,7 @@ const ClassFeeSummaryPage = () => {
       <!-- Unpaid Fees Table -->
       <table style="width: 100%; border-collapse: collapse; border: 2px solid #000; margin-bottom: 15px; font-size: 12px;">
         <thead>
-          <tr style="background-color: #243F73; color: #ffffff;">
+          <tr style="background-color: #2F5DAA; color: #ffffff;">
             <th style="border: 1px solid #000; padding: 8px; text-align: left;">#</th>
             <th style="border: 1px solid #000; padding: 8px; text-align: left;">Month</th>
             <th style="border: 1px solid #000; padding: 8px; text-align: left;">Voucher #</th>
@@ -713,7 +713,7 @@ const ClassFeeSummaryPage = () => {
                 <td style="border: 1px solid #000; padding: 6px;">${monthName}</td>
                 <td style="border: 1px solid #000; padding: 6px;">${fee.voucherNumber}</td>
                 <td style="border: 1px solid #000; padding: 6px; text-align: right;">Rs. ${fee.amount.toLocaleString()}</td>
-                <td style="border: 1px solid #000; padding: 6px; text-align: right; color: ${paidAmount > 0 ? '#22C55E' : '#6b7280'};">
+                <td style="border: 1px solid #000; padding: 6px; text-align: right; color: ${paidAmount > 0 ? '#3AC97C' : '#6b7280'};">
                   ${paidAmount > 0 ? `Rs. ${paidAmount.toLocaleString()}` : '-'}
                 </td>
                 <td style="border: 1px solid #000; padding: 6px; text-align: right; color: #F97316; font-weight: 600;">
@@ -727,7 +727,7 @@ const ClassFeeSummaryPage = () => {
           <tr style="background-color: #f3f4f6; font-weight: bold;">
             <td colspan="3" style="border: 2px solid #000; padding: 8px; text-align: right; font-size: 13px;">TOTAL:</td>
             <td style="border: 2px solid #000; padding: 8px; text-align: right; font-size: 13px;">Rs. ${totalAmount.toLocaleString()}</td>
-            <td style="border: 2px solid #000; padding: 8px; text-align: right; font-size: 13px; color: #22C55E;">Rs. ${totalPaid.toLocaleString()}</td>
+            <td style="border: 2px solid #000; padding: 8px; text-align: right; font-size: 13px; color: #3AC97C;">Rs. ${totalPaid.toLocaleString()}</td>
             <td style="border: 2px solid #000; padding: 8px; text-align: right; font-size: 13px; color: #F97316;">Rs. ${totalRemaining.toLocaleString()}</td>
           </tr>
         </tbody>
@@ -856,11 +856,11 @@ const ClassFeeSummaryPage = () => {
           <Row justify="space-between" align="middle">
             <Col>
               <div className="flex items-center space-x-3">
-                <div className="p-3 rounded-xl" style={{ background: '#243F73' }}>
+                <div className="p-3 rounded-xl" style={{ background: '#2F5DAA' }}>
                   <DollarOutlined className="text-white text-2xl" />
                 </div>
                 <div>
-                  <Title level={2} className="mb-0" style={{ color: '#243F73' }}>
+                  <Title level={2} className="mb-0" style={{ color: '#2F5DAA' }}>
                     Class Fee Dashboard
                   </Title>
                   <Text type="secondary" className="text-base">
@@ -885,7 +885,7 @@ const ClassFeeSummaryPage = () => {
                   icon={<DollarOutlined />}
                   onClick={() => setGenerateModalVisible(true)}
                   className="border-0 transition-all duration-300 hover:scale-105 text-white"
-                  style={{ background: '#243F73' }}
+                  style={{ background: '#2F5DAA' }}
                 >
                   Generate Monthly
                 </Button>
@@ -894,7 +894,7 @@ const ClassFeeSummaryPage = () => {
                   icon={<CreditCardOutlined />}
                   onClick={() => setAdmissionModalVisible(true)}
                   className="border-0 transition-all duration-300 hover:scale-105 text-white"
-                  style={{ background: '#243F73' }}
+                  style={{ background: '#2F5DAA' }}
                 >
                   Generate Admission
                 </Button>
@@ -906,7 +906,7 @@ const ClassFeeSummaryPage = () => {
                     setPaperFundModalVisible(true);
                   }}
                   className="border-0 transition-all duration-300 hover:scale-105 text-white"
-                  style={{ background: '#243F73' }}
+                  style={{ background: '#2F5DAA' }}
                 >
                   Generate Paper Fund
                 </Button>
@@ -979,7 +979,7 @@ const ClassFeeSummaryPage = () => {
             <Col xs={24} sm={12} lg={6}>
               <Card 
                 className="shadow-lg border-0 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                style={{ background: '#243F73' }}
+                style={{ background: '#2F5DAA' }}
               >
                 <div className="text-white">
                   <div className="flex items-center justify-between mb-3">
@@ -996,7 +996,7 @@ const ClassFeeSummaryPage = () => {
             <Col xs={24} sm={12} lg={6}>
               <Card 
                 className="shadow-lg border-0 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                style={{ background: '#15803D' }}
+                style={{ background: '#0A8F4F' }}
               >
                 <div className="text-white">
                   <div className="flex items-center justify-between mb-3">
@@ -1041,7 +1041,7 @@ const ClassFeeSummaryPage = () => {
               <Card 
                 className="shadow-lg border-0 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 style={{ background: summary.paidStudents / summary.totalStudents > 0.7 
-                  ? '#15803D' 
+                  ? '#0A8F4F' 
                   : '#F97316' }}
               >
                 <div className="text-white">
@@ -1332,7 +1332,7 @@ const ClassFeeSummaryPage = () => {
               <InfoCircleOutlined 
                 className="text-6xl" 
                 style={{ 
-                  color: '#243F73'
+                  color: '#2F5DAA'
                 }} 
               />
             </div>
@@ -1344,16 +1344,16 @@ const ClassFeeSummaryPage = () => {
               to view comprehensive fee summary and student vouchers.
             </Text>
             <div className="flex justify-center gap-4 mt-8">
-              <div className="bg-[#243F73]/10 px-6 py-3 rounded-lg">
-                <UserOutlined className="text-[#243F73] mr-2" />
+              <div className="bg-[#2F5DAA]/10 px-6 py-3 rounded-lg">
+                <UserOutlined className="text-[#2F5DAA] mr-2" />
                 <Text strong>Select Class</Text>
               </div>
-              <div className="bg-[#243F73]/10 px-6 py-3 rounded-lg">
-                <FilterOutlined className="text-[#243F73] mr-2" />
+              <div className="bg-[#2F5DAA]/10 px-6 py-3 rounded-lg">
+                <FilterOutlined className="text-[#2F5DAA] mr-2" />
                 <Text strong>Choose Filters</Text>
               </div>
-              <div className="bg-[#243F73]/10 px-6 py-3 rounded-lg">
-                <DollarOutlined className="text-[#243F73] mr-2" />
+              <div className="bg-[#2F5DAA]/10 px-6 py-3 rounded-lg">
+                <DollarOutlined className="text-[#2F5DAA] mr-2" />
                 <Text strong>View Summary</Text>
               </div>
             </div>
@@ -1961,7 +1961,7 @@ const ClassFeeSummaryPage = () => {
             loading={loading}
             onClick={handleGeneratePaperFund}
             icon={<FileTextOutlined />}
-            style={{ background: '#243F73', borderColor: '#243F73' }}
+            style={{ background: '#2F5DAA', borderColor: '#2F5DAA' }}
           >
             Generate Vouchers
           </Button>,
