@@ -370,7 +370,7 @@ const AdminLayout = () => {
           }}
         >
           <div onClick={showCopyrightModal} style={{ cursor: "pointer" }}>
-            © 2025 The Quaid-e-Azam Group of Schools & Colleges
+            © {new Date().getFullYear()} The Quaid-e-Azam Group of Schools & Colleges
           </div>
         </Footer>
 

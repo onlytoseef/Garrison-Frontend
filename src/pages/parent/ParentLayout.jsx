@@ -228,7 +228,7 @@ const ParentLayout = () => {
           <Outlet />
         </Content>
         <Footer style={{ textAlign: "center", background: "#1E3F72", color: "#fff", padding: "16px", fontSize: "14px" }}>
-          © 2025 The Quaid-e-Azam Group of Schools & Colleges — Parent Portal
+          © {new Date().getFullYear()} The Quaid-e-Azam Group of Schools & Colleges — Parent Portal
         </Footer>
       </Layout>
     </Layout>
