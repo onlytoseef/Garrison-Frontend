@@ -24,6 +24,42 @@
     transition: all 0.3s ease;
 }
 
+/* ===== Sidebar: fixed logo + scrollable menu + fixed logout ===== */
+/* Ant Design wraps Sider content in .ant-layout-sider-children; make it a
+   flex column so the menu can scroll instead of getting cut off. */
+.ant-layout-sider-children {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Logo (top) and Logout (bottom) stay fixed; only the menu scrolls */
+.ant-layout-sider-children > div {
+    flex-shrink: 0;
+}
+
+.ant-layout-sider-children > .ant-menu {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Thin, subtle scrollbar for the dark sidebar menu */
+.ant-layout-sider-children > .ant-menu::-webkit-scrollbar {
+    width: 6px;
+}
+.ant-layout-sider-children > .ant-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+.ant-layout-sider-children > .ant-menu::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
+}
+.ant-layout-sider-children > .ant-menu::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
 /* Avatar Hover Effect */
 .ant-avatar:hover {
     transform: scale(1.1);

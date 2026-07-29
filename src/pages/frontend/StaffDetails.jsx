@@ -164,15 +164,16 @@ const StaffDetails = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="p-8 bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen"
+      className="p-4 sm:p-6 md:p-8 bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen"
     >
+      <div className="max-w-7xl 2xl:max-w-full mx-auto">
       <motion.div
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="glass-card p-6 mb-8"
+        className="glass-card p-4 sm:p-6 mb-6 sm:mb-8"
       >
-        <h1 className="text-center text-3xl font-bold text-gray-800 mb-6">
+        <h1 className="text-center text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">
           {staffDetails.name}
         </h1>
         <hr className="border-t-2 border-gray-200 mb-6" />
@@ -212,9 +213,9 @@ const StaffDetails = () => {
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
-        className="glass-card p-6"
+        className="glass-card p-4 sm:p-6"
       >
-        <h2 className="text-center text-3xl font-bold text-gray-800 mb-6">
+        <h2 className="text-center text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">
           Salary Payment Status ({currentYear})
         </h2>
         <hr className="border-t-2 border-gray-200 mb-6" />
@@ -272,6 +273,7 @@ const StaffDetails = () => {
           })}
         </div>
       </motion.div>
+      </div>
 
       <Modal
         title={`Pay Salary for ${selectedMonth} ${currentYear}`}
