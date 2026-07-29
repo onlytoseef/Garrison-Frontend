@@ -21,6 +21,7 @@ import ClassResultSheet from "./ClassResultSheet";
 import ResultCard from "./ResultCard";
 import ManualAttendance from "./ManualAttendance";
 import Diary from "./Diary";
+import Resources from "./Resources";
 
 export default function AdminRoutes() {
   return (
@@ -40,6 +41,7 @@ export default function AdminRoutes() {
           <Route path="/attendance-record" element={<AttendanceRecord />} />
           <Route path="/manual-attendance" element={<ManualAttendance />} />
           <Route path="/diary" element={<Diary />} />
+          <Route path="/resources" element={<Resources />} />
           <Route path="/class-fee-summary" element={<ClassFeeSummaryPage />} />
           <Route path="/exams" element={<Exams />} />
           <Route path="/exams/:examId/marks" element={<MarksEntry />} />

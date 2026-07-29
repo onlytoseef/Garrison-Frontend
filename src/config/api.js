@@ -73,6 +73,10 @@ export const API_ENDPOINTS = {
   DIARY_BULK: `${API_BASE_URL}/api/diary/bulk`,
   DIARY_BY_ID: (id) => `${API_BASE_URL}/api/diary/${id}`,
 
+  // Resources
+  RESOURCES: `${API_BASE_URL}/api/resources`,
+  RESOURCE_BY_ID: (id) => `${API_BASE_URL}/api/resources/${id}`,
+
   // Exams
   EXAMS: `${API_BASE_URL}/api/exams`,
   ADD_EXAM: `${API_BASE_URL}/api/exam`,
@@ -92,6 +96,7 @@ export const API_ENDPOINTS = {
   PARENT_RESULTS: `${API_BASE_URL}/api/parent/results`,
   PARENT_ATTENDANCE: `${API_BASE_URL}/api/parent/attendance`,
   PARENT_DIARY: `${API_BASE_URL}/api/parent/diary`,
+  PARENT_RESOURCES: `${API_BASE_URL}/api/parent/resources`,
   PARENT_NOTIFICATIONS: `${API_BASE_URL}/api/parent/notifications`,
   PARENT_NOTIFICATIONS_READ: `${API_BASE_URL}/api/parent/notifications/read-all`,
 };

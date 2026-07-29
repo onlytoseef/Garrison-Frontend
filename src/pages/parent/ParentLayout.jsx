@@ -6,6 +6,7 @@ import {
   BarChartOutlined,
   CalendarOutlined,
   BookOutlined,
+  FolderOpenOutlined,
   BellOutlined,
   LogoutOutlined,
   MenuUnfoldOutlined,
@@ -28,6 +29,7 @@ const menuItems = [
   { key: "/parent/results", icon: <BarChartOutlined />, label: "Exam Results", path: "/parent/results" },
   { key: "/parent/attendance", icon: <CalendarOutlined />, label: "Attendance", path: "/parent/attendance" },
   { key: "/parent/diary", icon: <BookOutlined />, label: "Homework Diary", path: "/parent/diary" },
+  { key: "/parent/resources", icon: <FolderOpenOutlined />, label: "Resources", path: "/parent/resources" },
 ];
 
 const ParentLayout = () => {
@@ -92,6 +94,7 @@ const ParentLayout = () => {
     if (type === "result") return "📊";
     if (type === "diary") return "📖";
     if (type === "attendance") return "⚠️";
+    if (type === "resource") return "📁";
     return "🔔";
   };
 

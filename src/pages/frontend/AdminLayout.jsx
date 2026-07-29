@@ -16,6 +16,7 @@ import {
   SolutionOutlined,
   EditOutlined,
   BookOutlined,
+  FolderOpenOutlined,
 } from "@ant-design/icons";
 
 import { AiOutlineRobot } from "react-icons/ai";
@@ -72,6 +73,12 @@ const menuItems = [
     icon: <BookOutlined />,
     label: "Homework Diary",
     path: "/diary",
+  },
+  {
+    key: "/resources",
+    icon: <FolderOpenOutlined />,
+    label: "Resources",
+    path: "/resources",
   },
   // { key: "/chatbot", icon: <AiOutlineRobot />, label: "QA Assistant", path: "/chatbot" },
 ];
