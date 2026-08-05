@@ -885,7 +885,7 @@ const Campuses = () => {
                     value={form.name}
                     onChange={handleChange}
                     required
-                    placeholder="Alfalah School Lahore"
+                    placeholder="Quaid e Azam Group of Colleges, Lahore"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -956,7 +956,7 @@ const Campuses = () => {
                   value={form.principalEmail}
                   onChange={handleChange}
                   required
-                  placeholder="principal.lhr@alfalah.edu.pk"
+                  placeholder="principal.lhr@quaideazamgroupofcolleges.edu.pk"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-xs text-gray-400 mt-1">
