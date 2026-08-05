@@ -7,6 +7,9 @@ import { HiUserCircle, HiEye, HiEyeOff } from "react-icons/hi";
 import { motion } from "framer-motion";
 import { Form, Input, Button } from "antd";
 
+// Campus-based roles reach this page from the sidebar. A super admin does not:
+// their home is the campus picker, where the same form is offered as a modal
+// (see components/ChangePasswordModal.jsx), so they never have to leave it.
 const Profile = () => {
   const { user } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
@@ -23,14 +26,13 @@ const Profile = () => {
       }
 
       setLoading(true);
-      const response = await axios.post(
-  API_ENDPOINTS.UPDATE_PASSWORD ,
-        {
-          userId: user._id,
-          currentPassword: values.currentPassword,
-          newPassword: values.newPassword,
-        }
-      );
+      // userId is deliberately NOT sent: the server takes the account from the
+      // auth token. Sending it would be ignored, and relying on it was how the
+      // old endpoint let one user target another.
+      await axios.post(API_ENDPOINTS.UPDATE_PASSWORD, {
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+      });
       toast.success("Password updated successfully!");
       form.resetFields();
     } catch (err) {
@@ -108,6 +110,10 @@ const Profile = () => {
               name="newPassword"
               rules={[
                 { required: true, message: "Please enter your new password!" },
+                {
+                  min: 8,
+                  message: "Password must be at least 8 characters",
+                },
               ]}
             >
               <div className="relative">

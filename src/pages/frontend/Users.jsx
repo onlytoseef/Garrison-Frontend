@@ -122,7 +122,7 @@ const Users = () => {
           >
             <option value="admin">Admin</option>
             <option value="teacher">Teacher</option>
-            <option value="principle">Principle</option>
+            <option value="principal">Principal</option>
           </select>
           <motion.button
             type="submit"

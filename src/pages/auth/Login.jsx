@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { HiMail, HiLockClosed } from "react-icons/hi";
 import logo from "../../../src/assets/images/logo.png";
 import toast from "react-hot-toast";
+import { setActiveCampusId } from "../../config/axiosSetup";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -16,8 +17,16 @@ const Login = () => {
       const result = await dispatch(loginUser(values)).unwrap();
       if (result.user) {
         toast.success("Login successful!");
+
+        // Clear any campus left over from a previous session, so a super admin
+        // always starts at the picker and a principal never inherits a header
+        // that contradicts their own campus.
+        setActiveCampusId(null);
+
         if (result.user.role === "parent") {
           navigate("/parent");
+        } else if (result.user.role === "super_admin") {
+          navigate("/campuses");
         } else {
           navigate("/");
         }

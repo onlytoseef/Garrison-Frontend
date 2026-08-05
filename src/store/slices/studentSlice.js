@@ -58,6 +58,37 @@ export const deleteStudent = createAsyncThunk(
   }
 );
 
+export const updateStudentStatus = createAsyncThunk(
+  "students/updateStatus",
+  async ({ studentId, status }, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        API_ENDPOINTS.UPDATE_STUDENT_STATUS(studentId),
+        { status }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Failed" });
+    }
+  }
+);
+
+export const resetParentPassword = createAsyncThunk(
+  "students/resetParentPassword",
+  async (studentId, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        API_ENDPOINTS.RESET_PARENT_PASSWORD(studentId)
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || { message: "Failed to reset password" }
+      );
+    }
+  }
+);
+
 const studentsSlice = createSlice({
   name: "students",
   initialState: {
@@ -108,6 +139,31 @@ const studentsSlice = createSlice({
       })
       .addCase(deleteStudent.rejected, (state, action) => {
         console.error("Failed to delete student:", action.payload);
+      })
+      // Patch the one row in place rather than refetching the whole list, so
+      // the badge flips instantly and pagination/scroll position are kept.
+      .addCase(updateStudentStatus.fulfilled, (state, action) => {
+        const updated = action.payload.student;
+        state.students = state.students.map((student) =>
+          student.studentId === updated.studentId
+            ? { ...student, status: updated.status }
+            : student
+        );
+      })
+      // Same in-place patch: the new password goes straight into the cached row
+      // so reopening the credentials modal shows the current value instead of
+      // the stale one from the last fetch.
+      .addCase(resetParentPassword.fulfilled, (state, action) => {
+        const { student, parentCredentials } = action.payload;
+        state.students = state.students.map((s) =>
+          s.studentId === student.studentId
+            ? {
+                ...s,
+                parentEmail: parentCredentials.email,
+                parentPassword: parentCredentials.password,
+              }
+            : s
+        );
       });
   },
 });

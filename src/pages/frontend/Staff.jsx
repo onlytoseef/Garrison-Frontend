@@ -7,6 +7,7 @@ import {
   addStaff,
   updateStaff,
 } from "../../store/slices/staffSlice";
+import { fetchClasses } from "../../store/slices/classSlice";
 import { motion } from "framer-motion";
 import { Modal, Form, Input, Select, Typography } from "antd";
 import {
@@ -18,7 +19,9 @@ import {
   FaHome,
   FaGraduationCap,
   FaMoneyBill,
+  FaKey,
 } from "react-icons/fa";
+import TeacherAccessModal from "../components/TeacherAccessModal";
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -27,12 +30,17 @@ const Staff = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { staff, status } = useSelector((state) => state.staff);
+  const { classes } = useSelector((state) => state.classes);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingStaff, setEditingStaff] = useState(null);
+  // Staff member whose portal access is being managed.
+  const [accessStaff, setAccessStaff] = useState(null);
   const [form] = Form.useForm();
 
   useEffect(() => {
     dispatch(fetchStaff());
+    // Needed for the class checkboxes in the access modal.
+    dispatch(fetchClasses());
   }, [dispatch]);
 
   const handleDelete = (id) => {
@@ -96,11 +104,25 @@ const Staff = () => {
       key: "actions",
       align: "center",
       render: (_, record) => (
-        <div className="flex justify-center space-x-4">
+        <div className="flex justify-center space-x-2">
+          {/* Portal access only makes sense for roles that can hold a login;
+              a peon or guard has nothing to sign in for. */}
+          {["teacher", "principal", "admin"].includes(record.role) && (
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="bg-amber-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2"
+              onClick={() => setAccessStaff(record)}
+              title="Login and class assignments"
+            >
+              <FaKey />
+              <span>Access</span>
+            </motion.button>
+          )}
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
+            className="bg-blue-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2"
             onClick={() => handleEdit(record)}
           >
             <FaEdit />
@@ -109,7 +131,7 @@ const Staff = () => {
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
+            className="bg-red-500 text-white px-3 py-2 rounded-lg flex items-center space-x-2"
             onClick={() => handleDelete(record._id)}
           >
             <FaTrash />
@@ -256,6 +278,14 @@ const Staff = () => {
           </Form.Item>
         </Form>
       </Modal>
+
+      {accessStaff && (
+        <TeacherAccessModal
+          staff={accessStaff}
+          classes={classes}
+          onClose={() => setAccessStaff(null)}
+        />
+      )}
     </motion.div>
   );
 };

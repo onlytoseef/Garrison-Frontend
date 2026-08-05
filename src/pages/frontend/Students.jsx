@@ -5,11 +5,13 @@ import {
   deleteStudent,
   updateStudent,
   addStudent,
+  updateStudentStatus,
+  resetParentPassword,
 } from "../../store/slices/studentSlice";
 import { fetchClasses } from "../../store/slices/classSlice";
 import { API_BASE_URL, API_ENDPOINTS } from "../../config/api";
 import axios from "axios";
-import { FaTrash, FaEdit, FaPlus, FaDownload, FaUser, FaUserTie, FaPhone, FaHome, FaMale, FaFemale, FaUserPlus, FaSearch, FaQrcode, FaCamera, FaImage, FaEye, FaPrint, FaKey } from "react-icons/fa";
+import { FaTrash, FaEdit, FaPlus, FaDownload, FaUser, FaUserTie, FaPhone, FaHome, FaMale, FaFemale, FaUserPlus, FaSearch, FaQrcode, FaCamera, FaImage, FaEye, FaPrint, FaKey, FaBan, FaCheckCircle, FaRedo, FaCopy } from "react-icons/fa";
 import { MdSchool, MdDelete, MdNumbers } from "react-icons/md";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { toast } from "react-hot-toast";
@@ -158,12 +160,29 @@ const Students = () => {
     (state) => state.students
   );
   const { classes } = useSelector((state) => state.classes);
+
+  // Only these two roles may block or unblock a student. The backend enforces
+  // this as well (requireRole on the route) — this just hides a control that
+  // would always 403.
+  const { user } = useSelector((state) => state.auth);
+  const canChangeStatus = ["super_admin", "principal"].includes(user?.role);
+  // Teachers get a read-only roster of their own classes: the API refuses these
+  // actions and strips parent credentials from the payload, so the controls are
+  // hidden rather than left to fail on click.
+  const isTeacher = user?.role === "teacher";
+
+  const [statusTarget, setStatusTarget] = useState(null); // student pending confirm
+  const [statusSaving, setStatusSaving] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState(null);
   const [cardStudent, setCardStudent] = useState(null); // student whose ID card modal is open
   const [credStudent, setCredStudent] = useState(null); // student whose parent credentials modal is open
+  const [resettingCreds, setResettingCreds] = useState(false);
+  // Two-step confirm inside the modal: the old password stops working the moment
+  // this runs, so it should not be one stray click away.
+  const [confirmReset, setConfirmReset] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
   const [filterClass, setFilterClass] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -314,6 +333,71 @@ const Students = () => {
     } catch (error) {
       toast.error("Failed to delete student.");
     }
+  };
+
+  const handleStatusChange = async () => {
+    if (!statusTarget) return;
+    // Whatever it is now, flip it.
+    const nextStatus =
+      statusTarget.status === "blocked" ? "active" : "blocked";
+
+    try {
+      setStatusSaving(true);
+      const res = await dispatch(
+        updateStudentStatus({
+          studentId: statusTarget.studentId,
+          status: nextStatus,
+        })
+      ).unwrap();
+      toast.success(res.message);
+      setStatusTarget(null);
+    } catch (error) {
+      toast.error(error?.message || "Failed to update status");
+    } finally {
+      setStatusSaving(false);
+    }
+  };
+
+  /**
+   * Issues a new parent password. The backend updates the bcrypt hash used for
+   * login and the AES copy shown here in one transaction, so what appears in the
+   * modal afterwards is genuinely what the parent must type.
+   */
+  const handleResetParentPassword = async () => {
+    if (!credStudent) return;
+    try {
+      setResettingCreds(true);
+      const res = await dispatch(
+        resetParentPassword(credStudent.studentId)
+      ).unwrap();
+
+      // Reflect the new credentials in the open modal immediately; the slice
+      // has already patched the row behind it.
+      setCredStudent((prev) => ({
+        ...prev,
+        parentEmail: res.parentCredentials.email,
+        parentPassword: res.parentCredentials.password,
+      }));
+      setConfirmReset(false);
+      toast.success("Parent password reset");
+    } catch (error) {
+      toast.error(error?.message || "Failed to reset password");
+    } finally {
+      setResettingCreds(false);
+    }
+  };
+
+  const copyCredentials = () => {
+    if (!credStudent?.parentEmail) return;
+    navigator.clipboard.writeText(
+      `Email: ${credStudent.parentEmail}\nPassword: ${credStudent.parentPassword}`
+    );
+    toast.success("Copied");
+  };
+
+  const closeCredModal = () => {
+    setCredStudent(null);
+    setConfirmReset(false);
   };
 
   const handleEdit = (student) => {
@@ -602,13 +686,15 @@ const Students = () => {
                       </option>
                     ))}
                   </select>
-                  <button
-                    onClick={openAddModal}
-                    className="flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border-0"
-                  >
-                    <FaPlus className="mr-2" />
-                    Add Student
-                  </button>
+                  {!isTeacher && (
+                    <button
+                      onClick={openAddModal}
+                      className="flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border-0"
+                    >
+                      <FaPlus className="mr-2" />
+                      Add Student
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -650,6 +736,9 @@ const Students = () => {
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold">
                       Student Card
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold">
+                      Status
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold">
                       Actions
@@ -712,16 +801,20 @@ const Students = () => {
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-700">
                         <div className="flex justify-center">
-                          <button
-                            onClick={() => setCredStudent(student)}
-                            title="View Parent Login"
-                            className="p-2.5 rounded-lg transition-all duration-300 hover:scale-110 shadow-sm"
-                            style={{
-                              background: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)'
-                            }}
-                          >
-                            <FaKey className="text-white" />
-                          </button>
+                          {isTeacher ? (
+                            <span className="text-xs text-gray-400">—</span>
+                          ) : (
+                            <button
+                              onClick={() => setCredStudent(student)}
+                              title="View Parent Login"
+                              className="p-2.5 rounded-lg transition-all duration-300 hover:scale-110 shadow-sm"
+                              style={{
+                                background: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)'
+                              }}
+                            >
+                              <FaKey className="text-white" />
+                            </button>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-700">
@@ -753,26 +846,64 @@ const Students = () => {
                           </button>
                         </div>
                       </td>
+                      <td className="px-6 py-4 text-sm">
+                        {student.status === "blocked" ? (
+                          <span className="px-3 py-1.5 rounded-full font-semibold bg-red-100 text-red-700 border border-red-200">
+                            Blocked
+                          </span>
+                        ) : (
+                          <span className="px-3 py-1.5 rounded-full font-semibold bg-green-100 text-green-700 border border-green-200">
+                            Active
+                          </span>
+                        )}
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
-                          <button
-                            className="p-2.5 rounded-lg transition-all duration-300 hover:scale-110 shadow-sm"
-                            style={{
-                              background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
-                            }}
-                            onClick={() => handleEdit(student)}
-                          >
-                            <FaEdit className="text-white" />
-                          </button>
-                          <button
-                            className="p-2.5 rounded-lg transition-all duration-300 hover:scale-110 shadow-sm"
-                            style={{
-                              background: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)'
-                            }}
-                            onClick={() => openDeleteModal(student.studentId)}
-                          >
-                            <FaTrash className="text-white" />
-                          </button>
+                          {canChangeStatus && (
+                            <button
+                              className="p-2.5 rounded-lg transition-all duration-300 hover:scale-110 shadow-sm"
+                              style={{
+                                background:
+                                  student.status === "blocked"
+                                    ? "linear-gradient(135deg, #16A34A 0%, #22C55E 100%)"
+                                    : "linear-gradient(135deg, #D97706 0%, #F59E0B 100%)",
+                              }}
+                              title={
+                                student.status === "blocked"
+                                  ? "Unblock student"
+                                  : "Block student"
+                              }
+                              onClick={() => setStatusTarget(student)}
+                            >
+                              {student.status === "blocked" ? (
+                                <FaCheckCircle className="text-white" />
+                              ) : (
+                                <FaBan className="text-white" />
+                              )}
+                            </button>
+                          )}
+                          {!isTeacher && (
+                            <>
+                              <button
+                                className="p-2.5 rounded-lg transition-all duration-300 hover:scale-110 shadow-sm"
+                                style={{
+                                  background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
+                                }}
+                                onClick={() => handleEdit(student)}
+                              >
+                                <FaEdit className="text-white" />
+                              </button>
+                              <button
+                                className="p-2.5 rounded-lg transition-all duration-300 hover:scale-110 shadow-sm"
+                                style={{
+                                  background: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)'
+                                }}
+                                onClick={() => openDeleteModal(student.studentId)}
+                              >
+                                <FaTrash className="text-white" />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -1177,10 +1308,77 @@ const Students = () => {
         </div>
       )}
 
+      {/* Block / unblock confirmation. Blocking cuts off the parent's portal
+          access, so it is worth a confirm step rather than a bare toggle. */}
+      {statusTarget && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md animate-fadeIn">
+            <div
+              className="p-6 rounded-t-2xl"
+              style={{
+                background:
+                  statusTarget.status === "blocked"
+                    ? "linear-gradient(135deg, #16A34A 0%, #22C55E 100%)"
+                    : "linear-gradient(135deg, #D97706 0%, #F59E0B 100%)",
+              }}
+            >
+              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                {statusTarget.status === "blocked" ? (
+                  <>
+                    <FaCheckCircle /> Unblock Student
+                  </>
+                ) : (
+                  <>
+                    <FaBan /> Block Student
+                  </>
+                )}
+              </h2>
+            </div>
+            <div className="p-6">
+              <p className="text-gray-700 mb-2">
+                <strong>{statusTarget.name}</strong> ({statusTarget.studentId})
+              </p>
+              <p className="text-gray-600 mb-6">
+                {statusTarget.status === "blocked"
+                  ? "Their parent will be able to log in to the portal again."
+                  : "Their parent will no longer be able to log in to the portal. All records are kept."}
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setStatusTarget(null)}
+                  className="px-6 py-2.5 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleStatusChange}
+                  disabled={statusSaving}
+                  className="px-6 py-2.5 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 disabled:opacity-60"
+                  style={{
+                    background:
+                      statusTarget.status === "blocked"
+                        ? "linear-gradient(135deg, #16A34A 0%, #22C55E 100%)"
+                        : "linear-gradient(135deg, #D97706 0%, #F59E0B 100%)",
+                  }}
+                >
+                  {statusSaving
+                    ? "Saving..."
+                    : statusTarget.status === "blocked"
+                    ? "Unblock"
+                    : "Block"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isDeleteModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md animate-fadeIn">
-            <div 
+            <div
               className="p-6 rounded-t-2xl"
               style={{
                 background: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)'
@@ -1231,7 +1429,7 @@ const Students = () => {
               <h2 className="text-lg font-bold flex items-center gap-2">
                 <FaKey /> Parent Login Credentials
               </h2>
-              <button onClick={() => setCredStudent(null)} className="text-white/80 hover:text-white text-xl font-bold">&times;</button>
+              <button onClick={closeCredModal} className="text-white/80 hover:text-white text-xl font-bold">&times;</button>
             </div>
             <div className="p-6 space-y-4">
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
@@ -1258,9 +1456,56 @@ const Students = () => {
               {(!credStudent.parentEmail || !credStudent.parentPassword) && (
                 <p className="text-xs text-red-500 text-center">Parent account was not created for this student. This may be an older record.</p>
               )}
-              <div className="flex justify-end pt-2">
+
+              {/* Reset is a two-step action: the current password stops working
+                  the instant it runs, so the parent must be told the new one. */}
+              {confirmReset ? (
+                <div className="p-4 bg-red-50 border border-red-100 rounded-xl space-y-3">
+                  <p className="text-sm text-red-700">
+                    The current password will stop working immediately. Make sure
+                    you can pass the new one to the parent.
+                  </p>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => setConfirmReset(false)}
+                      disabled={resettingCreds}
+                      className="px-4 py-2 text-sm text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium disabled:opacity-60"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleResetParentPassword}
+                      disabled={resettingCreds}
+                      className="px-4 py-2 text-sm text-white rounded-lg font-medium disabled:opacity-60"
+                      style={{ background: "linear-gradient(135deg, #DC2626 0%, #EF4444 100%)" }}
+                    >
+                      {resettingCreds ? "Resetting..." : "Yes, reset it"}
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="flex justify-between items-center gap-2 pt-2">
+                <div className="flex gap-2">
+                  {credStudent.parentEmail && !confirmReset && (
+                    <>
+                      <button
+                        onClick={() => setConfirmReset(true)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-xl font-medium transition-colors"
+                      >
+                        <FaRedo /> Reset Password
+                      </button>
+                      <button
+                        onClick={copyCredentials}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-medium transition-colors"
+                      >
+                        <FaCopy /> Copy
+                      </button>
+                    </>
+                  )}
+                </div>
                 <button
-                  onClick={() => setCredStudent(null)}
+                  onClick={closeCredModal}
                   className="px-6 py-2.5 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105"
                   style={{ background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)' }}
                 >

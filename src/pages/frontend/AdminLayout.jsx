@@ -17,13 +17,17 @@ import {
   EditOutlined,
   BookOutlined,
   FolderOpenOutlined,
+  FileSearchOutlined,
 } from "@ant-design/icons";
 
 import { AiOutlineRobot } from "react-icons/ai";
 import { motion } from "framer-motion";
+import axios from "axios";
 import logo from "../../assets/images/logo.png";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../store/slices/authSlice";
+import { API_BASE_URL } from "../../config/api";
+import { getActiveCampusId, setActiveCampusId } from "../../config/axiosSetup";
 import "./AdminLayout.css";
 
 const { Header, Footer, Sider, Content } = Layout;
@@ -80,8 +84,38 @@ const menuItems = [
     label: "Resources",
     path: "/resources",
   },
+  {
+    key: "/logs",
+    icon: <FileSearchOutlined />,
+    label: "Activity Logs",
+    path: "/logs",
+  },
   // { key: "/chatbot", icon: <AiOutlineRobot />, label: "QA Assistant", path: "/chatbot" },
 ];
+
+/**
+ * What a teacher may reach. Everything else is refused by the API anyway, so
+ * showing it would only produce dead links and 403s.
+ *
+ * Attendance, exams and results are absent on purpose: those permissions were
+ * not granted to teachers.
+ */
+const TEACHER_PATHS = [
+  "/",
+  "/students",
+  "/classes",
+  "/diary",
+  "/resources",
+  // Marking a register is the one attendance action a teacher performs. The
+  // page itself only lists their assigned classes, and the API refuses any
+  // other. Attendance Records and the QR scanner stay with the office.
+  "/manual-attendance",
+];
+
+const menuItemsForRole = (role) =>
+  role === "teacher"
+    ? menuItems.filter((item) => TEACHER_PATHS.includes(item.path))
+    : menuItems;
 
 const AdminLayout = () => {
   const location = useLocation();
@@ -91,6 +125,37 @@ const AdminLayout = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+
+  // Only a super admin browses a campus they don't own, so only they need the
+  // "you are inside campus X" banner and a way back to the picker.
+  const isSuperAdmin = user?.role === "super_admin";
+  const [campusName, setCampusName] = useState("");
+
+  // Teachers get a reduced sidebar; the API refuses the rest regardless, so
+  // rendering those links would only produce dead ends.
+  const visibleMenuItems = menuItemsForRole(user?.role);
+
+  useEffect(() => {
+    if (!isSuperAdmin) return;
+    const campusId = getActiveCampusId();
+    if (!campusId) return;
+
+    axios
+      .get(`${API_BASE_URL}/api/campuses`)
+      .then((res) => {
+        const active = res.data.find((c) => c._id === campusId);
+        if (active) setCampusName(`${active.name} (${active.code})`);
+      })
+      .catch(() => {
+        // Banner is informational; a failure here must not block the layout.
+      });
+  }, [isSuperAdmin]);
+
+  const exitCampus = () => {
+    setActiveCampusId(null);
+    navigate("/campuses");
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -104,6 +169,7 @@ const AdminLayout = () => {
   }, []);
 
   const handleLogout = () => {
+    setActiveCampusId(null);
     dispatch(logoutUser());
     navigate("/auth/login");
   };
@@ -182,7 +248,7 @@ const AdminLayout = () => {
               flex: 1,
             }}
           >
-            {menuItems.map((item) => (
+            {visibleMenuItems.map((item) => (
               <Menu.Item
                 key={item.path}
                 icon={item.icon}
@@ -248,7 +314,7 @@ const AdminLayout = () => {
           style={{ background: "#1E3F72", borderRight: "none" }}
           onClick={() => setMobileDrawerOpen(false)}
         >
-          {menuItems.map((item) => (
+          {visibleMenuItems.map((item) => (
             <Menu.Item
               key={item.path}
               icon={item.icon}
@@ -357,6 +423,32 @@ const AdminLayout = () => {
           </Dropdown>
         </Header>
         <Content className="admin-content">
+          {/* Super admins are browsing someone else's campus — make that
+              obvious, and give them one click back to the picker. */}
+          {isSuperAdmin && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: 8,
+                background: "#FEF3C7",
+                border: "1px solid #FDE68A",
+                borderRadius: 8,
+                padding: "8px 14px",
+                marginBottom: 16,
+              }}
+            >
+              <span style={{ color: "#92400E", fontSize: 14 }}>
+                Viewing campus:{" "}
+                <strong>{campusName || "Loading..."}</strong>
+              </span>
+              <Button size="small" onClick={exitCampus}>
+                Switch campus
+              </Button>
+            </div>
+          )}
           <Outlet />
         </Content>
         <Footer

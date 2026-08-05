@@ -15,6 +15,30 @@ export const API_ENDPOINTS = {
   STUDENT_QR_CODE: (id) => `${API_BASE_URL}/api/student/${id}/qrcode`, // Lazy load QR code
   DELETE_STUDENT: (id) => `${API_BASE_URL}/api/student/${id}`,
   UPDATE_STUDENT: (id) => `${API_BASE_URL}/api/student/${id}`,
+  UPDATE_STUDENT_STATUS: (id) =>
+    `${API_BASE_URL}/api/student/${id}/status`,
+  RESET_PARENT_PASSWORD: (id) =>
+    `${API_BASE_URL}/api/student/${id}/reset-parent-password`,
+
+  // Teachers — logins and class assignments
+  TEACHERS: `${API_BASE_URL}/api/teachers`,
+  TEACHER_CREATE_LOGIN: (staffId) =>
+    `${API_BASE_URL}/api/teacher/${staffId}/create-login`,
+  TEACHER_RESET_PASSWORD: (staffId) =>
+    `${API_BASE_URL}/api/teacher/${staffId}/reset-password`,
+  TEACHER_CLASSES: (staffId) =>
+    `${API_BASE_URL}/api/teacher/${staffId}/classes`,
+  TEACHER_REVOKE_LOGIN: (staffId) =>
+    `${API_BASE_URL}/api/teacher/${staffId}/login`,
+  TEACHER_MY_CLASSES: `${API_BASE_URL}/api/teacher/my-classes`,
+
+  // Activity logs
+  LOGS: `${API_BASE_URL}/api/logs`,
+  LOGS_SUMMARY: `${API_BASE_URL}/api/logs/summary`,
+
+  // Campuses (super admin)
+  CAMPUSES: `${API_BASE_URL}/api/campuses`,
+  CAMPUS_OVERVIEW: `${API_BASE_URL}/api/campus-overview`,
   TOTAL_STUDENTS: `${API_BASE_URL}/api/total-students`,
   GENERATE_QR_CODES: `${API_BASE_URL}/api/generate-qr-codes`,
   
@@ -51,20 +75,6 @@ export const API_ENDPOINTS = {
   // Dashboard
   DASHBOARD_SUMMARY: `${API_BASE_URL}/api/dashboard-summary`,
   
-  // Student Fees
-  STUDENT_FEE_CLASS_SUMMARY: `${API_BASE_URL}/api/student-fee/class-summary`,
-  CLASS_STUDENTS_UNPAID_FEES: `${API_BASE_URL}/api/student-fee/class-students-unpaid`,
-  STUDENT_FEE_SUMMARY: (studentId) => `${API_BASE_URL}/api/student-fee/summary/${studentId}`,
-  GENERATE_FEE_VOUCHER: `${API_BASE_URL}/api/student-fee/generate-voucher`,
-  VOUCHER_DETAILS: (studentId, voucherNumber) => `${API_BASE_URL}/api/student-fee/voucher-details/${studentId}/${voucherNumber}`,
-  GENERATE_BULK_MONTHLY: `${API_BASE_URL}/api/student-fee/generate-bulk-monthly`,
-  GENERATE_BULK_ADMISSION: `${API_BASE_URL}/api/student-fee/generate-bulk-admission`,
-  GENERATE_BULK_PAPERFUND: `${API_BASE_URL}/api/student-fee/generate-bulk-paperfund`,
-  UPDATE_FEE_STATUS: (studentId, voucherNumber) => `${API_BASE_URL}/api/student-fee/update-status/${studentId}/${voucherNumber}`,
-  DELETE_VOUCHER: (studentId, voucherNumber) => `${API_BASE_URL}/api/student-fee/delete-voucher/${studentId}/${voucherNumber}`,
-  EDIT_ADMISSION_FEE: (studentId, voucherNumber) => `${API_BASE_URL}/api/student-fee/edit-admission/${studentId}/${voucherNumber}`,
-  EDIT_MONTHLY_FEE: (studentId, voucherNumber) => `${API_BASE_URL}/api/student-fee/edit-monthly/${studentId}/${voucherNumber}`,
-  PARTIAL_PAYMENT: (studentId, voucherNumber) => `${API_BASE_URL}/api/student-fee/partial-payment/${studentId}/${voucherNumber}`,
   WHATSAPP_CLASS_MESSAGE: `${API_BASE_URL}/api/whatsapp/class-message`,
 
   // Diary

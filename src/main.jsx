@@ -7,6 +7,12 @@ import { BrowserRouter } from "react-router";
 import { Provider } from "react-redux";
 import store from "./store/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { setupAxios } from "./config/axiosSetup";
+
+// Registers the axios interceptors that attach the auth token and the active
+// campus header. Must run before anything renders — every API route requires
+// auth now, so a request fired without this gets a 401.
+setupAxios();
 
 // Create a client for React Query
 const queryClient = new QueryClient({

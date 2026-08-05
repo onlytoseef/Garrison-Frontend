@@ -2,8 +2,16 @@ import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { loginUser } from "../store/slices/authSlice";
+import { getActiveCampusId } from "../config/axiosSetup";
 
-const ProtectedRoute = ({ allowedRoles }) => {
+/**
+ * Route guard.
+ *
+ * `allowedRoles` gates by role. `requireCampus` additionally sends a super admin
+ * who has not opened a campus yet to the campus picker — the campus-scoped pages
+ * cannot render without one, and the API would reject their requests anyway.
+ */
+const ProtectedRoute = ({ allowedRoles, requireCampus = false }) => {
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const location = useLocation();
@@ -20,10 +28,26 @@ const ProtectedRoute = ({ allowedRoles }) => {
   }
 
   if (allowedRoles && !allowedRoles.includes(user?.role)) {
-    const redirectTo = user?.role === "parent" ? "/parent" : "/";
+    // Each role has one home: parents to their portal, super admins to the
+    // campus list, everyone else to the dashboard.
+    let redirectTo = "/";
+    if (user?.role === "parent") redirectTo = "/parent";
+    else if (user?.role === "super_admin") redirectTo = "/campuses";
+
     if (location.pathname !== redirectTo) {
       return <Navigate to={redirectTo} replace />;
     }
+  }
+
+  // A principal always has a campus (enforced by the schema); only a super
+  // admin can be campus-less, and only until they pick one.
+  if (
+    requireCampus &&
+    user?.role === "super_admin" &&
+    !getActiveCampusId() &&
+    location.pathname !== "/campuses"
+  ) {
+    return <Navigate to="/campuses" replace />;
   }
 
   return <Outlet />;
