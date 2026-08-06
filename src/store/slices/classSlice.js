@@ -25,6 +25,20 @@ export const deleteClass = createAsyncThunk("classes/delete", async (id) => {
   return id;
 });
 
+export const updateClass = createAsyncThunk(
+  "classes/update",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(API_ENDPOINTS.UPDATE_CLASS(id), data);
+      return response.data.updatedClass;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || { message: "Failed to update class" }
+      );
+    }
+  }
+);
+
 const classSlice = createSlice({
   name: "classes",
   initialState: {
@@ -73,6 +87,17 @@ const classSlice = createSlice({
         state.classes = state.classes.filter(
           (cls) => cls._id !== action.payload
         );
+      })
+
+      // Patch the row in place so the table updates without a refetch.
+      .addCase(updateClass.fulfilled, (state, action) => {
+        const updated = action.payload;
+        state.classes = state.classes.map((cls) =>
+          cls._id === updated._id ? { ...cls, ...updated } : cls
+        );
+        if (state.selectedClass?._id === updated._id) {
+          state.selectedClass = { ...state.selectedClass, ...updated };
+        }
       });
   },
 });

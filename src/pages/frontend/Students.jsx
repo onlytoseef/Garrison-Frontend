@@ -11,73 +11,13 @@ import {
 import { fetchClasses } from "../../store/slices/classSlice";
 import { API_BASE_URL, API_ENDPOINTS } from "../../config/api";
 import axios from "axios";
-import { FaTrash, FaEdit, FaPlus, FaDownload, FaUser, FaUserTie, FaPhone, FaHome, FaMale, FaFemale, FaUserPlus, FaSearch, FaQrcode, FaCamera, FaImage, FaEye, FaPrint, FaKey, FaBan, FaCheckCircle, FaRedo, FaCopy } from "react-icons/fa";
+import { FaTrash, FaEdit, FaPlus,  FaUser, FaUserTie, FaPhone, FaHome, FaMale, FaFemale, FaUserPlus, FaSearch,  FaCamera, FaImage, FaEye, FaPrint, FaKey, FaBan, FaCheckCircle, FaRedo, FaCopy, FaFileExcel } from "react-icons/fa";
 import { MdSchool, MdDelete, MdNumbers } from "react-icons/md";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import StudentCard from "../components/StudentCard";
+import ImportStudentsModal from "../components/ImportStudentsModal";
 
-// Lazy loading QR Code component
-const LazyQRCode = ({ studentId }) => {
-  const [qrCode, setQrCode] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-
-  const fetchQRCode = async () => {
-    if (qrCode || loading) return;
-    setLoading(true);
-    try {
-      const response = await axios.get(API_ENDPOINTS.STUDENT_QR_CODE(studentId));
-      setQrCode(response.data.qrCode);
-    } catch (err) {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (error) {
-    return <span className="text-gray-400 text-xs">No QR</span>;
-  }
-
-  if (!qrCode) {
-    return (
-      <button
-        onClick={fetchQRCode}
-        disabled={loading}
-        className="flex flex-col items-center gap-1 text-blue-500 hover:text-blue-700 transition-colors"
-        title="Load QR Code"
-      >
-        {loading ? (
-          <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded animate-spin"></div>
-        ) : (
-          <>
-            <FaQrcode className="text-2xl" />
-            <span className="text-xs">Load QR</span>
-          </>
-        )}
-      </button>
-    );
-  }
-
-  return (
-    <>
-      <img
-        src={qrCode}
-        alt="QR Code"
-        className="w-12 h-12 border-2 border-gray-200 rounded p-1"
-      />
-      <a
-        href={qrCode}
-        download={`${studentId}_QR.png`}
-        className="text-blue-500 hover:text-blue-700 transition-colors"
-        title="Download QR Code"
-      >
-        <FaDownload />
-      </a>
-    </>
-  );
-};
 
 const SkeletonCard = () => (
   <div className="glass-card p-4">
@@ -104,7 +44,6 @@ const SkeletonTable = () => (
           <th className="px-6 py-3 text-left text-sm font-semibold">
             Class & Section
           </th>
-          <th className="px-6 py-3 text-left text-sm font-semibold">QR Code</th>
           <th className="px-6 py-3 text-left text-sm font-semibold">Actions</th>
         </tr>
       </thead>
@@ -137,9 +76,6 @@ const SkeletonTable = () => (
             </td>
             <td className="px-6 py-4">
               <div className="h-6 bg-gray-200 rounded animate-pulse w-24"></div>
-            </td>
-            <td className="px-6 py-4">
-              <div className="w-10 h-10 bg-gray-200 animate-pulse"></div>
             </td>
             <td className="px-6 py-4">
               <div className="flex gap-2">
@@ -175,6 +111,7 @@ const Students = () => {
   const [statusSaving, setStatusSaving] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState(null);
   const [cardStudent, setCardStudent] = useState(null); // student whose ID card modal is open
@@ -516,27 +453,6 @@ const Students = () => {
     setIsDeleteModalOpen(false);
   };
 
-  const handleGenerateQRCodes = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/student/generate-qr-codes`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      toast.success(data.message);
-      // Refresh students list
-      dispatch(fetchStudents({ 
-        page: currentPage, 
-        limit: 2000, // Increased to fetch all students (up to 2000)
-        search: searchTerm,
-        classId: filterClass 
-      }));
-    } catch (error) {
-      toast.error('Failed to generate QR codes');
-    }
-  };
 
   // Print the currently open student ID card.
   const handlePrintCard = () => {
@@ -687,13 +603,23 @@ const Students = () => {
                     ))}
                   </select>
                   {!isTeacher && (
-                    <button
-                      onClick={openAddModal}
-                      className="flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border-0"
-                    >
-                      <FaPlus className="mr-2" />
-                      Add Student
-                    </button>
+                    <>
+                      <button
+                        onClick={() => setIsImportOpen(true)}
+                        className="flex items-center justify-center bg-white text-gray-700 border border-gray-300 px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-300"
+                        title="Import students from an Excel or CSV file"
+                      >
+                        <FaFileExcel className="mr-2 text-green-600" />
+                        Import
+                      </button>
+                      <button
+                        onClick={openAddModal}
+                        className="flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border-0"
+                      >
+                        <FaPlus className="mr-2" />
+                        Add Student
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -1552,6 +1478,24 @@ const Students = () => {
             </div>
           </div>
         </div>
+      )}
+      {isImportOpen && (
+        <ImportStudentsModal
+          onClose={() => setIsImportOpen(false)}
+          onImported={() => {
+            // An import can add students and create classes, so both lists are
+            // refetched rather than patched in place.
+            dispatch(
+              fetchStudents({
+                page: currentPage,
+                limit: 50,
+                search: debouncedSearchTerm,
+                classId: filterClass,
+              })
+            );
+            dispatch(fetchClasses());
+          }}
+        />
       )}
     </div>
   );

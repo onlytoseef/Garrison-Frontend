@@ -18,7 +18,7 @@ import {
   FaExclamationTriangle,
   FaCalendarCheck,
   FaBookOpen,
-  FaQrcode,
+  
   FaFileAlt,
   FaMoneyCheck,
 } from "react-icons/fa";
@@ -622,19 +622,6 @@ const Campuses = () => {
                         detail="No students enrolled yet"
                         campusCode={i.campusCode}
                         onOpen={() => openCampusById(i.campusId, "/classes")}
-                      />
-                    ))}
-
-                    {overview.attention.missingQr.map((i) => (
-                      <AttentionRow
-                        key={`qr-${i.campusId}`}
-                        icon={<FaQrcode />}
-                        label={`${i.count} student${
-                          i.count === 1 ? "" : "s"
-                        } without a QR code`}
-                        detail="ID cards cannot be printed"
-                        campusCode={i.campusCode}
-                        onOpen={() => openCampusById(i.campusId, "/students")}
                       />
                     ))}
 

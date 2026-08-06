@@ -12,13 +12,16 @@ export const API_ENDPOINTS = {
   STUDENTS: `${API_BASE_URL}/api/students`,
   ADD_STUDENT: `${API_BASE_URL}/api/add-student`,
   STUDENT_BY_ID: (id) => `${API_BASE_URL}/api/student/${id}`,
-  STUDENT_QR_CODE: (id) => `${API_BASE_URL}/api/student/${id}/qrcode`, // Lazy load QR code
   DELETE_STUDENT: (id) => `${API_BASE_URL}/api/student/${id}`,
   UPDATE_STUDENT: (id) => `${API_BASE_URL}/api/student/${id}`,
   UPDATE_STUDENT_STATUS: (id) =>
     `${API_BASE_URL}/api/student/${id}/status`,
   RESET_PARENT_PASSWORD: (id) =>
     `${API_BASE_URL}/api/student/${id}/reset-parent-password`,
+
+  // Bulk import: preview validates and reports, commit actually writes.
+  IMPORT_PREVIEW: `${API_BASE_URL}/api/students/import/preview`,
+  IMPORT_COMMIT: `${API_BASE_URL}/api/students/import/commit`,
 
   // Teachers — logins and class assignments
   TEACHERS: `${API_BASE_URL}/api/teachers`,
@@ -40,7 +43,6 @@ export const API_ENDPOINTS = {
   CAMPUSES: `${API_BASE_URL}/api/campuses`,
   CAMPUS_OVERVIEW: `${API_BASE_URL}/api/campus-overview`,
   TOTAL_STUDENTS: `${API_BASE_URL}/api/total-students`,
-  GENERATE_QR_CODES: `${API_BASE_URL}/api/generate-qr-codes`,
   
   // Classes
   CLASSES: `${API_BASE_URL}/api/classes`,

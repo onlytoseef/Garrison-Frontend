@@ -5,14 +5,20 @@ import {
   fetchClasses,
   addClass,
   deleteClass,
+  updateClass,
   fetchClassById,
 } from "../../store/slices/classSlice";
-import { FaPlus, FaTrash, FaEye, FaPrint, FaBook, FaDoorOpen, FaUserTie, FaGraduationCap, FaUsers, FaUserGraduate, FaArrowRight, FaCheckCircle, FaTimesCircle, FaWhatsapp } from "react-icons/fa";
+import { FaPlus, FaTrash, FaEdit, FaEye, FaPrint, FaBook, FaDoorOpen, FaUserTie, FaGraduationCap, FaUsers, FaUserGraduate, FaArrowRight, FaCheckCircle, FaTimesCircle, FaWhatsapp } from "react-icons/fa";
 import { MdDelete, MdClass, MdSchool } from "react-icons/md";
 import ClassPrint from "../components/ClassPrint";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
 import toast from "react-hot-toast";
+
+// What the bulk importer writes into room number and in-charge, since a
+// spreadsheet of students does not carry either. Kept in sync with
+// backend/controllers/studentImportController.js.
+const PLACEHOLDER = "—";
 
 const Classess = () => {
   const dispatch = useDispatch();
@@ -24,6 +30,11 @@ const Classess = () => {
   const [classDetailsModal, setClassDetailsModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  // Class being edited. Imported classes arrive with placeholder room and
+  // in-charge values, and this is where they get filled in.
+  const [editClass, setEditClass] = useState(null);
+  const [editForm, setEditForm] = useState({ grade: "", section: "", roomNumber: "", inCharge: "" });
+  const [editSaving, setEditSaving] = useState(false);
   const [whatsappModal, setWhatsappModal] = useState(false);
   const [whatsappMessage, setWhatsappMessage] = useState("");
   const [whatsappTarget, setWhatsappTarget] = useState(null);
@@ -72,6 +83,52 @@ const Classess = () => {
   const handleDeleteClass = () => {
     dispatch(deleteClass(deleteId));
     setDeleteModal(false);
+  };
+
+  const openEditModal = async (cls) => {
+    setEditClass(cls);
+    setEditForm({
+      grade: cls.grade || "",
+      section: cls.section || "",
+      // Imported classes carry a placeholder here rather than a real value.
+      // Showing it in the input would make the user delete it before typing.
+      roomNumber: cls.roomNumber === PLACEHOLDER ? "" : cls.roomNumber || "",
+      inCharge: cls.inCharge === PLACEHOLDER ? "" : cls.inCharge || "",
+    });
+    try {
+      const res = await axios.get(API_ENDPOINTS.STAFF);
+      setTeachers((res.data.staff || res.data || []).filter((s) => s.role === "teacher"));
+    } catch {
+      setTeachers([]);
+    }
+  };
+
+  const handleUpdateClass = async () => {
+    if (!editForm.grade.trim() || !editForm.section.trim()) {
+      toast.error("Class and section are required");
+      return;
+    }
+
+    setEditSaving(true);
+    try {
+      await dispatch(
+        updateClass({
+          id: editClass._id,
+          data: {
+            grade: editForm.grade.trim(),
+            section: editForm.section.trim(),
+            roomNumber: editForm.roomNumber.trim(),
+            inCharge: editForm.inCharge.trim(),
+          },
+        })
+      ).unwrap();
+      toast.success("Class updated");
+      setEditClass(null);
+    } catch (err) {
+      toast.error(err?.message || "Failed to update class");
+    } finally {
+      setEditSaving(false);
+    }
   };
 
   const handleViewClass = (id) => {
@@ -416,6 +473,14 @@ const Classess = () => {
                             View
                           </button>
                           <button
+                            onClick={() => openEditModal(cls)}
+                            title="Edit room and in-charge"
+                            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-110 text-white"
+                            style={{ background: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)' }}
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
                             onClick={() => { setDeleteId(cls._id); setDeleteModal(true); }}
                             className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-110 text-white"
                             style={{ background: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)' }}
@@ -546,6 +611,131 @@ const Classess = () => {
                     }}
                   >
                     Add Class
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Class Modal — the way a room number and in-charge get filled in
+            on classes the bulk importer created with placeholders. */}
+        {editClass && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto animate-fadeIn">
+              <div
+                className="p-6 rounded-t-2xl"
+                style={{
+                  background: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)'
+                }}
+              >
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <FaEdit className="text-2xl" />
+                  Edit Class
+                </h2>
+                <p className="text-white/80 text-sm mt-1">
+                  {editClass.grade} - {editClass.section}
+                </p>
+              </div>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleUpdateClass();
+                }}
+                className="p-6"
+              >
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <FaBook className="text-amber-600" />
+                    Grade
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.grade}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, grade: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-amber-500 rounded-xl outline-none transition-all duration-300"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <FaGraduationCap className="text-amber-600" />
+                    Section
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.section}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, section: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-amber-500 rounded-xl outline-none transition-all duration-300"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <FaDoorOpen className="text-amber-600" />
+                    Room Number
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter Room Number"
+                    value={editForm.roomNumber}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, roomNumber: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-amber-500 rounded-xl outline-none transition-all duration-300"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <FaUserTie className="text-amber-600" />
+                    In-charge Name
+                  </label>
+                  <select
+                    value={editForm.inCharge}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, inCharge: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-amber-500 rounded-xl outline-none transition-all duration-300"
+                  >
+                    <option value="">Select Teacher</option>
+                    {/* A class imported before its teacher was added to staff can
+                        hold a name that is not in the dropdown. Without this the
+                        select would silently blank it out on save. */}
+                    {editForm.inCharge &&
+                      !teachers.some((t) => t.name === editForm.inCharge) && (
+                        <option value={editForm.inCharge}>
+                          {editForm.inCharge}
+                        </option>
+                      )}
+                    {teachers.map((t) => (
+                      <option key={t._id} value={t.name}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setEditClass(null)}
+                    disabled={editSaving}
+                    className="px-6 py-2.5 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-xl font-medium transition-all duration-300 hover:scale-105 disabled:opacity-60"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={editSaving}
+                    className="px-6 py-2.5 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 disabled:opacity-60"
+                    style={{
+                      background: 'linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)'
+                    }}
+                  >
+                    {editSaving ? "Saving..." : "Save Changes"}
                   </button>
                 </div>
               </form>
