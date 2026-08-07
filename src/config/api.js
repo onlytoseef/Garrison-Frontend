@@ -23,6 +23,16 @@ export const API_ENDPOINTS = {
   IMPORT_PREVIEW: `${API_BASE_URL}/api/students/import/preview`,
   IMPORT_COMMIT: `${API_BASE_URL}/api/students/import/commit`,
 
+  // Fees — payments and outstanding balances, mirrored from the office's Excel.
+  // Nothing here creates a payment; :kind is "payments" or "dues".
+  FEES: `${API_BASE_URL}/api/fees`,
+  FEES_STUDENT: (id) => `${API_BASE_URL}/api/fees/student/${id}`,
+  FEES_CLEAR_DUES: `${API_BASE_URL}/api/fees/dues`,
+  FEES_IMPORT_PREVIEW: (kind) =>
+    `${API_BASE_URL}/api/fees/import/${kind}/preview`,
+  FEES_IMPORT_COMMIT: (kind) =>
+    `${API_BASE_URL}/api/fees/import/${kind}/commit`,
+
   // Teachers — logins and class assignments
   TEACHERS: `${API_BASE_URL}/api/teachers`,
   TEACHER_CREATE_LOGIN: (staffId) =>
@@ -106,6 +116,7 @@ export const API_ENDPOINTS = {
   // Parent
   PARENT_DASHBOARD: `${API_BASE_URL}/api/parent/dashboard`,
   PARENT_RESULTS: `${API_BASE_URL}/api/parent/results`,
+  PARENT_FEES: `${API_BASE_URL}/api/parent/fees`,
   PARENT_ATTENDANCE: `${API_BASE_URL}/api/parent/attendance`,
   PARENT_DIARY: `${API_BASE_URL}/api/parent/diary`,
   PARENT_RESOURCES: `${API_BASE_URL}/api/parent/resources`,

@@ -6,6 +6,7 @@ import ParentResults from "./ParentResults";
 import ParentAttendance from "./ParentAttendance";
 import ParentDiary from "./ParentDiary";
 import ParentResources from "./ParentResources";
+import ParentFees from "./ParentFees";
 import ProtectedRoute from "../../utils/ProtectedRoute";
 
 export default function ParentRoutes() {
@@ -18,6 +19,7 @@ export default function ParentRoutes() {
           <Route path="/attendance" element={<ParentAttendance />} />
           <Route path="/diary" element={<ParentDiary />} />
           <Route path="/resources" element={<ParentResources />} />
+          <Route path="/fees" element={<ParentFees />} />
         </Route>
       </Route>
     </Routes>

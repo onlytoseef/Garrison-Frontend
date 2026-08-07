@@ -65,7 +65,9 @@ const menuItems = [
     label: "Manual Attendance",
     path: "/manual-attendance",
   },
-  // { key: "/student-list", icon: <DollarOutlined />, label: "Fee Management", path: "/student-list" },
+  // Not in TEACHER_PATHS below, so teachers never see it — the API refuses
+  // them anyway.
+  { key: "/fees", icon: <DollarOutlined />, label: "Fees", path: "/fees" },
   {
     key: "/exams",
     icon: <SolutionOutlined />,

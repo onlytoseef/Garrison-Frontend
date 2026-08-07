@@ -21,6 +21,7 @@ import Diary from "./Diary";
 import Resources from "./Resources";
 import Campuses from "./Campuses";
 import Logs from "./Logs";
+import Fees from "./Fees";
 
 // Roles that may work inside a campus. 'principal' is the campus owner;
 // 'super_admin' gets here too, but only after opening a campus (requireCampus
@@ -90,6 +91,9 @@ export default function AdminRoutes() {
           <Route path="/staff/:id" element={<StaffDetails />} />
           <Route path="/staff" element={<Staff />} />
           <Route path="/users" element={<Users />} />
+          {/* Fees are office work: the money is the office's business, and the
+              API refuses teachers outright. */}
+          <Route path="/fees" element={<Fees />} />
           <Route path="/student-attendance" element={<AttendancePage />} />
           <Route path="/attendance-record" element={<AttendanceRecord />} />
           <Route path="/exams" element={<Exams />} />

@@ -7,6 +7,7 @@ import {
   CalendarOutlined,
   BookOutlined,
   FolderOpenOutlined,
+  DollarOutlined,
   BellOutlined,
   LogoutOutlined,
   MenuUnfoldOutlined,
@@ -30,6 +31,7 @@ const menuItems = [
   { key: "/parent/attendance", icon: <CalendarOutlined />, label: "Attendance", path: "/parent/attendance" },
   { key: "/parent/diary", icon: <BookOutlined />, label: "Homework Diary", path: "/parent/diary" },
   { key: "/parent/resources", icon: <FolderOpenOutlined />, label: "Resources", path: "/parent/resources" },
+  { key: "/parent/fees", icon: <DollarOutlined />, label: "Fees", path: "/parent/fees" },
 ];
 
 const ParentLayout = () => {

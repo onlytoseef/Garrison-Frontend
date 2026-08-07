@@ -6,6 +6,7 @@ import staffReducer from "./slices/staffSlice";
 import authReducer from "./slices/authSlice";
 import examReducer from "./slices/examSlice";
 import resultReducer from "./slices/resultSlice";
+import feeReducer from "./slices/feeSlice";
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     auth: authReducer,
     exams: examReducer,
     results: resultReducer,
+    fees: feeReducer,
   },
 });
 
