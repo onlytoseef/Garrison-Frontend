@@ -23,6 +23,10 @@ export const API_ENDPOINTS = {
   IMPORT_PREVIEW: `${API_BASE_URL}/api/students/import/preview`,
   IMPORT_COMMIT: `${API_BASE_URL}/api/students/import/commit`,
 
+  // Roster export. Returns a file, not JSON — request it with
+  // responseType: "blob". Takes ?format=xlsx|csv and an optional ?classId.
+  STUDENTS_EXPORT: `${API_BASE_URL}/api/students/export`,
+
   // Fees — payments and outstanding balances, mirrored from the office's Excel.
   // Nothing here creates a payment; :kind is "payments" or "dues".
   FEES: `${API_BASE_URL}/api/fees`,

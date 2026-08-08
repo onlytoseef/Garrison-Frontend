@@ -11,12 +11,13 @@ import {
 import { fetchClasses } from "../../store/slices/classSlice";
 import { API_BASE_URL, API_ENDPOINTS } from "../../config/api";
 import axios from "axios";
-import { FaTrash, FaEdit, FaPlus,  FaUser, FaUserTie, FaPhone, FaHome, FaMale, FaFemale, FaUserPlus, FaSearch,  FaCamera, FaImage, FaEye, FaPrint, FaKey, FaBan, FaCheckCircle, FaRedo, FaCopy, FaFileExcel } from "react-icons/fa";
+import { FaTrash, FaEdit, FaPlus,  FaUser, FaUserTie, FaPhone, FaHome, FaMale, FaFemale, FaUserPlus, FaSearch,  FaCamera, FaImage, FaEye, FaPrint, FaKey, FaBan, FaCheckCircle, FaRedo, FaCopy, FaFileExcel, FaDownload } from "react-icons/fa";
 import { MdSchool, MdDelete, MdNumbers } from "react-icons/md";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { toast } from "react-hot-toast";
 import StudentCard from "../components/StudentCard";
 import ImportStudentsModal from "../components/ImportStudentsModal";
+import ExportStudentsModal from "../components/ExportStudentsModal";
 
 
 const SkeletonCard = () => (
@@ -112,6 +113,7 @@ const Students = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState(null);
   const [cardStudent, setCardStudent] = useState(null); // student whose ID card modal is open
@@ -602,6 +604,17 @@ const Students = () => {
                       </option>
                     ))}
                   </select>
+                  {/* Outside the !isTeacher guard: a teacher can already read
+                      their own classes' roster on screen, and the export is
+                      scoped to exactly those, so it hands them nothing new. */}
+                  <button
+                    onClick={() => setIsExportOpen(true)}
+                    className="flex items-center justify-center bg-white text-gray-700 border border-gray-300 px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-300"
+                    title="Export students to Excel, CSV or PDF"
+                  >
+                    <FaDownload className="mr-2 text-blue-600" />
+                    Export
+                  </button>
                   {!isTeacher && (
                     <>
                       <button
@@ -1495,6 +1508,15 @@ const Students = () => {
             );
             dispatch(fetchClasses());
           }}
+        />
+      )}
+      {isExportOpen && (
+        <ExportStudentsModal
+          classes={classes}
+          // Whatever class the page is already filtered to is the one the user
+          // is looking at, so it is the sensible default to export.
+          initialClassId={filterClass}
+          onClose={() => setIsExportOpen(false)}
         />
       )}
     </div>
