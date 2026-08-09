@@ -23,11 +23,13 @@ import {
   FaChevronDown,
   FaBuilding,
   FaUserGraduate,
+  FaDatabase,
 } from "react-icons/fa";
 import { API_BASE_URL, API_ENDPOINTS } from "../../config/api";
 import { setActiveCampusId } from "../../config/axiosSetup";
 import ChangePasswordModal from "../components/ChangePasswordModal";
 import LogsModal from "../components/LogsModal";
+import BackupModal from "../components/BackupModal";
 import { logoutUser } from "../../store/slices/authSlice";
 import logo from "../../assets/images/logo.png";
 
@@ -386,6 +388,7 @@ const Campuses = () => {
   const [newCredentials, setNewCredentials] = useState(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showLogsModal, setShowLogsModal] = useState(false);
+  const [showBackupModal, setShowBackupModal] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -560,6 +563,14 @@ const Campuses = () => {
               >
                 <FaClipboardList className="text-xs" />
                 <span className="hidden sm:inline">Logs</span>
+              </button>
+
+              <button
+                onClick={() => setShowBackupModal(true)}
+                className="flex items-center gap-1.5 text-[13px] text-gray-600 hover:text-gray-900 px-2.5 py-1.5 rounded-lg hover:bg-white/60 transition-all duration-200"
+              >
+                <FaDatabase className="text-xs" />
+                <span className="hidden sm:inline">Backup</span>
               </button>
 
               <button
@@ -1333,6 +1344,10 @@ const Campuses = () => {
 
       {showPasswordModal && (
         <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />
+      )}
+
+      {showBackupModal && (
+        <BackupModal onClose={() => setShowBackupModal(false)} />
       )}
 
       {showLogsModal && (

@@ -53,9 +53,14 @@ export const API_ENDPOINTS = {
   LOGS: `${API_BASE_URL}/api/logs`,
   LOGS_SUMMARY: `${API_BASE_URL}/api/logs/summary`,
 
+  // Database backup and restore — super admin only. BACKUP returns a file, so
+  // request it with responseType: "blob".
+  BACKUP: `${API_BASE_URL}/api/backup`,
+  BACKUP_SUMMARY: `${API_BASE_URL}/api/backup/summary`,
+  BACKUP_RESTORE: `${API_BASE_URL}/api/backup/restore`,
+
   // Campuses (super admin)
-  CAMPUSES: `${API_BASE_URL}/api/campuses`,
-  CAMPUS_OVERVIEW: `${API_BASE_URL}/api/campus-overview`,
+  CAMPUSES: `${API_BASE_URL}/api/campuses`,  CAMPUS_OVERVIEW: `${API_BASE_URL}/api/campus-overview`,
   TOTAL_STUDENTS: `${API_BASE_URL}/api/total-students`,
   
   // Classes

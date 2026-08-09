@@ -1,27 +1,38 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import AdminLayout from "./AdminLayout";
-import Home from "./Home";
-import Staff from "./Staff";
-import Students from "./Students";
-import Classes from "./Classess";
 import ProtectedRoute from "../../utils/ProtectedRoute";
-import Users from "./Users";
-import StaffDetails from "./StaffDetails";
-import AttendancePage from "./AttendancePage";
-import AttendanceRecord from "./AttendanceRecord";
-import Profile from "./Profile";
-import AlfalahAI from "./AlfalahAI";
-import Exams from "./Exams";
-import MarksEntry from "./MarksEntry";
-import ClassResultSheet from "./ClassResultSheet";
-import ResultCard from "./ResultCard";
-import ManualAttendance from "./ManualAttendance";
-import Diary from "./Diary";
-import Resources from "./Resources";
-import Campuses from "./Campuses";
-import Logs from "./Logs";
-import Fees from "./Fees";
+import RouteLoader from "../components/RouteLoader";
+
+/**
+ * Every page here is code-split.
+ *
+ * The layout and the guard stay eager: they render on every route, so deferring
+ * them would only add a round trip before anything appears. The pages are the
+ * weight, and a principal who never opens the exam module should never download
+ * it — before this, one bundle carried the whole admin surface, the parent
+ * portal and the chatbot to every user on first load.
+ */
+const Home = lazy(() => import("./Home"));
+const Staff = lazy(() => import("./Staff"));
+const Students = lazy(() => import("./Students"));
+const Classes = lazy(() => import("./Classess"));
+const Users = lazy(() => import("./Users"));
+const StaffDetails = lazy(() => import("./StaffDetails"));
+const AttendancePage = lazy(() => import("./AttendancePage"));
+const AttendanceRecord = lazy(() => import("./AttendanceRecord"));
+const Profile = lazy(() => import("./Profile"));
+const AlfalahAI = lazy(() => import("./AlfalahAI"));
+const Exams = lazy(() => import("./Exams"));
+const MarksEntry = lazy(() => import("./MarksEntry"));
+const ClassResultSheet = lazy(() => import("./ClassResultSheet"));
+const ResultCard = lazy(() => import("./ResultCard"));
+const ManualAttendance = lazy(() => import("./ManualAttendance"));
+const Diary = lazy(() => import("./Diary"));
+const Resources = lazy(() => import("./Resources"));
+const Campuses = lazy(() => import("./Campuses"));
+const Logs = lazy(() => import("./Logs"));
+const Fees = lazy(() => import("./Fees"));
 
 // Roles that may work inside a campus. 'principal' is the campus owner;
 // 'super_admin' gets here too, but only after opening a campus (requireCampus
@@ -37,72 +48,77 @@ const OFFICE_ROLES = CAMPUS_ROLES.filter((role) => role !== "teacher");
 
 export default function AdminRoutes() {
   return (
-    <Routes>
-      {/* Campus picker — super admin only, and deliberately outside
-          AdminLayout: there is no campus context to render a sidebar for. */}
-      <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
-        <Route path="/campuses" element={<Campuses />} />
-      </Route>
-
-      {/* Audit trail. Outside the campus guard because a super admin reads it
-          across every campus without opening one; a principal is pinned to
-          their own campus by the API. Teachers are excluded.
-          (Own-password changes are NOT here: the super admin gets a modal on
-          the campus picker, so they never leave that screen.) */}
-      <Route
-        element={
-          <ProtectedRoute
-            allowedRoles={["super_admin", "principal", "admin"]}
-          />
-        }
-      >
-        <Route element={<AdminLayout />}>
-          <Route path="/logs" element={<Logs />} />
+    // One Suspense around the whole tree rather than one per route: the
+    // fallback renders inside AdminLayout for the nested routes, so the sidebar
+    // stays put and only the content area shows the loader.
+    <Suspense fallback={<RouteLoader />}>
+      <Routes>
+        {/* Campus picker — super admin only, and deliberately outside
+            AdminLayout: there is no campus context to render a sidebar for. */}
+        <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
+          <Route path="/campuses" element={<Campuses />} />
         </Route>
-      </Route>
 
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={CAMPUS_ROLES} requireCampus />
-        }
-      >
-        <Route element={<AdminLayout />}>
-          {/* Open to teachers */}
-          <Route path="/" element={<Home />} />
-          <Route path="/students" element={<Students />} />
-          <Route path="/classes" element={<Classes />} />
-          <Route path="/diary" element={<Diary />} />
-          <Route path="/resources" element={<Resources />} />
-          {/* Marking a register is class-scoped, so teachers get it. The page
-              lists only their assigned classes and the API refuses any other.
-              Attendance Records and the QR scanner remain office-only below. */}
-          <Route path="/manual-attendance" element={<ManualAttendance />} />
-          <Route path="/profile" element={<Profile />} />
+        {/* Audit trail. Outside the campus guard because a super admin reads it
+            across every campus without opening one; a principal is pinned to
+            their own campus by the API. Teachers are excluded.
+            (Own-password changes are NOT here: the super admin gets a modal on
+            the campus picker, so they never leave that screen.) */}
+        <Route
+          element={
+            <ProtectedRoute
+              allowedRoles={["super_admin", "principal", "admin"]}
+            />
+          }
+        >
+          <Route element={<AdminLayout />}>
+            <Route path="/logs" element={<Logs />} />
+          </Route>
         </Route>
-      </Route>
 
-      {/* Office-only pages: same layout, stricter guard. */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={OFFICE_ROLES} requireCampus />
-        }
-      >
-        <Route element={<AdminLayout />}>
-          <Route path="/staff/:id" element={<StaffDetails />} />
-          <Route path="/staff" element={<Staff />} />
-          <Route path="/users" element={<Users />} />
-          {/* Fees are office work: the money is the office's business, and the
-              API refuses teachers outright. */}
-          <Route path="/fees" element={<Fees />} />
-          <Route path="/student-attendance" element={<AttendancePage />} />
-          <Route path="/attendance-record" element={<AttendanceRecord />} />
-          <Route path="/exams" element={<Exams />} />
-          <Route path="/exams/:examId/marks" element={<MarksEntry />} />
-          <Route path="/exams/:examId/results" element={<ClassResultSheet />} />
-          <Route path="/exams/:examId/result/:studentId" element={<ResultCard />} />
-          <Route path="/chatbot" element={<AlfalahAI />} />
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={CAMPUS_ROLES} requireCampus />
+          }
+        >
+          <Route element={<AdminLayout />}>
+            {/* Open to teachers */}
+            <Route path="/" element={<Home />} />
+            <Route path="/students" element={<Students />} />
+            <Route path="/classes" element={<Classes />} />
+            <Route path="/diary" element={<Diary />} />
+            <Route path="/resources" element={<Resources />} />
+            {/* Marking a register is class-scoped, so teachers get it. The page
+                lists only their assigned classes and the API refuses any other.
+                Attendance Records and the QR scanner remain office-only below. */}
+            <Route path="/manual-attendance" element={<ManualAttendance />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
         </Route>
-      </Route>
-    </Routes>
+
+        {/* Office-only pages: same layout, stricter guard. */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={OFFICE_ROLES} requireCampus />
+          }
+        >
+          <Route element={<AdminLayout />}>
+            <Route path="/staff/:id" element={<StaffDetails />} />
+            <Route path="/staff" element={<Staff />} />
+            <Route path="/users" element={<Users />} />
+            {/* Fees are office work: the money is the office's business, and the
+                API refuses teachers outright. */}
+            <Route path="/fees" element={<Fees />} />
+            <Route path="/student-attendance" element={<AttendancePage />} />
+            <Route path="/attendance-record" element={<AttendanceRecord />} />
+            <Route path="/exams" element={<Exams />} />
+            <Route path="/exams/:examId/marks" element={<MarksEntry />} />
+            <Route path="/exams/:examId/results" element={<ClassResultSheet />} />
+            <Route path="/exams/:examId/result/:studentId" element={<ResultCard />} />
+            <Route path="/chatbot" element={<AlfalahAI />} />
+          </Route>
+        </Route>
+      </Routes>
+    </Suspense>
   );
 }

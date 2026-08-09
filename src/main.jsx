@@ -6,7 +6,6 @@ import "./index.css";
 import { BrowserRouter } from "react-router";
 import { Provider } from "react-redux";
 import store from "./store/store";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setupAxios } from "./config/axiosSetup";
 
 // Registers the axios interceptors that attach the auth token and the active
@@ -14,27 +13,18 @@ import { setupAxios } from "./config/axiosSetup";
 // auth now, so a request fired without this gets a 401.
 setupAxios();
 
-// Create a client for React Query
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
-      cacheTime: 10 * 60 * 1000, // Cache for 10 minutes
-      refetchOnWindowFocus: false, // Don't refetch on window focus
-      retry: 1, // Retry failed requests once
-    },
-  },
-});
+// React Query used to wrap this tree. It was removed because nothing consumed
+// it: the two hook files that called useQuery were never imported by any page,
+// and every page fetches through Redux thunks or axios directly. Keeping the
+// provider only shipped the library to users for no benefit.
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-        <BrowserRouter>
-          <Toaster position="top-center" />
-          <App />
-        </BrowserRouter>
-      </Provider>
-    </QueryClientProvider>
+    <Provider store={store}>
+      <BrowserRouter>
+        <Toaster position="top-center" />
+        <App />
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>
 );
