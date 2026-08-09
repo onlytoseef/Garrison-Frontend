@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStudentResult } from "../../store/slices/resultSlice";
 import { FaArrowLeft, FaPrint } from "react-icons/fa";
-import logo from "../../assets/images/logo.png";
+import logo from "../../assets/images/logo.webp";
 
 const NAVY = "#2F5DAA";
 

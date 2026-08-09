@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { API_ENDPOINTS } from "../../config/api";
 import API_BASE_URL from "../../config/api";
+import Loader from "../components/Loader";
 import {
   FaUserGraduate,
   FaCalendarCheck,
@@ -89,19 +90,7 @@ const ParentDashboard = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div className="p-6 min-h-screen">
-        <div className="animate-pulse space-y-6">
-          <div className="h-32 bg-gray-200 rounded-2xl"></div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => <div key={i} className="h-28 bg-gray-200 rounded-xl"></div>)}
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {[1, 2, 3, 4].map((i) => <div key={i} className="h-40 bg-gray-200 rounded-xl"></div>)}
-          </div>
-        </div>
-      </div>
-    );
+    return <Loader fullscreen={false} />;
   }
 
   if (!data) {

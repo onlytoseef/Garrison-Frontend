@@ -12,6 +12,7 @@ import {
   FaUserSlash,
 } from "react-icons/fa";
 import { API_ENDPOINTS } from "../../config/api";
+import Loader from "./Loader";
 
 /**
  * Bulk fee import from the client's Excel exports.
@@ -201,7 +202,7 @@ const ImportFeesModal = ({ kind = "payments", onClose, onImported }) => {
               </div>
 
               {loading && !preview ? (
-                <div className="h-32 bg-gray-100 rounded-xl animate-pulse" />
+                <Loader fullscreen={false} size={92} />
               ) : preview ? (
                 <>
                   {/* Which campus this lands in. Importing into the wrong one

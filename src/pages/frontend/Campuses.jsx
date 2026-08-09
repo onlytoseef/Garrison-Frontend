@@ -31,7 +31,9 @@ import ChangePasswordModal from "../components/ChangePasswordModal";
 import LogsModal from "../components/LogsModal";
 import BackupModal from "../components/BackupModal";
 import { logoutUser } from "../../store/slices/authSlice";
-import logo from "../../assets/images/logo.png";
+import logo from "../../assets/images/logo.webp";
+import Loader from "../components/Loader";
+import { overlayFade, modalPop } from "../../utils/animations";
 
 // ---------------------------------------------------------------------------
 // Design tokens — every value here comes from :root in index.css so this page
@@ -85,19 +87,8 @@ const riseIn = {
   show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
 };
 
-// Modals: the backdrop fades, the panel scales up from slightly small and low.
-// Both directions are defined so AnimatePresence can play the close, which is
-// the half that is usually missing and the half whose absence feels abrupt.
-const overlayFade = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.2 } },
-};
-
-const modalPop = {
-  hidden: { opacity: 0, scale: 0.96, y: 12 },
-  show: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.28, ease: EASE } },
-  exit: { opacity: 0, scale: 0.97, y: 8, transition: { duration: 0.18, ease: "easeIn" } },
-};
+// Modal variants live in utils/animations.js — the same ones the standalone modal
+// components use, so every modal in the app opens with one rhythm.
 
 // ---------------------------------------------------------------------------
 // Miniature components — each is compact, deliberate, and does one job.
@@ -530,22 +521,45 @@ const Campuses = () => {
   // Render
   // -----------------------------------------------------------------------
 
+  // Nothing renders until the data is here — not even the header.
+  //
+  // Rendering the header first and loading the body underneath produced two
+  // visible loading states for one wait: the route's own loader, then the
+  // header, then a second loader where the content would go. One screen, held
+  // until there is a whole page to show, reads as a single moment.
+  // fullscreen so this is pixel-identical to the route loader that precedes it.
+  // The chunk-load loader and this one run back to back; if they differ in
+  // position or backdrop the crest visibly jumps, which is what read as "the
+  // loader showed twice".
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(135deg, #F6F9FC 0%, #E8F1FB 100%)" }}>
+    // Cards are solid now, so the page can be plain white — they carry their
+    // own edge and shadow rather than relying on a tint behind them.
+    <div className="min-h-screen bg-white">
       {/* ================================================================ */}
       {/* HEADER                                                           */}
       {/* ================================================================ */}
-      <header className="glass-card sticky top-0 z-30 mb-6" style={{ borderRadius: 0 }}>
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Solid brand navy, the same token the sidebar uses, so a super admin
+          who opens a campus sees one continuous colour rather than two
+          different blues. Not glass: glass needs something behind it, and the
+          page is white now. */}
+      <header
+        className="sticky top-0 z-30 mb-6 shadow-sm"
+        style={{ background: "var(--sidebar-bg, #1E3F72)" }}
+      >
+        <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4">
             {/* Left: logo + school identity */}
             <div className="flex items-center gap-3 min-w-0">
               <img src={logo} alt="Logo" className="w-10 h-10 rounded-lg object-contain shrink-0" />
               <div className="min-w-0 hidden sm:block">
-                <h1 className="text-sm font-bold text-gray-900 truncate">
+                <h1 className="text-sm font-bold text-white truncate">
                   Quaid-e-Azam Group of Colleges
                 </h1>
-                <p className="text-[11px] font-medium" style={{ color: BRAND.primary }}>
+                <p className="text-[11px] font-medium text-white/70">
                   Super Admin
                 </p>
               </div>
@@ -553,13 +567,13 @@ const Campuses = () => {
 
             {/* Right: actions */}
             <div className="flex items-center gap-1 sm:gap-2">
-              <span className="text-[11px] text-gray-400 hidden md:inline mr-2 truncate max-w-[180px]">
+              <span className="text-[11px] text-white/60 hidden md:inline mr-2 truncate max-w-[180px]">
                 {user?.email}
               </span>
 
               <button
                 onClick={() => setShowLogsModal(true)}
-                className="flex items-center gap-1.5 text-[13px] text-gray-600 hover:text-gray-900 px-2.5 py-1.5 rounded-lg hover:bg-white/60 transition-all duration-200"
+                className="flex items-center gap-1.5 text-[13px] text-white/85 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200"
               >
                 <FaClipboardList className="text-xs" />
                 <span className="hidden sm:inline">Logs</span>
@@ -567,7 +581,7 @@ const Campuses = () => {
 
               <button
                 onClick={() => setShowBackupModal(true)}
-                className="flex items-center gap-1.5 text-[13px] text-gray-600 hover:text-gray-900 px-2.5 py-1.5 rounded-lg hover:bg-white/60 transition-all duration-200"
+                className="flex items-center gap-1.5 text-[13px] text-white/85 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200"
               >
                 <FaDatabase className="text-xs" />
                 <span className="hidden sm:inline">Backup</span>
@@ -575,15 +589,17 @@ const Campuses = () => {
 
               <button
                 onClick={() => setShowPasswordModal(true)}
-                className="flex items-center gap-1.5 text-[13px] text-gray-600 hover:text-gray-900 px-2.5 py-1.5 rounded-lg hover:bg-white/60 transition-all duration-200"
+                className="flex items-center gap-1.5 text-[13px] text-white/85 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200"
               >
                 <FaKey className="text-xs" />
                 <span className="hidden sm:inline">Password</span>
               </button>
 
+              {/* Sign out keeps a warm tint rather than red-on-navy, which
+                  vibrates badly. It only turns red on hover. */}
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1.5 text-[13px] text-gray-500 hover:text-red-600 px-2.5 py-1.5 rounded-lg hover:bg-red-50/70 transition-all duration-200"
+                className="flex items-center gap-1.5 text-[13px] text-white/70 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-red-500/80 transition-all duration-200"
               >
                 <FaSignOutAlt className="text-xs" />
                 <span className="hidden sm:inline">Sign out</span>
@@ -596,11 +612,11 @@ const Campuses = () => {
       {/* ================================================================ */}
       {/* MAIN CONTENT                                                     */}
       {/* ================================================================ */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pb-10">
         {/* ------------------------------------------------------------ */}
         {/* COMMAND STRIP — colourful glass tiles                        */}
         {/* ------------------------------------------------------------ */}
-        {!loading && overview && (
+        {overview && (
           <motion.div
             variants={riseIn}
             initial="hidden"
@@ -608,7 +624,7 @@ const Campuses = () => {
             className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
           >
             {/* Total Students — brand blue */}
-            <div className="glass-card p-5 flex items-center gap-4">
+            <div className="solid-card p-5 flex items-center gap-4">
               <div
                 className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
                 style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}
@@ -629,7 +645,7 @@ const Campuses = () => {
             </div>
 
             {/* Staff — light blue */}
-            <div className="glass-card p-5 flex items-center gap-4">
+            <div className="solid-card p-5 flex items-center gap-4">
               <div
                 className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
                 style={{ background: "linear-gradient(135deg, #5B8EE8 0%, #2F5DAA 100%)" }}
@@ -652,7 +668,7 @@ const Campuses = () => {
             </div>
 
             {/* Attendance — brand green */}
-            <div className="glass-card p-5 flex items-center gap-4">
+            <div className="solid-card p-5 flex items-center gap-4">
               <div
                 className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
                 style={{
@@ -681,7 +697,7 @@ const Campuses = () => {
 
             {/* Needs attention — amber, and the count itself turns red when the
                 list is not empty so the tile reads at a glance. */}
-            <div className="glass-card p-5 flex items-center gap-4">
+            <div className="solid-card p-5 flex items-center gap-4">
               <div
                 className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
                 style={{
@@ -711,15 +727,11 @@ const Campuses = () => {
           </motion.div>
         )}
 
-        {/* Loading state for command strip */}
-        {loading && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="glass-card p-5 h-[96px] animate-pulse" />
-            ))}
-          </div>
-        )}
-
+        {/* One gate for the whole body. The stat strip, the campus grid and the
+            sidebar all come from the same pair of requests, so showing a loader
+            above a half-built page implied they arrive separately — and the
+            page-level loader plus per-card placeholders read as two loading
+            states for one wait. Either the loader is on screen, or the page is. */}
         {/* ------------------------------------------------------------ */}
         {/* TWO-COLUMN BODY: campus grid + sidebar                       */}
         {/* ------------------------------------------------------------ */}
@@ -746,17 +758,8 @@ const Campuses = () => {
             </div>
 
             {/* --- the cards --- */}
-            {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-4">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="bg-white rounded-2xl border border-gray-100 h-48 animate-pulse"
-                  />
-                ))}
-              </div>
-            ) : campuses.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
+            {campuses.length === 0 ? (
+              <div className="solid-card p-12 text-center">
                 <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
                   <FaBuilding className="text-gray-300 text-xl" />
                 </div>
@@ -781,7 +784,7 @@ const Campuses = () => {
                 variants={pageStagger}
                 initial="hidden"
                 animate="show"
-                className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-4"
+                className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-4"
               >
                 {campuses.map((campus) => {
                   const stats = statsByCampus[campus._id];
@@ -792,60 +795,71 @@ const Campuses = () => {
                       key={campus._id}
                       variants={riseIn}
                       whileHover={{ y: -3, transition: { duration: 0.2 } }}
-                      className="glass-card overflow-hidden group cursor-pointer relative"
+                      className="solid-card solid-card-interactive overflow-hidden group cursor-pointer"
                       onClick={() => openCampus(campus)}
                     >
-                      {/* Top accent strip — campus identity color */}
-                      <div
-                        className="h-1.5"
-                        style={{ background: `linear-gradient(90deg, ${hue.from} 0%, ${hue.to} 100%)` }}
-                      />
+                      {/* The campus code, set as a stamp.
+                          The code is not decoration — it prefixes every student
+                          ID at this campus (LHR-10001), so it is the identifier
+                          staff already read things by. Making it the loudest
+                          element means the card is recognisable before the name
+                          is read, and the hue is derived from the code itself so
+                          a campus keeps its colour as the list grows. */}
+                      <div className="px-5 pt-5 pb-4 flex items-start gap-3.5">
+                        <div
+                          className="w-[52px] h-[52px] rounded-2xl shrink-0 flex items-center justify-center shadow-sm"
+                          style={{
+                            background: `linear-gradient(140deg, ${hue.from} 0%, ${hue.to} 100%)`,
+                          }}
+                        >
+                          <span className="text-white font-mono font-bold text-[13px] tracking-tight">
+                            {campus.code}
+                          </span>
+                        </div>
 
-                      {/* Top strip: campus name + code */}
-                      <div className="px-5 pt-5 pb-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-[15px] font-bold text-gray-900 truncate leading-tight mb-1.5">
+                        <div className="min-w-0 flex-1 pt-0.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="text-[15px] font-bold text-gray-900 leading-snug line-clamp-2">
                               {campus.name}
                             </h3>
-                            <span
-                              className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg font-mono"
-                              style={{
-                                background: hue.soft,
-                                color: hue.ink,
-                              }}
-                            >
-                              <FaBuilding className="text-[9px]" />
-                              {campus.code}
-                            </span>
+                            {!campus.isActive && (
+                              <span className="text-[10px] bg-red-50 text-red-600 px-2 py-0.5 rounded-md font-semibold shrink-0 mt-0.5">
+                                Inactive
+                              </span>
+                            )}
                           </div>
-                          {!campus.isActive && (
-                            <span className="text-[11px] bg-red-50 text-red-600 px-2.5 py-1 rounded-lg font-semibold shrink-0">
-                              Inactive
-                            </span>
-                          )}
+                          <p className="text-[11px] text-gray-400 mt-1 flex items-center gap-1.5">
+                            <FaBuilding className="text-[9px]" />
+                            Campus
+                            <FaArrowRight
+                              className="text-[9px] opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
+                              style={{ color: hue.ink }}
+                            />
+                          </p>
                         </div>
                       </div>
 
-                      {/* Core stats: three tinted tiles in the campus hue */}
-                      <div className="px-5 pb-4 grid grid-cols-3 gap-2">
+                      {/* Core stats.
+                          Deliberately quiet: the stamp above is the one loud
+                          element on this card, and three more colour blocks
+                          would compete with it. Hairline dividers instead of
+                          tinted boxes — the numbers carry themselves. */}
+                      <div className="px-5 pb-4 flex items-stretch">
                         {[
                           { value: campus.totalStudents, label: "Students" },
                           { value: campus.totalStaff, label: "Staff" },
                           { value: campus.totalClasses, label: "Classes" },
-                        ].map((tile) => (
+                        ].map((tile, i) => (
                           <div
                             key={tile.label}
-                            className="text-center py-2.5 rounded-xl"
-                            style={{ background: hue.soft }}
+                            className={`flex-1 text-center ${
+                              i > 0 ? "border-l border-gray-100" : ""
+                            }`}
                           >
-                            <p
-                              className="text-xl font-extrabold tabular-nums leading-none mb-1"
-                              style={{ color: hue.ink }}
-                            >
+                            <p className="text-[22px] font-bold text-gray-900 tabular-nums leading-none mb-1">
                               {tile.value}
                             </p>
-                            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
+                            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">
                               {tile.label}
                             </p>
                           </div>
@@ -855,9 +869,13 @@ const Campuses = () => {
                       {/* Extended stats row — only when overview loaded */}
                       {stats && (
                         <>
-                          <div className="mx-5 border-t border-white/60" />
+                          <div className="mx-5 border-t border-gray-100" />
 
-                          <div className="px-5 py-3.5 flex items-center gap-3">
+                          {/* The live-signal row sits on a faint wash so it
+                              reads as a distinct band — today's attendance and
+                              the 7-day trend are the numbers that change daily,
+                              unlike the roster counts above. */}
+                          <div className="px-5 py-3.5 flex items-center gap-3 bg-slate-50/60">
                             <AttendanceRing
                               rate={
                                 stats.markedToday > 0
@@ -902,7 +920,7 @@ const Campuses = () => {
                           visual affordance rather than a second button — nesting
                           a real one would fire the card handler too. */}
                       <div
-                        className="w-full flex items-center justify-center gap-2 py-3 text-[13px] font-semibold border-t border-white/60 transition-colors"
+                        className="w-full flex items-center justify-center gap-2 py-3 text-[13px] font-semibold border-t border-gray-100 transition-colors"
                         style={{ color: hue.ink }}
                       >
                         Open campus
@@ -931,13 +949,12 @@ const Campuses = () => {
           {/* -------------------------------------------------------- */}
           {/* RIGHT: sidebar — attention + activity                    */}
           {/* -------------------------------------------------------- */}
-          <div className="lg:w-[340px] shrink-0 space-y-5">
+          <div className="lg:w-[340px] 2xl:w-[400px] shrink-0 space-y-5">
             {/* -------- Needs Attention -------- */}
-            {!loading &&
-              overview &&
+            {overview &&
               overview.attentionCount > 0 &&
               showAttention && (
-                <div className="bg-white rounded-2xl border border-red-100 shadow-sm overflow-hidden">
+                <div className="solid-card overflow-hidden">
                   <div className="flex items-center justify-between px-5 py-4 bg-red-50/50">
                     <span className="flex items-center gap-2 text-[13px] font-semibold text-gray-800">
                       <FaExclamationTriangle className="text-red-500 text-xs" />
@@ -1073,7 +1090,7 @@ const Campuses = () => {
 
             {/* -------- Recent Activity -------- */}
             {recentLogs.length > 0 && (
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="solid-card overflow-hidden">
                 <div className="flex items-center justify-between px-5 py-4">
                   <span className="text-[13px] font-semibold text-gray-800">
                     Recent activity
@@ -1123,8 +1140,7 @@ const Campuses = () => {
             )}
 
             {/* When attention was dismissed */}
-            {!loading &&
-              overview &&
+            {overview &&
               overview.attentionCount > 0 &&
               !showAttention && (
                 <button
@@ -1342,22 +1358,30 @@ const Campuses = () => {
       )}
       </AnimatePresence>
 
-      {showPasswordModal && (
-        <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />
-      )}
+      {/* AnimatePresence is what lets these play their close animation — without
+          it React unmounts them instantly and only the open half is ever seen. */}
+      <AnimatePresence>
+        {showPasswordModal && (
+          <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />
+        )}
+      </AnimatePresence>
 
-      {showBackupModal && (
-        <BackupModal onClose={() => setShowBackupModal(false)} />
-      )}
+      <AnimatePresence>
+        {showBackupModal && (
+          <BackupModal onClose={() => setShowBackupModal(false)} />
+        )}
+      </AnimatePresence>
 
-      {showLogsModal && (
-        <LogsModal
-          onClose={() => {
-            setShowLogsModal(false);
-            fetchRecentActivity();
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {showLogsModal && (
+          <LogsModal
+            onClose={() => {
+              setShowLogsModal(false);
+              fetchRecentActivity();
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

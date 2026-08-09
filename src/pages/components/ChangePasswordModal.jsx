@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 import { FaKey, FaTimes, FaEye, FaEyeSlash } from "react-icons/fa";
+import { overlayFade, modalPop } from "../../utils/animations";
 import { API_ENDPOINTS } from "../../config/api";
 
 /**
@@ -72,8 +74,20 @@ const ChangePasswordModal = ({ onClose }) => {
   );
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+    <motion.div
+      variants={overlayFade}
+      initial="hidden"
+      animate="show"
+      exit="hidden"
+      className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4"
+    >
+      <motion.div
+        variants={modalPop}
+        initial="hidden"
+        animate="show"
+        exit="exit"
+        className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
+      >
         <div
           className="flex items-center justify-between px-6 py-4 text-white"
           style={{
@@ -126,8 +140,8 @@ const ChangePasswordModal = ({ onClose }) => {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

@@ -12,6 +12,7 @@ import {
   FaShieldAlt,
 } from "react-icons/fa";
 import { API_ENDPOINTS } from "../../config/api";
+import { overlayFade, modalPop } from "../../utils/animations";
 
 /**
  * Database backup and restore.
@@ -126,11 +127,18 @@ const BackupModal = ({ onClose }) => {
     : [];
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-3 sm:p-4">
+    <motion.div
+      variants={overlayFade}
+      initial="hidden"
+      animate="show"
+      exit="hidden"
+      className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-3 sm:p-4"
+    >
       <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 12 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        variants={modalPop}
+        initial="hidden"
+        animate="show"
+        exit="exit"
         className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[92vh]"
       >
         <div
@@ -304,7 +312,7 @@ const BackupModal = ({ onClose }) => {
           </button>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 

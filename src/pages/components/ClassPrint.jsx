@@ -1,7 +1,7 @@
 import React from "react";
 import moment from "moment";
 import { Divider } from "antd";
-import logo from "../../assets/images/logo.png";
+import logo from "../../assets/images/logo.webp";
 
 const ClassPrint = ({ classData }) => {
   // Ensure students data exists and has the expected structure

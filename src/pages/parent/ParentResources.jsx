@@ -15,6 +15,7 @@ import {
   FaEye,
 } from "react-icons/fa";
 import { MdFolderSpecial } from "react-icons/md";
+import Loader from "../components/Loader";
 
 const CATEGORIES = [
   "Notes",
@@ -144,15 +145,7 @@ const ParentResources = () => {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="glass-card p-5 animate-pulse">
-              <div className="h-5 bg-gray-200 rounded w-1/3 mb-3"></div>
-              <div className="h-4 bg-gray-200 rounded w-2/3 mb-4"></div>
-              <div className="h-10 bg-gray-100 rounded"></div>
-            </div>
-          ))}
-        </div>
+        <Loader fullscreen={false} />
       ) : filtered.length === 0 ? (
         <div className="glass-card p-10 text-center text-gray-500">
           <FaFolderOpen className="text-5xl text-gray-300 mx-auto mb-3" />

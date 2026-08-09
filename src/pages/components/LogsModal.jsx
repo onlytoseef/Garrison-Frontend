@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+import { motion } from "framer-motion";
 import {
   FaTimes,
   FaShieldAlt,
@@ -25,6 +26,8 @@ import {
   FaClipboardList,
 } from "react-icons/fa";
 import { API_ENDPOINTS } from "../../config/api";
+import { overlayFade, modalPop } from "../../utils/animations";
+import Loader from "./Loader";
 
 /**
  * Activity log viewer as a modal.
@@ -213,8 +216,20 @@ const LogsModal = ({ onClose }) => {
   }, {});
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-3 sm:p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl flex flex-col max-h-[92vh]">
+    <motion.div
+      variants={overlayFade}
+      initial="hidden"
+      animate="show"
+      exit="hidden"
+      className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-3 sm:p-4"
+    >
+      <motion.div
+        variants={modalPop}
+        initial="hidden"
+        animate="show"
+        exit="exit"
+        className="bg-white rounded-2xl shadow-xl w-full max-w-3xl flex flex-col max-h-[92vh]"
+      >
         {/* Header */}
         <div
           className="flex items-center justify-between px-5 sm:px-6 py-4 text-white rounded-t-2xl shrink-0"
@@ -335,13 +350,8 @@ const LogsModal = ({ onClose }) => {
         {/* Scrollable list */}
         <div className="flex-1 overflow-y-auto min-h-0">
           {loading ? (
-            <div className="p-4 space-y-2">
-              {[...Array(6)].map((_, i) => (
-                <div
-                  key={i}
-                  className="h-14 bg-gray-100 rounded-lg animate-pulse"
-                />
-              ))}
+            <div className="p-4">
+              <Loader fullscreen={false} size={92} />
             </div>
           ) : logs.length === 0 ? (
             <div className="p-12 text-center">
@@ -462,8 +472,8 @@ const LogsModal = ({ onClose }) => {
             Close
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

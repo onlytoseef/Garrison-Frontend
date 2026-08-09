@@ -18,7 +18,7 @@ import {
 import { motion } from "framer-motion";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
-import logo from "../../assets/images/logo.png";
+import logo from "../../assets/images/logo.webp";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../store/slices/authSlice";
 import "../frontend/AdminLayout.css";

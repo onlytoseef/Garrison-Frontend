@@ -4,6 +4,7 @@ import { API_ENDPOINTS } from "../../config/api";
 import API_BASE_URL from "../../config/api";
 import { FaBook, FaCalendarAlt, FaPaperclip, FaFilePdf, FaImage } from "react-icons/fa";
 import { MdMenuBook } from "react-icons/md";
+import Loader from "../components/Loader";
 
 const ParentDiary = () => {
   const [entries, setEntries] = useState([]);
@@ -55,15 +56,7 @@ const ParentDiary = () => {
       </div>
 
       {loading ? (
-        <div className="glass-card p-5 animate-pulse">
-          <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex gap-4 mb-4">
-              <div className="h-10 bg-gray-200 rounded w-1/4"></div>
-              <div className="h-10 bg-gray-200 rounded flex-1"></div>
-            </div>
-          ))}
-        </div>
+        <Loader fullscreen={false} />
       ) : entries.length === 0 ? (
         <div className="glass-card p-10 text-center text-gray-500">
           <FaBook className="text-5xl text-gray-300 mx-auto mb-3" />

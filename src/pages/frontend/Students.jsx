@@ -18,6 +18,7 @@ import { toast } from "react-hot-toast";
 import StudentCard from "../components/StudentCard";
 import ImportStudentsModal from "../components/ImportStudentsModal";
 import ExportStudentsModal from "../components/ExportStudentsModal";
+import Loader from "../components/Loader";
 
 
 const SkeletonCard = () => (
@@ -26,70 +27,6 @@ const SkeletonCard = () => (
   </div>
 );
 
-const SkeletonTable = () => (
-  <div className="overflow-x-auto rounded-lg shadow-md">
-    <table className="min-w-full bg-transparent">
-      <thead className="bg-gradient-to-r from-[#2F5DAA] to-[#1E3F72] text-white">
-        <tr>
-          <th className="px-6 py-3 text-left text-sm font-semibold">Photo</th>
-          <th className="px-6 py-3 text-left text-sm font-semibold">
-            Roll Number
-          </th>
-          <th className="px-6 py-3 text-left text-sm font-semibold">Name</th>
-          <th className="px-6 py-3 text-left text-sm font-semibold">
-            Guardian
-          </th>
-          <th className="px-6 py-3 text-left text-sm font-semibold">Gender</th>
-          <th className="px-6 py-3 text-left text-sm font-semibold">Phone</th>
-          <th className="px-6 py-3 text-left text-sm font-semibold">Parent Login</th>
-          <th className="px-6 py-3 text-left text-sm font-semibold">
-            Class & Section
-          </th>
-          <th className="px-6 py-3 text-left text-sm font-semibold">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {[...Array(5)].map((_, index) => (
-          <tr
-            key={index}
-            className={index % 2 === 0 ? "bg-white/40" : "bg-white/20"}
-          >
-            <td className="px-6 py-4">
-              <div className="h-10 w-10 bg-gray-200 rounded-full animate-pulse"></div>
-            </td>
-            <td className="px-6 py-4">
-              <div className="h-6 bg-gray-200 rounded animate-pulse w-16"></div>
-            </td>
-            <td className="px-6 py-4">
-              <div className="h-6 bg-gray-200 rounded animate-pulse w-32"></div>
-            </td>
-            <td className="px-6 py-4">
-              <div className="h-6 bg-gray-200 rounded animate-pulse w-28"></div>
-            </td>
-            <td className="px-6 py-4">
-              <div className="h-6 bg-gray-200 rounded animate-pulse w-20"></div>
-            </td>
-            <td className="px-6 py-4">
-              <div className="h-6 bg-gray-200 rounded animate-pulse w-24"></div>
-            </td>
-            <td className="px-6 py-4">
-              <div className="h-6 bg-gray-200 rounded animate-pulse w-36"></div>
-            </td>
-            <td className="px-6 py-4">
-              <div className="h-6 bg-gray-200 rounded animate-pulse w-24"></div>
-            </td>
-            <td className="px-6 py-4">
-              <div className="flex gap-2">
-                <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
-                <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
 
 const Students = () => {
   const dispatch = useDispatch();
@@ -555,12 +492,7 @@ const Students = () => {
       
       <div className="max-w-7xl 2xl:max-w-full mx-auto animate-fadeIn">
         {status === "loading" ? (
-          <>
-            <div className="glass-card p-4 mb-5 animate-pulse">
-              <div className="h-12 bg-gray-200 rounded-lg w-full"></div>
-            </div>
-            <SkeletonTable />
-          </>
+          <Loader fullscreen={false} />
         ) : (
           <>
             {/* Stats and Actions Bar */}

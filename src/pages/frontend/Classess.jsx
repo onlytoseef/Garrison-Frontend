@@ -14,6 +14,7 @@ import ClassPrint from "../components/ClassPrint";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
 import toast from "react-hot-toast";
+import Loader from "../components/Loader";
 
 // What the bulk importer writes into room number and in-charge, since a
 // spreadsheet of students does not carry either. Kept in sync with
@@ -388,9 +389,7 @@ const Classess = () => {
 
         {/* Classes grouped by grade */}
         {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
-          </div>
+          <Loader fullscreen={false} />
         ) : classes.length === 0 ? (
           <div className="glass-card p-12 text-center">
             <div className="inline-block p-6 bg-blue-100 rounded-full mb-4">
@@ -761,9 +760,7 @@ const Classess = () => {
 
               <div className="p-6 flex-1 overflow-y-auto">
                 {loading ? (
-                  <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600"></div>
-                  </div>
+                  <Loader fullscreen={false} size={104} />
                 ) : selectedClass ? (
                   <>
                     {/* Class Info Cards */}
@@ -1111,9 +1108,7 @@ const Classess = () => {
 
                 {/* Students Preview Table */}
                 {previewLoading ? (
-                  <div className="flex justify-center py-8">
-                    <div className="animate-spin rounded-full h-10 w-10 border-4 border-emerald-200 border-t-emerald-600"></div>
-                  </div>
+                  <Loader fullscreen={false} size={88} />
                 ) : promoteStudents.length > 0 ? (
                   <div className="border-2 border-gray-100 rounded-xl overflow-hidden mb-6">
                     <div className="bg-gray-50 px-4 py-3 flex items-center justify-between">

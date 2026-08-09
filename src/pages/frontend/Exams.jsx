@@ -21,6 +21,7 @@ import {
 } from "react-icons/fa";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
+import Loader from "../components/Loader";
 
 const NAVY = "#2F5DAA";
 const currentYear = new Date().getFullYear();
@@ -261,11 +262,7 @@ const Exams = () => {
 
         {/* List */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="glass-card p-6 animate-pulse h-48" />
-            ))}
-          </div>
+          <Loader fullscreen={false} />
         ) : exams.length === 0 ? (
           <div className="glass-card p-10 text-center text-gray-500">
             <FaBook className="mx-auto text-4xl mb-3 text-gray-300" />

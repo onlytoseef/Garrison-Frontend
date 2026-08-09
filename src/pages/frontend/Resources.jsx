@@ -23,6 +23,7 @@ import {
   FaUserTie,
 } from "react-icons/fa";
 import { MdFolderSpecial } from "react-icons/md";
+import Loader from "../components/Loader";
 
 const CATEGORIES = [
   "Notes",
@@ -233,9 +234,7 @@ const Resources = () => {
           </div>
 
           {classLoading ? (
-            <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
-            </div>
+            <Loader fullscreen={false} />
           ) : classes.length === 0 ? (
             <div className="glass-card p-12 text-center text-gray-500">
               <FaFolderOpen className="text-6xl text-gray-300 mx-auto mb-3" />

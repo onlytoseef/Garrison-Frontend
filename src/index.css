@@ -46,16 +46,19 @@
 
 /* Glassmorphism Card */
 .glass-card {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 32px 16px rgba(255, 255, 255, 0.06);
+    /* Alpha is 1, not the 2.3 in the source: CSS alpha is 0–1 and browsers
+       clamp anything above it, so 2.3 and 1 render identically. Written as 1
+       so what is here matches what is drawn. */
+    inset 0 0 46px 23px rgba(255, 255, 255, 1);
   position: relative;
   overflow: hidden;
 }
@@ -90,6 +93,117 @@
     rgba(255, 255, 255, 0.3)
   );
   pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Route loader — the school crest with brand arcs turning around it
+   ---------------------------------------------------------------------------
+   transform-box/transform-origin are both required. SVG puts a shape's origin
+   at the top-left of the viewBox by default, so a plain rotate() would swing
+   each ring around the corner in a wide arc rather than turning it in place. */
+.ql-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* A cached chunk can arrive in under 100ms, and a full-screen blur that appears
+   and vanishes that fast reads as a glitch rather than progress. Holding the
+   loader invisible for a moment first means a fast route shows nothing at all,
+   and only a genuinely slow one is announced. */
+.ql-loader {
+  animation: ql-appear 0.28s ease-out 0.18s both;
+}
+
+@keyframes ql-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.ql-ring-1 {
+  animation: ql-spin 2.1s linear infinite;
+}
+
+/* The middle ring turns the other way. Two rings going the same direction at
+   similar speeds read as one thick ring; opposing them separates the layers. */
+.ql-ring-2 {
+  animation: ql-spin 3.1s linear infinite reverse;
+}
+
+.ql-ring-3 {
+  animation: ql-spin 4.4s linear infinite;
+}
+
+@keyframes ql-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* The crest breathes rather than spins — a rotating logo reads as a broken
+   image, and the school's mark should stay upright and readable. */
+.ql-crest {
+  animation: ql-breathe 2.6s ease-in-out infinite;
+}
+
+@keyframes ql-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.92;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+/* Honour a reduced-motion preference: the loader still shows, it just holds
+   still. Something must remain visible, or the screen looks frozen. */
+@media (prefers-reduced-motion: reduce) {
+  .ql-ring-1,
+  .ql-ring-2,
+  .ql-ring-3,
+  .ql-crest {
+    animation: none !important;
+  }
+
+  /* The delayed fade-in is a comfort feature, not motion for its own sake, so
+     it stays — but instantly, with no transition. */
+  .ql-loader {
+    animation: ql-appear 0.01s linear 0.18s both;
+  }
+}
+
+/* Glass needs something behind it to refract. The super admin dashboard sets a
+   soft tinted backdrop for exactly that reason — on a plain white page the
+   translucent fill and white border would leave no visible edge. */
+
+/* ---------------------------------------------------------------------------
+   Solid card
+   ---------------------------------------------------------------------------
+   The opaque counterpart to .glass-card, for surfaces that sit on a white page.
+
+   No border: the shadow alone separates the card from the page. A hairline
+   border on top of a soft shadow gives the edge two competing definitions and
+   reads as heavier than either on its own. */
+.solid-card {
+  background: #ffffff;
+  border: none;
+  border-radius: 18px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  position: relative;
+  transition: box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Lift on hover. Only the interactive cards get this class, so a stat tile
+   never pretends to be clickable. Same hue, deeper and further — the card
+   appears to rise rather than to change colour. */
+.solid-card-interactive:hover {
+  box-shadow: rgba(100, 100, 111, 0.3) 0px 14px 42px 0px;
 }
 
 /* Performance-optimized animations */

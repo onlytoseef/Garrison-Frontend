@@ -10,6 +10,7 @@ import {
   FaUserSlash,
 } from "react-icons/fa";
 import { API_ENDPOINTS } from "../../config/api";
+import Loader from "./Loader";
 
 /**
  * Manages one staff member's portal access: creates or resets their login and
@@ -172,7 +173,7 @@ const TeacherAccessModal = ({ staff, classes = [], onClose }) => {
           </div>
 
           {loading ? (
-            <div className="h-24 bg-gray-100 rounded-xl animate-pulse" />
+            <Loader fullscreen={false} size={80} />
           ) : (
             <>
               {/* ---------- Login ---------- */}

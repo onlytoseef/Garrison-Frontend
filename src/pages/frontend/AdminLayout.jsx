@@ -23,7 +23,7 @@ import {
 import { AiOutlineRobot } from "react-icons/ai";
 import { motion } from "framer-motion";
 import axios from "axios";
-import logo from "../../assets/images/logo.png";
+import logo from "../../assets/images/logo.webp";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../store/slices/authSlice";
 import { API_BASE_URL } from "../../config/api";

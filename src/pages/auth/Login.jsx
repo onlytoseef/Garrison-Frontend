@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../store/slices/authSlice";
 import { motion } from "framer-motion";
 import { HiMail, HiLockClosed } from "react-icons/hi";
-import logo from "../../../src/assets/images/logo.png";
+import logo from "../../../src/assets/images/logo.webp";
 import toast from "react-hot-toast";
 import { setActiveCampusId } from "../../config/axiosSetup";
 
