@@ -27,7 +27,6 @@ import {
 } from "react-icons/fa";
 import { API_ENDPOINTS } from "../../config/api";
 import { overlayFade, modalPop } from "../../utils/animations";
-import Loader from "./Loader";
 
 /**
  * Activity log viewer as a modal.
@@ -350,8 +349,13 @@ const LogsModal = ({ onClose }) => {
         {/* Scrollable list */}
         <div className="flex-1 overflow-y-auto min-h-0">
           {loading ? (
-            <div className="p-4">
-              <Loader fullscreen={false} size={92} />
+            <div className="p-4 space-y-2">
+              {[...Array(6)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-14 bg-gray-100 rounded-lg animate-pulse"
+                />
+              ))}
             </div>
           ) : logs.length === 0 ? (
             <div className="p-12 text-center">

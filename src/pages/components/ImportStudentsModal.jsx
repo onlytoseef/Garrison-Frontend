@@ -12,7 +12,6 @@ import {
   FaSchool,
 } from "react-icons/fa";
 import { API_ENDPOINTS } from "../../config/api";
-import Loader from "./Loader";
 
 /**
  * Bulk student import from a spreadsheet.
@@ -237,7 +236,7 @@ const ImportStudentsModal = ({ onClose, onImported }) => {
               </div>
 
               {loading && !preview ? (
-                <Loader fullscreen={false} size={92} />
+                <div className="h-32 bg-gray-100 rounded-xl animate-pulse" />
               ) : preview ? (
                 <>
                   {/* Which campus this lands in. Importing into the wrong one

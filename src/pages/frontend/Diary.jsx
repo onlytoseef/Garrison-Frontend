@@ -19,7 +19,6 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { MdMenuBook, MdSubject } from "react-icons/md";
-import Loader from "../components/Loader";
 
 const Diary = () => {
   const [classes, setClasses] = useState([]);
@@ -233,7 +232,17 @@ const Diary = () => {
         </div>
 
         {classLoading ? (
-          <Loader fullscreen={false} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="glass-card overflow-hidden animate-pulse">
+                <div className="h-20 bg-gray-200 rounded-t-xl"></div>
+                <div className="p-4 space-y-3">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : classes.length === 0 ? (
           <div className="text-center py-16">
             <FaChalkboardTeacher className="text-6xl text-gray-300 mx-auto mb-4" />
@@ -478,7 +487,15 @@ const Diary = () => {
               </p>
             </div>
           ) : loading ? (
-            <Loader fullscreen={false} />
+            <div className="glass-card p-5 animate-pulse">
+              <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex gap-4 mb-4">
+                  <div className="h-10 bg-gray-200 rounded w-1/4"></div>
+                  <div className="h-10 bg-gray-200 rounded flex-1"></div>
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="glass-card overflow-hidden">
               {/* Diary header */}

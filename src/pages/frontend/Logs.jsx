@@ -24,7 +24,6 @@ import {
   FaUserSlash,
 } from "react-icons/fa";
 import { API_ENDPOINTS } from "../../config/api";
-import Loader from "../components/Loader";
 
 /**
  * Activity log viewer for super admins and principals.
@@ -369,7 +368,14 @@ const Logs = () => {
 
         {/* Timeline */}
         {loading ? (
-          <Loader fullscreen={false} />
+          <div className="space-y-2">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="glass-card h-16 animate-pulse bg-white/40"
+              />
+            ))}
+          </div>
         ) : logs.length === 0 ? (
           <div className="glass-card p-10 text-center">
             <FaFilter className="text-4xl text-gray-300 mx-auto mb-3" />

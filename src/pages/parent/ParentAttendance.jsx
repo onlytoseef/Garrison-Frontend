@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
 import { FaCalendarAlt, FaCheckCircle, FaTimesCircle, FaClock, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import Loader from "../components/Loader";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTH_NAMES = [
@@ -138,7 +137,15 @@ const ParentAttendance = () => {
 
         <div className="p-4 sm:p-6">
           {loading ? (
-            <Loader fullscreen={false} />
+            <div className="animate-pulse space-y-3">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="grid grid-cols-7 gap-2">
+                  {[...Array(7)].map((_, j) => (
+                    <div key={j} className="h-12 bg-gray-200 rounded-xl"></div>
+                  ))}
+                </div>
+              ))}
+            </div>
           ) : (
             <>
               {/* Day headers */}

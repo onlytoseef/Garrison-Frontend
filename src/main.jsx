@@ -6,12 +6,16 @@ import "./index.css";
 import { BrowserRouter } from "react-router";
 import { Provider } from "react-redux";
 import store from "./store/store";
-import { setupAxios } from "./config/axiosSetup";
+import { setupAxios, registerStore } from "./config/axiosSetup";
 
 // Registers the axios interceptors that attach the auth token and the active
 // campus header. Must run before anything renders — every API route requires
 // auth now, so a request fired without this gets a 401.
 setupAxios();
+
+// Lets setActiveCampusId empty the store when a super admin switches campus,
+// without axiosSetup importing the store directly and closing a require cycle.
+registerStore(store);
 
 // React Query used to wrap this tree. It was removed because nothing consumed
 // it: the two hook files that called useQuery were never imported by any page,

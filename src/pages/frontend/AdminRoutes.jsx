@@ -3,6 +3,12 @@ import { Route, Routes } from "react-router-dom";
 import AdminLayout from "./AdminLayout";
 import ProtectedRoute from "../../utils/ProtectedRoute";
 import RouteLoader from "../components/RouteLoader";
+// Eager, unlike every other page here. Campuses is the super admin's landing
+// route, so lazy-loading it bought nothing — they always need it — while
+// costing a visible chunk wait. Worse, that wait rendered the generic route
+// spinner, which then handed over to the page's own crest loader: two loaders
+// for one arrival. Importing it directly leaves exactly one.
+import Campuses from "./Campuses";
 
 /**
  * Every page here is code-split.
@@ -30,7 +36,6 @@ const ResultCard = lazy(() => import("./ResultCard"));
 const ManualAttendance = lazy(() => import("./ManualAttendance"));
 const Diary = lazy(() => import("./Diary"));
 const Resources = lazy(() => import("./Resources"));
-const Campuses = lazy(() => import("./Campuses"));
 const Logs = lazy(() => import("./Logs"));
 const Fees = lazy(() => import("./Fees"));
 

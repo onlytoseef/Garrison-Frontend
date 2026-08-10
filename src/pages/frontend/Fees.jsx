@@ -19,7 +19,6 @@ import {
 } from "../../store/slices/feeSlice";
 import { fetchClasses } from "../../store/slices/classSlice";
 import ImportFeesModal from "../components/ImportFeesModal";
-import Loader from "../components/Loader";
 
 /**
  * Fee overview: what each student has paid and what they still owe.
@@ -31,6 +30,15 @@ import Loader from "../components/Loader";
 
 const money = (n) => Number(n || 0).toLocaleString();
 
+
+const SkeletonTable = () => (
+  <div className="glass-card overflow-hidden border border-gray-100">
+    <div className="h-12 bg-gray-200 animate-pulse" />
+    {[...Array(8)].map((_, i) => (
+      <div key={i} className="h-14 border-t border-gray-100 bg-gray-50 animate-pulse" />
+    ))}
+  </div>
+);
 
 const Fees = () => {
   const dispatch = useDispatch();
@@ -221,7 +229,7 @@ const Fees = () => {
         </div>
 
         {status === "loading" ? (
-          <Loader fullscreen={false} />
+          <SkeletonTable />
         ) : (
           <div className="glass-card overflow-hidden border border-gray-100">
             <div className="overflow-x-auto">

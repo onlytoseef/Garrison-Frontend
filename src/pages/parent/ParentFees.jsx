@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
 import { FaMoneyBillWave, FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
-import Loader from "../components/Loader";
 
 /**
  * The parent's own fee position — what has been paid and what is still owed.
@@ -47,7 +46,15 @@ const ParentFees = () => {
   );
 
   if (loading) {
-    return <Loader fullscreen={false} />;
+    return (
+      <div className="p-6">
+        <div className="animate-pulse space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-40 bg-gray-200 rounded-xl"></div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   // No payments AND no balance on record means the office has not uploaded

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
 import { FaChartBar, FaCheckCircle, FaTimesCircle, FaTrophy } from "react-icons/fa";
-import Loader from "../components/Loader";
 
 const ParentResults = () => {
   const [data, setData] = useState(null);
@@ -26,7 +25,13 @@ const ParentResults = () => {
   }, []);
 
   if (loading) {
-    return <Loader fullscreen={false} />;
+    return (
+      <div className="p-6">
+        <div className="animate-pulse space-y-4">
+          {[1, 2, 3].map((i) => <div key={i} className="h-40 bg-gray-200 rounded-xl"></div>)}
+        </div>
+      </div>
+    );
   }
 
   if (!data || data.results.length === 0) {

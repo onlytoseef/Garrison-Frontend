@@ -13,7 +13,6 @@ import {
   FaUserGraduate,
 } from "react-icons/fa";
 import { MdHowToReg } from "react-icons/md";
-import Loader from "../components/Loader";
 
 const ManualAttendance = () => {
   const [classes, setClasses] = useState([]);
@@ -199,7 +198,23 @@ const ManualAttendance = () => {
 
         {/* Class Cards Grid */}
         {classLoading ? (
-          <Loader fullscreen={false} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="glass-card overflow-hidden animate-pulse"
+              >
+                <div
+                  className="h-20 rounded-t-xl"
+                  style={{ background: "#e5e7eb" }}
+                ></div>
+                <div className="p-4 space-y-3">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : classes.length === 0 ? (
           <div className="text-center py-16">
             <FaChalkboardTeacher className="text-6xl text-gray-300 mx-auto mb-4" />
@@ -377,7 +392,18 @@ const ManualAttendance = () => {
 
       {/* Student Table */}
       {loading ? (
-        <Loader fullscreen={false} />
+        <div className="glass-card overflow-hidden animate-pulse">
+          <div className="h-12 bg-gray-200 rounded-t-xl"></div>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="p-4 border-b border-gray-100">
+              <div className="flex items-center gap-4">
+                <div className="h-4 bg-gray-200 rounded w-12"></div>
+                <div className="h-4 bg-gray-200 rounded w-40"></div>
+                <div className="h-8 bg-gray-200 rounded w-60 ml-auto"></div>
+              </div>
+            </div>
+          ))}
+        </div>
       ) : students.length === 0 ? (
         <div className="text-center py-16 glass-card">
           <FaUserGraduate className="text-6xl text-gray-300 mx-auto mb-4" />
