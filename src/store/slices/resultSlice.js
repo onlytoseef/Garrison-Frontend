@@ -16,6 +16,24 @@ export const bulkEnterMarks = createAsyncThunk(
   }
 );
 
+// The teacher path: save marks for ONE subject's column. The backend merges it
+// into the result without touching any other subject's marks. One call per
+// subject the teacher owns.
+export const enterSubjectMarks = createAsyncThunk(
+  "results/enterSubject",
+  async ({ examId, subjectName, entries }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        API_ENDPOINTS.RESULT_SUBJECT_MARKS(examId),
+        { subjectName, entries }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
+
 export const fetchClassResults = createAsyncThunk(
   "results/fetchClass",
   async (examId) => {
@@ -62,6 +80,17 @@ const resultSlice = createSlice({
         state.saving = false;
       })
       .addCase(bulkEnterMarks.rejected, (state, action) => {
+        state.saving = false;
+        state.error = action.error.message;
+      })
+
+      .addCase(enterSubjectMarks.pending, (state) => {
+        state.saving = true;
+      })
+      .addCase(enterSubjectMarks.fulfilled, (state) => {
+        state.saving = false;
+      })
+      .addCase(enterSubjectMarks.rejected, (state, action) => {
         state.saving = false;
         state.error = action.error.message;
       })

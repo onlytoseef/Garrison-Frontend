@@ -36,6 +36,11 @@ const Exams = () => {
   const navigate = useNavigate();
   const { exams, loading } = useSelector((state) => state.exams);
   const { classes } = useSelector((state) => state.classes);
+  // Teachers reach this page to enter marks for their own subject and view
+  // results. Creating, publishing and deleting exams stay with the office, so
+  // those controls are hidden (and the API refuses them anyway).
+  const { user } = useSelector((state) => state.auth);
+  const isTeacher = user?.role === "teacher";
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -197,13 +202,15 @@ const Exams = () => {
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-3">
             <FaBook style={{ color: NAVY }} /> Examinations
           </h1>
-          <button
-            onClick={openAdd}
-            className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all"
-            style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
-          >
-            <FaPlus /> Create Exam
-          </button>
+          {!isTeacher && (
+            <button
+              onClick={openAdd}
+              className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all"
+              style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
+            >
+              <FaPlus /> Create Exam
+            </button>
+          )}
         </div>
 
         {/* Filters */}
@@ -312,23 +319,27 @@ const Exams = () => {
                   >
                     <FaListOl /> Results
                   </button>
-                  <button
-                    onClick={() => handlePublish(exam)}
-                    className={`flex items-center justify-center gap-1.5 px-3 py-2 text-sm rounded-lg font-medium ${
-                      exam.status === "published"
-                        ? "bg-orange-50 text-orange-600"
-                        : "bg-green-50 text-green-700"
-                    }`}
-                  >
-                    <FaCheckCircle />
-                    {exam.status === "published" ? "Unpublish" : "Publish"}
-                  </button>
-                  <button
-                    onClick={() => setDeleteTarget(exam)}
-                    className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-red-50 text-red-600 font-medium"
-                  >
-                    <FaTrash /> Delete
-                  </button>
+                  {!isTeacher && (
+                    <>
+                      <button
+                        onClick={() => handlePublish(exam)}
+                        className={`flex items-center justify-center gap-1.5 px-3 py-2 text-sm rounded-lg font-medium ${
+                          exam.status === "published"
+                            ? "bg-orange-50 text-orange-600"
+                            : "bg-green-50 text-green-700"
+                        }`}
+                      >
+                        <FaCheckCircle />
+                        {exam.status === "published" ? "Unpublish" : "Publish"}
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget(exam)}
+                        className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-red-50 text-red-600 font-medium"
+                      >
+                        <FaTrash /> Delete
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             ))}

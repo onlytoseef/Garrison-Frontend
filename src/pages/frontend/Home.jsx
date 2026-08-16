@@ -3,6 +3,8 @@ import { Chart, registerables } from "chart.js";
 import { motion } from "framer-motion";
 import axios from "axios";
 import moment from "moment-timezone";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { API_ENDPOINTS } from "../../config/api";
 import {
   FaUsers,
@@ -11,6 +13,11 @@ import {
   FaUserCheck,
   FaUserTimes,
   FaUserClock,
+  FaExclamationCircle,
+  FaCalendarCheck,
+  FaBook,
+  FaPen,
+  FaCheckCircle,
 } from "react-icons/fa";
 
 Chart.register(...registerables);
@@ -38,6 +45,16 @@ const SkeletonChart = ({ height = "300px" }) => (
 
 const Home = () => {
   const chartRef = useRef(null);
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+  const isTeacher = user?.role === "teacher";
+  // The Needs Attention feed is shown to teachers (their assigned classes) and to
+  // the office (principal/admin/super-admin-in-campus), who see every class in
+  // the campus. Parents have their own portal.
+  const showAttention = ["teacher", "principal", "admin", "super_admin"].includes(
+    user?.role
+  );
+
   const [totalStudents, setTotalStudents] = useState(0);
   const [presentStudents, setPresentStudents] = useState(0);
   const [absentStudents, setAbsentStudents] = useState(0);
@@ -45,6 +62,30 @@ const Home = () => {
   const [totalStaff, setTotalStaff] = useState(0);
   const [totalClasses, setTotalClasses] = useState(0);
   const [loading, setLoading] = useState(true);
+
+  // Teacher "Needs Attention" feed — what is still outstanding today.
+  const [attention, setAttention] = useState(null); // { date, classes: [] }
+  const [attentionLoading, setAttentionLoading] = useState(false);
+
+  useEffect(() => {
+    if (!showAttention) return;
+    let alive = true;
+    setAttentionLoading(true);
+    axios
+      .get(API_ENDPOINTS.TEACHER_ATTENTION)
+      .then((res) => {
+        if (alive) setAttention(res.data);
+      })
+      .catch(() => {
+        if (alive) setAttention({ classes: [] });
+      })
+      .finally(() => {
+        if (alive) setAttentionLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [showAttention]);
 
   const fetchData = async () => {
     try {
@@ -113,6 +154,123 @@ const Home = () => {
 
   return (
     <div className="p-3 sm:p-4 md:p-6 lg:p-8">
+      {showAttention && (
+        <div className="mb-4 sm:mb-6 md:mb-8">
+          <div className="flex items-center gap-3 mb-3 sm:mb-4">
+            <div
+              className="p-2 rounded-xl text-white"
+              style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}
+            >
+              <FaExclamationCircle className="text-lg sm:text-xl" />
+            </div>
+            <div>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
+                Needs Attention
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-500">
+                {isTeacher
+                  ? "Outstanding for today"
+                  : "Outstanding across your campus today"}
+                {attention?.date
+                  ? ` — ${moment(attention.date).format("ddd, DD MMM YYYY")}`
+                  : ""}
+              </p>
+            </div>
+          </div>
+
+          {attentionLoading ? (
+            <div className="glass-card p-5 animate-pulse space-y-3">
+              <div className="h-4 bg-gray-200 rounded w-1/3" />
+              <div className="h-8 bg-gray-200 rounded w-2/3" />
+            </div>
+          ) : (attention?.classes?.length ?? 0) === 0 ? (
+            <div className="glass-card p-6 flex items-center gap-3 border-l-4 border-green-500">
+              <FaCheckCircle className="text-green-500 text-2xl flex-shrink-0" />
+              <div>
+                <p className="font-semibold text-gray-800">You're all caught up.</p>
+                <p className="text-sm text-gray-500">
+                  Nothing pending for your classes today.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+              {attention.classes.map((c) => (
+                <div
+                  key={c._id}
+                  className="glass-card p-4 sm:p-5 border-l-4 border-amber-400"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h3 className="font-bold text-gray-800">
+                        Class {c.grade} - {c.section}
+                      </h3>
+                      <p className="text-xs mt-0.5 flex items-center gap-1.5">
+                        <FaChalkboardTeacher className="text-gray-400" />
+                        {c.inchargeName ? (
+                          <span className="text-gray-500">
+                            In-charge:{" "}
+                            <span className="font-medium text-gray-700">
+                              {c.inchargeName}
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="text-amber-600 font-medium">
+                            No in-charge assigned
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                    {c.isIncharge && (
+                      <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                        In-charge
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {c.attendancePending && (
+                      <button
+                        onClick={() => navigate("/manual-attendance")}
+                        className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-red-50 text-red-700 hover:bg-red-100 font-medium transition-colors"
+                      >
+                        <FaCalendarCheck /> Attendance not marked
+                      </button>
+                    )}
+                    {c.diaryPendingSubjects?.length > 0 && (
+                      <button
+                        onClick={() => navigate("/diary")}
+                        className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 font-medium transition-colors"
+                        title={c.diaryPendingSubjects.join(", ")}
+                      >
+                        <FaBook /> Diary pending
+                        <span className="text-xs font-normal opacity-80">
+                          ({c.diaryPendingSubjects.length}
+                          {c.isIncharge ? `/${c.ownedSubjectCount}` : ""})
+                        </span>
+                      </button>
+                    )}
+                    {(c.examsPending || []).map((ex) => (
+                      <button
+                        key={ex.examId}
+                        onClick={() => navigate(`/exams/${ex.examId}/marks`)}
+                        className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium transition-colors"
+                        title={ex.pendingSubjects.join(", ")}
+                      >
+                        <FaPen /> {ex.name}
+                        <span className="text-xs font-normal opacity-80">
+                          ({ex.pendingSubjects.length} subject
+                          {ex.pendingSubjects.length === 1 ? "" : "s"})
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {loading ? (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 md:mb-8">

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 import { API_ENDPOINTS } from "../../config/api";
 import API_BASE_URL from "../../config/api";
 import toast from "react-hot-toast";
 import {
   FaArrowLeft,
-  FaPlus,
-  FaTrash,
   FaBook,
   FaCalendarAlt,
   FaChalkboardTeacher,
@@ -21,11 +20,17 @@ import {
 import { MdMenuBook, MdSubject } from "react-icons/md";
 
 const Diary = () => {
+  // Teachers only ever see the diary for the subjects they own in a class. The
+  // subject rows below are filtered to those, and the save only sends them — the
+  // API enforces the same, so a teacher can never write another subject's diary.
+  const { user } = useSelector((state) => state.auth);
+  const isTeacher = user?.role === "teacher";
+
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
-  const [activeTab, setActiveTab] = useState("subjects");
   const [subjects, setSubjects] = useState([]);
-  const [newSubject, setNewSubject] = useState("");
+  // For teachers: { [classId]: [ownedSubject, ...] }, from /teacher/my-classes.
+  const [ownedByClass, setOwnedByClass] = useState({});
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
@@ -35,11 +40,11 @@ const Diary = () => {
   const [existingAttachment, setExistingAttachment] = useState("");
   const [loading, setLoading] = useState(false);
   const [classLoading, setClassLoading] = useState(true);
-  const [savingSubjects, setSavingSubjects] = useState(false);
   const [savingAll, setSavingAll] = useState(false);
 
   useEffect(() => {
     fetchClasses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchClasses = async () => {
@@ -47,6 +52,20 @@ const Diary = () => {
       setClassLoading(true);
       const res = await axios.get(API_ENDPOINTS.CLASSES);
       setClasses(res.data);
+      // A teacher's owned subjects per class come from my-classes; the grid list
+      // itself stays from /classes so it keeps inCharge/room for display.
+      if (isTeacher) {
+        try {
+          const mine = await axios.get(API_ENDPOINTS.TEACHER_MY_CLASSES);
+          const map = {};
+          (mine.data || []).forEach((c) => {
+            map[c._id] = c.teacherSubjects || [];
+          });
+          setOwnedByClass(map);
+        } catch {
+          setOwnedByClass({});
+        }
+      }
     } catch {
       toast.error("Failed to load classes");
     } finally {
@@ -54,28 +73,41 @@ const Diary = () => {
     }
   };
 
+  // The subjects a teacher may edit in a class; everyone else gets the full list.
+  const subjectsForClass = (classId, allSubjects) =>
+    isTeacher
+      ? allSubjects.filter((s) => (ownedByClass[classId] || []).includes(s))
+      : allSubjects;
+
   const selectClass = async (cls) => {
     setSelectedClass(cls);
     setLoading(true);
+    let subs = [];
     try {
       const res = await axios.get(API_ENDPOINTS.CLASS_SUBJECTS(cls._id));
-      setSubjects(res.data.subjects || []);
+      subs = subjectsForClass(cls._id, res.data.subjects || []);
+      setSubjects(subs);
     } catch {
       setSubjects([]);
     }
-    await fetchDiary(cls._id, selectedDate);
+    await fetchDiary(cls._id, selectedDate, subs);
     setLoading(false);
   };
 
-  const fetchDiary = async (classId, date) => {
+  const fetchDiary = async (classId, date, subjectList = subjects) => {
     try {
       const res = await axios.get(API_ENDPOINTS.DIARY, {
         params: { classId, date },
       });
+      // The diary read is class-scoped, so for a teacher it also carries other
+      // subjects' entries — keep only the ones they may edit so the "saved"
+      // count and the attachment reflect their own rows.
+      const allow = subjectList.length ? new Set(subjectList) : null;
       const entries = {};
       const forms = {};
       let foundAttachment = "";
       (res.data || []).forEach((entry) => {
+        if (allow && !allow.has(entry.subject)) return;
         entries[entry.subject] = entry;
         forms[entry.subject] = entry.description || "";
         if (entry.attachment && !foundAttachment) {
@@ -85,9 +117,9 @@ const Diary = () => {
       setDiaryEntries(entries);
       setExistingAttachment(foundAttachment);
       setClassAttachment(null);
-      setDiaryForms((prev) => {
+      setDiaryForms(() => {
         const merged = {};
-        subjects.forEach((sub) => {
+        subjectList.forEach((sub) => {
           merged[sub] = forms[sub] || "";
         });
         return merged;
@@ -119,37 +151,6 @@ const Diary = () => {
       setLoading(true);
       await fetchDiary(selectedClass._id, newDate);
       setLoading(false);
-    }
-  };
-
-  // Subject management
-  const addSubject = () => {
-    const trimmed = newSubject.trim();
-    if (!trimmed) return;
-    if (subjects.includes(trimmed)) {
-      toast.error("Subject already exists");
-      return;
-    }
-    setSubjects([...subjects, trimmed]);
-    setNewSubject("");
-  };
-
-  const removeSubject = (sub) => {
-    setSubjects(subjects.filter((s) => s !== sub));
-  };
-
-  const saveSubjects = async () => {
-    if (!selectedClass) return;
-    setSavingSubjects(true);
-    try {
-      await axios.put(API_ENDPOINTS.CLASS_SUBJECTS(selectedClass._id), {
-        subjects,
-      });
-      toast.success("Subjects saved");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to save subjects");
-    } finally {
-      setSavingSubjects(false);
     }
   };
 
@@ -206,7 +207,6 @@ const Diary = () => {
     setDiaryForms({});
     setClassAttachment(null);
     setExistingAttachment("");
-    setActiveTab("subjects");
   };
 
   // ─── Class Grid View ───
@@ -336,137 +336,9 @@ const Diary = () => {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6">
-        <button
-          onClick={() => setActiveTab("subjects")}
-          className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${
-            activeTab === "subjects"
-              ? "text-white shadow-lg"
-              : "text-[#2F5DAA] bg-white border-2 border-[#2F5DAA]/20 hover:border-[#2F5DAA]/40"
-          }`}
-          style={
-            activeTab === "subjects"
-              ? {
-                  background:
-                    "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
-                }
-              : {}
-          }
-        >
-          <MdSubject className="inline mr-2 text-lg" />
-          Subjects
-        </button>
-        <button
-          onClick={() => setActiveTab("diary")}
-          className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${
-            activeTab === "diary"
-              ? "text-white shadow-lg"
-              : "text-[#2F5DAA] bg-white border-2 border-[#2F5DAA]/20 hover:border-[#2F5DAA]/40"
-          }`}
-          style={
-            activeTab === "diary"
-              ? {
-                  background:
-                    "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
-                }
-              : {}
-          }
-        >
-          <FaBook className="inline mr-2" />
-          Daily Diary
-        </button>
-      </div>
-
-      {/* ─── Subjects Tab ─── */}
-      {activeTab === "subjects" && (
-        <div className="glass-card p-5 sm:p-6">
-          <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <MdSubject className="text-[#2F5DAA] text-xl" />
-            Manage Subjects
-          </h2>
-
-          {/* Add subject input */}
-          <div className="flex gap-2 mb-6">
-            <input
-              type="text"
-              value={newSubject}
-              onChange={(e) => setNewSubject(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && addSubject()}
-              placeholder="Enter subject name (e.g. Urdu, English, Math)"
-              className="flex-1 px-4 py-2.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-xl outline-none transition-all duration-300"
-            />
-            <button
-              onClick={addSubject}
-              className="px-4 py-2.5 rounded-xl text-white font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105"
-              style={{
-                background:
-                  "linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)",
-              }}
-            >
-              <FaPlus className="inline mr-1" /> Add
-            </button>
-          </div>
-
-          {/* Subjects list */}
-          {subjects.length === 0 ? (
-            <div className="text-center py-10">
-              <MdSubject className="text-5xl text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500">
-                No subjects added yet. Add subjects above.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-2 mb-6">
-              {subjects.map((sub, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 flex items-center justify-center rounded-lg text-white text-sm font-bold" style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}>
-                      {idx + 1}
-                    </span>
-                    <span className="font-medium text-gray-800">{sub}</span>
-                  </div>
-                  <button
-                    onClick={() => removeSubject(sub)}
-                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200"
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Save button */}
-          <button
-            onClick={saveSubjects}
-            disabled={savingSubjects}
-            className="px-6 py-3 rounded-xl text-white font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              background:
-                "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
-            }}
-          >
-            {savingSubjects ? (
-              <span className="flex items-center gap-2">
-                <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                Saving...
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <FaSave /> Save Subjects
-              </span>
-            )}
-          </button>
-        </div>
-      )}
-
-      {/* ─── Daily Diary Tab ─── */}
-      {activeTab === "diary" && (
-        <div>
+      {/* Daily diary. Subjects are no longer edited here — the super admin
+          assigns them per grade from the dashboard, and this page reads them. */}
+      <div>
           {/* Date picker */}
           <div className="flex items-center gap-2 mb-6">
             <FaCalendarAlt className="text-[#2F5DAA]" />
@@ -481,9 +353,10 @@ const Diary = () => {
           {subjects.length === 0 ? (
             <div className="glass-card p-8 text-center">
               <MdSubject className="text-5xl text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500 text-lg mb-2">No subjects defined</p>
+              <p className="text-gray-500 text-lg mb-2">No subjects assigned</p>
               <p className="text-gray-400 text-sm">
-                Go to the Subjects tab first to add subjects for this class.
+                This class has no subjects yet. Ask the super admin to assign
+                them from the dashboard.
               </p>
             </div>
           ) : loading ? (
@@ -676,7 +549,6 @@ const Diary = () => {
             </div>
           )}
         </div>
-      )}
     </div>
   );
 };

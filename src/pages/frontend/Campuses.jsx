@@ -24,12 +24,15 @@ import {
   FaBuilding,
   FaUserGraduate,
   FaDatabase,
+  FaBook,
 } from "react-icons/fa";
 import { API_BASE_URL, API_ENDPOINTS } from "../../config/api";
 import { setActiveCampusId } from "../../config/axiosSetup";
 import ChangePasswordModal from "../components/ChangePasswordModal";
 import LogsModal from "../components/LogsModal";
 import BackupModal from "../components/BackupModal";
+import SubjectsModal from "../components/SubjectsModal";
+import ExamsModal from "../components/ExamsModal";
 import { logoutUser } from "../../store/slices/authSlice";
 import logo from "../../assets/images/logo.webp";
 import Loader from "../components/Loader";
@@ -380,6 +383,8 @@ const Campuses = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showLogsModal, setShowLogsModal] = useState(false);
   const [showBackupModal, setShowBackupModal] = useState(false);
+  const [showSubjectsModal, setShowSubjectsModal] = useState(false);
+  const [showExamsModal, setShowExamsModal] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -570,6 +575,22 @@ const Campuses = () => {
               <span className="text-[11px] text-white/60 hidden md:inline mr-2 truncate max-w-[180px]">
                 {user?.email}
               </span>
+
+              <button
+                onClick={() => setShowSubjectsModal(true)}
+                className="flex items-center gap-1.5 text-[13px] text-white/85 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200"
+              >
+                <FaBook className="text-xs" />
+                <span className="hidden sm:inline">Subjects</span>
+              </button>
+
+              <button
+                onClick={() => setShowExamsModal(true)}
+                className="flex items-center gap-1.5 text-[13px] text-white/85 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200"
+              >
+                <FaUserGraduate className="text-xs" />
+                <span className="hidden sm:inline">Exams</span>
+              </button>
 
               <button
                 onClick={() => setShowLogsModal(true)}
@@ -1369,6 +1390,18 @@ const Campuses = () => {
       <AnimatePresence>
         {showBackupModal && (
           <BackupModal onClose={() => setShowBackupModal(false)} />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showSubjectsModal && (
+          <SubjectsModal onClose={() => setShowSubjectsModal(false)} />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showExamsModal && (
+          <ExamsModal onClose={() => setShowExamsModal(false)} />
         )}
       </AnimatePresence>
 

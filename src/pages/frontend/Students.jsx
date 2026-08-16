@@ -11,7 +11,7 @@ import {
 import { fetchClasses } from "../../store/slices/classSlice";
 import { API_BASE_URL, API_ENDPOINTS } from "../../config/api";
 import axios from "axios";
-import { FaTrash, FaEdit, FaPlus,  FaUser, FaUserTie, FaPhone, FaHome, FaMale, FaFemale, FaUserPlus, FaSearch,  FaCamera, FaImage, FaEye, FaPrint, FaKey, FaBan, FaCheckCircle, FaRedo, FaCopy, FaFileExcel, FaDownload } from "react-icons/fa";
+import { FaTrash, FaEdit, FaPlus,  FaUser, FaUserTie, FaPhone, FaHome, FaMale, FaFemale, FaUserPlus, FaSearch,  FaCamera, FaImage, FaEye, FaPrint, FaKey, FaBan, FaCheckCircle, FaRedo, FaCopy, FaFileExcel, FaDownload, FaIdCard } from "react-icons/fa";
 import { MdSchool, MdDelete, MdNumbers } from "react-icons/md";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { toast } from "react-hot-toast";
@@ -130,11 +130,13 @@ const Students = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [lastFetchKey, setLastFetchKey] = useState(""); // Track last fetch to avoid duplicate calls
   const [formData, setFormData] = useState({
+    studentId: "",
     name: "",
     guardianName: "",
     classId: "",
     gender: "",
     guardianPhone: "",
+    guardianCnic: "",
     address: "",
   });
 
@@ -343,11 +345,13 @@ const Students = () => {
   const handleEdit = (student) => {
     setEditingStudent(student);
     setFormData({
+      studentId: student.studentId || "",
       name: student.name,
       guardianName: student.guardianName,
       classId: student.classId._id,
       gender: student.gender,
       guardianPhone: student.guardianPhone,
+      guardianCnic: student.guardianCnic || "",
       address: student.address,
     });
     // Show the existing photo (if any) as the preview; no new file selected yet.
@@ -366,6 +370,7 @@ const Students = () => {
     fd.append("classId", formData.classId);
     fd.append("gender", formData.gender);
     fd.append("guardianPhone", formData.guardianPhone);
+    fd.append("guardianCnic", formData.guardianCnic);
     fd.append("address", formData.address);
     // Only send a photo if the user picked/captured a new one; else backend keeps the old.
     if (photoFile) {
@@ -393,11 +398,13 @@ const Students = () => {
     e.preventDefault();
 
     const fd = new FormData();
+    fd.append("studentId", formData.studentId.trim());
     fd.append("name", formData.name);
     fd.append("guardianName", formData.guardianName);
     fd.append("classId", formData.classId);
     fd.append("gender", formData.gender);
     fd.append("guardianPhone", formData.guardianPhone);
+    fd.append("guardianCnic", formData.guardianCnic);
     fd.append("address", formData.address);
     if (photoFile) {
       fd.append("photo", photoFile, "photo.jpg");
@@ -420,16 +427,20 @@ const Students = () => {
       setPhotoPreview(null);
       setIsAddModalOpen(false);
       setFormData({
+        studentId: "",
         name: "",
         guardianName: "",
         classId: "",
         gender: "",
         guardianPhone: "",
+        guardianCnic: "",
         address: "",
       });
       toast.success("Student added successfully!");
     } catch (error) {
-      toast.error("Failed to add student.");
+      toast.error(
+        error?.message || "Failed to add student."
+      );
     }
   };
 
@@ -437,6 +448,18 @@ const Students = () => {
     setPhotoFile(null);
     setPhotoPreview(null);
     setCameraOn(false);
+    // Start from a clean form — otherwise fields left over from an Edit (which
+    // reuses formData) would pre-fill the new student, including the ID.
+    setFormData({
+      studentId: "",
+      name: "",
+      guardianName: "",
+      classId: "",
+      gender: "",
+      guardianPhone: "",
+      guardianCnic: "",
+      address: "",
+    });
     setIsAddModalOpen(true);
   };
 
@@ -918,8 +941,8 @@ const Students = () => {
 
       {isAddModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto animate-fadeIn">
-            <div 
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto animate-fadeIn">
+            <div
               className="p-6 rounded-t-2xl"
               style={{
                 background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
@@ -931,6 +954,30 @@ const Students = () => {
               </h2>
             </div>
             <form onSubmit={handleAdd} className="p-6">
+              {/* Two-column field grid; wide inputs (help text, photo) can span
+                  both via sm:col-span-2. */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5">
+              <div className="mb-4 sm:col-span-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                  <MdNumbers className="text-blue-600" />
+                  Student ID
+                </label>
+                <input
+                  type="text"
+                  name="studentId"
+                  value={formData.studentId}
+                  onChange={(e) =>
+                    setFormData({ ...formData, studentId: e.target.value })
+                  }
+                  required
+                  placeholder="e.g. 10234 or LHR-10234"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
+                />
+                <p className="mt-1 text-xs text-gray-400">
+                  The student's admission number. Must be unique — it also becomes
+                  their parent login.
+                </p>
+              </div>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                   <FaUser className="text-blue-600" />
@@ -1044,6 +1091,27 @@ const Students = () => {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                  <FaIdCard className="text-blue-600" />
+                  Guardian CNIC
+                </label>
+                <input
+                  type="text"
+                  name="guardianCnic"
+                  inputMode="numeric"
+                  maxLength={15}
+                  value={formData.guardianCnic}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      guardianCnic: e.target.value.replace(/[^0-9-]/g, ""),
+                    })
+                  }
+                  placeholder="e.g. 3310402314266 or 33104-2314266-7"
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
+                />
+              </div>
+              <div className="mb-4 sm:col-span-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                   <FaHome className="text-blue-600" />
                   Address
                 </label>
@@ -1057,6 +1125,7 @@ const Students = () => {
                   required
                   className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                 />
+              </div>
               </div>
               {photoBlock}
               <div className="flex justify-end gap-3 mt-6">
@@ -1205,6 +1274,27 @@ const Students = () => {
                     })
                   }
                   required
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                  <FaIdCard className="text-blue-600" />
+                  Guardian CNIC
+                </label>
+                <input
+                  type="text"
+                  name="guardianCnic"
+                  inputMode="numeric"
+                  maxLength={15}
+                  value={formData.guardianCnic}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      guardianCnic: e.target.value.replace(/[^0-9-]/g, ""),
+                    })
+                  }
+                  placeholder="e.g. 3310402314266 or 33104-2314266-7"
                   className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-blue-500 rounded-xl outline-none transition-all duration-300"
                 />
               </div>

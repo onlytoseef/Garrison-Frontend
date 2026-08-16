@@ -49,14 +49,14 @@ const Login = () => {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="glass-card p-6 sm:p-8 w-full max-w-md relative z-10"
+        className="glass-panel p-6 sm:p-8 w-full max-w-md relative z-10"
       >
         <div className="flex justify-center mb-6 sm:mb-8">
           <img src={logo} className="w-40 sm:w-60" alt="Logo" />
         </div>
         <div className="text-center mb-6 sm:mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Welcome Back!</h2>
-          <p className="text-sm sm:text-base text-gray-600">You've been missed!</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white">Welcome Back!</h2>
+          <p className="text-sm sm:text-base text-white">You've been missed!</p>
         </div>
 
         <form
@@ -69,7 +69,7 @@ const Login = () => {
           className="space-y-5 sm:space-y-6"
         >
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-white mb-1">
               Email
             </label>
             <div className="mt-1 relative rounded-md shadow-sm">
@@ -87,7 +87,7 @@ const Login = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-white mb-1">
               Password
             </label>
             <div className="mt-1 relative rounded-md shadow-sm">

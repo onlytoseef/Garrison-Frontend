@@ -219,8 +219,8 @@ const Logs = () => {
   }, {});
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 min-h-screen bg-gradient-to-br from-blue-50 to-[#1E3F72]/10">
-      <div className="max-w-6xl mx-auto">
+    <div className="p-4 sm:p-6 md:p-8 min-h-screen bg-white">
+      <div className="max-w-6xl 2xl:max-w-full mx-auto">
         <div className="mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
             Activity Logs

@@ -96,7 +96,7 @@ const AttendanceRecord = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F3F4F6] p-6">
+    <div className="min-h-screen bg-white p-6">
       <Toaster position="top-center" reverseOrder={false} />
       <motion.div
         initial={{ opacity: 0, y: -50 }}

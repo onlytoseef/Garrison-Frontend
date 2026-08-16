@@ -25,6 +25,11 @@ const Classess = () => {
   const { classes, selectedClass, loading } = useSelector(
     (state) => state.classes
   );
+  // Teachers get a read-only view: they may open a class to see its students and
+  // data, but every mutating control (add / edit / delete / promote / WhatsApp)
+  // is hidden. The API refuses them regardless; this keeps the screen honest.
+  const { user } = useSelector((state) => state.auth);
+  const isTeacher = user?.role === "teacher";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [teachers, setTeachers] = useState([]);
   const [classDetailsModal, setClassDetailsModal] = useState(false);
@@ -344,26 +349,34 @@ const Classess = () => {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              <button
-                onClick={() => setPromoteModal(true)}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 text-white px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg"
-                style={{
-                  background: 'linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)'
-                }}
-              >
-                <FaArrowRight className="text-base sm:text-lg" />
-                Promote Students
-              </button>
-              <button
-                onClick={() => openAddModal()}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 text-white px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg"
-                style={{
-                  background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
-                }}
-              >
-                <FaPlus className="text-base sm:text-lg" />
-                Add New Class
-              </button>
+              {isTeacher ? (
+                <span className="text-xs sm:text-sm text-gray-400 self-center">
+                  View only
+                </span>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setPromoteModal(true)}
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 text-white px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg"
+                    style={{
+                      background: 'linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)'
+                    }}
+                  >
+                    <FaArrowRight className="text-base sm:text-lg" />
+                    Promote Students
+                  </button>
+                  <button
+                    onClick={() => openAddModal()}
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 text-white px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg"
+                    style={{
+                      background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)'
+                    }}
+                  >
+                    <FaPlus className="text-base sm:text-lg" />
+                    Add New Class
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -397,15 +410,21 @@ const Classess = () => {
               <MdClass className="text-6xl text-blue-600" />
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-2">No Classes Found</h3>
-            <p className="text-gray-600 mb-6">Get started by adding your first class</p>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105"
-              style={{ background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)' }}
-            >
-              <FaPlus />
-              Add Your First Class
-            </button>
+            <p className="text-gray-600 mb-6">
+              {isTeacher
+                ? "You have not been assigned to any classes yet."
+                : "Get started by adding your first class"}
+            </p>
+            {!isTeacher && (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                style={{ background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)' }}
+              >
+                <FaPlus />
+                Add Your First Class
+              </button>
+            )}
           </div>
         ) : (
           <div className="space-y-8">
@@ -472,28 +491,32 @@ const Classess = () => {
                             <FaEye />
                             View
                           </button>
-                          <button
-                            onClick={() => openEditModal(cls)}
-                            title="Edit room and in-charge"
-                            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-110 text-white"
-                            style={{ background: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)' }}
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            onClick={() => { setDeleteId(cls._id); setDeleteModal(true); }}
-                            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-110 text-white"
-                            style={{ background: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)' }}
-                          >
-                            <FaTrash />
-                          </button>
-                          <button
-                            onClick={() => handleOpenWhatsAppModal(cls)}
-                            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-110 text-white"
-                            style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}
-                          >
-                            <FaWhatsapp />
-                          </button>
+                          {!isTeacher && (
+                            <>
+                              <button
+                                onClick={() => openEditModal(cls)}
+                                title="Edit room and in-charge"
+                                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-110 text-white"
+                                style={{ background: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)' }}
+                              >
+                                <FaEdit />
+                              </button>
+                              <button
+                                onClick={() => { setDeleteId(cls._id); setDeleteModal(true); }}
+                                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-110 text-white"
+                                style={{ background: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)' }}
+                              >
+                                <FaTrash />
+                              </button>
+                              <button
+                                onClick={() => handleOpenWhatsAppModal(cls)}
+                                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-110 text-white"
+                                style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}
+                              >
+                                <FaWhatsapp />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>

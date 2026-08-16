@@ -45,7 +45,9 @@ const Fees = lazy(() => import("./Fees"));
 const CAMPUS_ROLES = ["super_admin", "principal", "admin", "teacher", "user"];
 
 // Everyone in a campus except teachers. Teachers are limited to their assigned
-// classes: the roster, the diary and resources. Attendance, exams, results,
+// classes and subjects: a read-only class view, the diary and resources,
+// entering marks for their own subject, and — if they are a class in-charge —
+// marking that class's register. The student roster, fees, attendance records,
 // staff and user management were not granted to them, and the API refuses those
 // routes — so the pages are gated here too, otherwise typing the URL renders a
 // screen that only produces 403s.
@@ -87,15 +89,24 @@ export default function AdminRoutes() {
           }
         >
           <Route element={<AdminLayout />}>
-            {/* Open to teachers */}
+            {/* Open to teachers. The class page is read-only for them, and the
+                exam pages let them enter marks for their own subject and view
+                results — all scoped by the API to their assigned classes. */}
             <Route path="/" element={<Home />} />
-            <Route path="/students" element={<Students />} />
             <Route path="/classes" element={<Classes />} />
             <Route path="/diary" element={<Diary />} />
             <Route path="/resources" element={<Resources />} />
-            {/* Marking a register is class-scoped, so teachers get it. The page
-                lists only their assigned classes and the API refuses any other.
-                Attendance Records and the QR scanner remain office-only below. */}
+            <Route path="/exams" element={<Exams />} />
+            <Route path="/exams/:examId/marks" element={<MarksEntry />} />
+            <Route path="/exams/:examId/results" element={<ClassResultSheet />} />
+            <Route
+              path="/exams/:examId/result/:studentId"
+              element={<ResultCard />}
+            />
+            {/* Marking a class register. Open to teachers because a class
+                in-charge marks their own class's attendance; the page shows a
+                teacher only their in-charge classes, and the API refuses any
+                other class. Office roles reach it the same way. */}
             <Route path="/manual-attendance" element={<ManualAttendance />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
@@ -110,16 +121,13 @@ export default function AdminRoutes() {
           <Route element={<AdminLayout />}>
             <Route path="/staff/:id" element={<StaffDetails />} />
             <Route path="/staff" element={<Staff />} />
+            <Route path="/students" element={<Students />} />
             <Route path="/users" element={<Users />} />
             {/* Fees are office work: the money is the office's business, and the
                 API refuses teachers outright. */}
             <Route path="/fees" element={<Fees />} />
             <Route path="/student-attendance" element={<AttendancePage />} />
             <Route path="/attendance-record" element={<AttendanceRecord />} />
-            <Route path="/exams" element={<Exams />} />
-            <Route path="/exams/:examId/marks" element={<MarksEntry />} />
-            <Route path="/exams/:examId/results" element={<ClassResultSheet />} />
-            <Route path="/exams/:examId/result/:studentId" element={<ResultCard />} />
             <Route path="/chatbot" element={<AlfalahAI />} />
           </Route>
         </Route>

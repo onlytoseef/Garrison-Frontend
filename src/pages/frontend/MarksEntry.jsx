@@ -4,7 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
 import { fetchExamById } from "../../store/slices/examSlice";
-import { bulkEnterMarks, fetchClassResults } from "../../store/slices/resultSlice";
+import {
+  bulkEnterMarks,
+  enterSubjectMarks,
+  fetchClassResults,
+} from "../../store/slices/resultSlice";
 import { toast } from "react-hot-toast";
 import { FaArrowLeft, FaSave } from "react-icons/fa";
 
@@ -17,10 +21,19 @@ const MarksEntry = () => {
 
   const { selectedExam } = useSelector((state) => state.exams);
   const { classResults, saving } = useSelector((state) => state.results);
+  // A teacher enters marks only for the subject(s) they own in this exam's
+  // class: they see only those columns and each saves independently, without
+  // touching any other subject's marks. Admins keep the full-grid save.
+  const { user } = useSelector((state) => state.auth);
+  const isTeacher = user?.role === "teacher";
 
   const [students, setStudents] = useState([]);
   const [marks, setMarks] = useState({}); // { studentId: { subjectName: value } }
   const [remarks, setRemarks] = useState({}); // { studentId: string }
+  const [ownedSubjects, setOwnedSubjects] = useState([]); // teacher's subject names
+  // A class in-charge sees every subject and the running totals (read-only), but
+  // Remarks stays office-only. A single-subject teacher sees neither.
+  const [isIncharge, setIsIncharge] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const exam = selectedExam;
@@ -51,6 +64,23 @@ const MarksEntry = () => {
     loadStudents();
   }, [exam]);
 
+  // For a teacher, find which of this exam's subjects they own in its class.
+  useEffect(() => {
+    if (!isTeacher || !exam || !exam.classId?._id) return;
+    const loadOwned = async () => {
+      try {
+        const res = await axios.get(API_ENDPOINTS.TEACHER_MY_CLASSES);
+        const mine = (res.data || []).find((c) => c._id === exam.classId._id);
+        setOwnedSubjects(mine?.teacherSubjects || []);
+        setIsIncharge(!!mine?.isIncharge);
+      } catch {
+        setOwnedSubjects([]);
+        setIsIncharge(false);
+      }
+    };
+    loadOwned();
+  }, [isTeacher, exam]);
+
   // Prefill marks from any existing results.
   useEffect(() => {
     if (!classResults || classResults.length === 0) return;
@@ -69,7 +99,15 @@ const MarksEntry = () => {
     setRemarks((prev) => ({ ...prefillRemarks, ...prev }));
   }, [classResults]);
 
-  const subjects = exam?.subjects || [];
+  // The columns shown. A teacher sees only the exam subjects they own; an
+  // in-charge owns them all, so they see every column. Total and % are shown to
+  // an in-charge (read-only) as well as the office; Remarks stays office-only,
+  // since it spans subjects and is not part of the per-subject teacher save.
+  const allSubjects = exam?.subjects || [];
+  const subjects = isTeacher
+    ? allSubjects.filter((s) => ownedSubjects.includes(s.subjectName))
+    : allSubjects;
+  const showTotals = !isTeacher || isIncharge;
 
   const handleMarkChange = (studentId, subject, rawValue) => {
     let value = parseFloat(rawValue);
@@ -100,17 +138,38 @@ const MarksEntry = () => {
   }, [marks, students, subjects]);
 
   const handleSave = async () => {
-    const entries = students.map((st) => ({
-      studentId: st._id,
-      marks: subjects.map((sub) => ({
-        subjectName: sub.subjectName,
-        obtainedMarks: Number((marks[st._id] || {})[sub.subjectName]) || 0,
-      })),
-      remarks: remarks[st._id] || "",
-    }));
-
     try {
-      await dispatch(bulkEnterMarks({ examId, entries })).unwrap();
+      if (isTeacher) {
+        // One targeted save per owned subject — the backend merges each into the
+        // result without disturbing the other subjects' marks.
+        if (subjects.length === 0) {
+          toast.error("You have no subjects to enter for this exam");
+          return;
+        }
+        for (const sub of subjects) {
+          const entries = students.map((st) => ({
+            studentId: st._id,
+            obtainedMarks: Number((marks[st._id] || {})[sub.subjectName]) || 0,
+          }));
+          await dispatch(
+            enterSubjectMarks({
+              examId,
+              subjectName: sub.subjectName,
+              entries,
+            })
+          ).unwrap();
+        }
+      } else {
+        const entries = students.map((st) => ({
+          studentId: st._id,
+          marks: subjects.map((sub) => ({
+            subjectName: sub.subjectName,
+            obtainedMarks: Number((marks[st._id] || {})[sub.subjectName]) || 0,
+          })),
+          remarks: remarks[st._id] || "",
+        }));
+        await dispatch(bulkEnterMarks({ examId, entries })).unwrap();
+      }
       toast.success("Marks saved successfully!");
       dispatch(fetchClassResults(examId));
     } catch (err) {
@@ -177,9 +236,15 @@ const MarksEntry = () => {
                       </span>
                     </th>
                   ))}
-                  <th className="px-3 py-3 text-center text-sm font-semibold whitespace-nowrap">Total</th>
-                  <th className="px-3 py-3 text-center text-sm font-semibold whitespace-nowrap">%</th>
-                  <th className="px-3 py-3 text-left text-sm font-semibold whitespace-nowrap">Remarks</th>
+                  {showTotals && (
+                    <>
+                      <th className="px-3 py-3 text-center text-sm font-semibold whitespace-nowrap">Total</th>
+                      <th className="px-3 py-3 text-center text-sm font-semibold whitespace-nowrap">%</th>
+                    </>
+                  )}
+                  {!isTeacher && (
+                    <th className="px-3 py-3 text-left text-sm font-semibold whitespace-nowrap">Remarks</th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -212,23 +277,29 @@ const MarksEntry = () => {
                           />
                         </td>
                       ))}
-                      <td className="px-3 py-2 text-center text-sm font-semibold text-gray-800">
-                        {t.obtained}/{t.grandTotal}
-                      </td>
-                      <td className="px-3 py-2 text-center text-sm font-semibold" style={{ color: NAVY }}>
-                        {t.pct}%
-                      </td>
-                      <td className="px-3 py-2">
-                        <input
-                          type="text"
-                          value={remarks[st._id] || ""}
-                          onChange={(e) =>
-                            setRemarks((prev) => ({ ...prev, [st._id]: e.target.value }))
-                          }
-                          placeholder="Optional"
-                          className="w-32 px-2 py-1.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-lg outline-none text-sm"
-                        />
-                      </td>
+                      {showTotals && (
+                        <>
+                          <td className="px-3 py-2 text-center text-sm font-semibold text-gray-800">
+                            {t.obtained}/{t.grandTotal}
+                          </td>
+                          <td className="px-3 py-2 text-center text-sm font-semibold" style={{ color: NAVY }}>
+                            {t.pct}%
+                          </td>
+                        </>
+                      )}
+                      {!isTeacher && (
+                        <td className="px-3 py-2">
+                          <input
+                            type="text"
+                            value={remarks[st._id] || ""}
+                            onChange={(e) =>
+                              setRemarks((prev) => ({ ...prev, [st._id]: e.target.value }))
+                            }
+                            placeholder="Optional"
+                            className="w-32 px-2 py-1.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-lg outline-none text-sm"
+                          />
+                        </td>
+                      )}
                     </tr>
                   );
                 })}

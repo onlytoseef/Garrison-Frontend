@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 import { API_ENDPOINTS } from "../../config/api";
 import toast from "react-hot-toast";
 import {
@@ -15,6 +16,12 @@ import {
 import { MdHowToReg } from "react-icons/md";
 
 const ManualAttendance = () => {
+  // A teacher only reaches this page as a class IN-CHARGE, and then only for
+  // the classes they run — so the class grid is sourced from /teacher/my-classes
+  // filtered to those. Office roles see every class as before.
+  const { user } = useSelector((state) => state.auth);
+  const isTeacher = user?.role === "teacher";
+
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
   const [students, setStudents] = useState([]);
@@ -33,8 +40,15 @@ const ManualAttendance = () => {
   const fetchClasses = async () => {
     try {
       setClassLoading(true);
-      const res = await axios.get(API_ENDPOINTS.CLASSES);
-      setClasses(res.data);
+      if (isTeacher) {
+        // Only classes this teacher is in-charge of — my-classes already carries
+        // grade/section/room/studentCount and the isIncharge flag.
+        const res = await axios.get(API_ENDPOINTS.TEACHER_MY_CLASSES);
+        setClasses((res.data || []).filter((c) => c.isIncharge));
+      } else {
+        const res = await axios.get(API_ENDPOINTS.CLASSES);
+        setClasses(res.data);
+      }
     } catch (err) {
       toast.error("Failed to load classes");
     } finally {

@@ -110,20 +110,20 @@ const AttendancePage = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-[#F3F4F6] p-3 sm:p-4 md:p-6"
+      className="min-h-screen bg-white p-3 sm:p-4 md:p-6"
     >
       <div className="text-center mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">Mark Attendance</h1>
         <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">
-          Scan student QR codes to mark attendance.
+          Enter a student ID to mark attendance.
         </p>
       </div>
 
-      <div className="max-w-md mx-auto glass-card p-4 sm:p-6 mb-6 sm:mb-8">
+      <div className="max-w-md mx-auto solid-card p-4 sm:p-6 mb-6 sm:mb-8">
         <input
           ref={inputRef}
           type="text"
-          placeholder="Scan QR Code"
+          placeholder="Enter Student ID"
           value={scannedData}
           onChange={(e) => {
             const value = e.target.value;
@@ -135,7 +135,7 @@ const AttendancePage = () => {
           className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F5DAA]"
         />
         <p className="mt-2 text-xs sm:text-sm text-gray-600">
-          Scanned Student ID: {scannedData}
+          Student ID: {scannedData}
         </p>
       </div>
 
@@ -242,9 +242,9 @@ const AttendancePage = () => {
         </motion.div>
       )}
 
-      <div className="glass-card p-4 sm:p-6">
+      <div className="solid-card p-4 sm:p-6">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">
-          Today's Scanned Students
+          Today's Marked Students
         </h2>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-transparent">

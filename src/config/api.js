@@ -48,6 +48,9 @@ export const API_ENDPOINTS = {
   TEACHER_REVOKE_LOGIN: (staffId) =>
     `${API_BASE_URL}/api/teacher/${staffId}/login`,
   TEACHER_MY_CLASSES: `${API_BASE_URL}/api/teacher/my-classes`,
+  // Teacher dashboard "Needs Attention" feed — per class, what is outstanding
+  // today (attendance / diary / exam marks), scoped to their assignments.
+  TEACHER_ATTENTION: `${API_BASE_URL}/api/teacher/attention`,
 
   // Activity logs
   LOGS: `${API_BASE_URL}/api/logs`,
@@ -58,6 +61,17 @@ export const API_ENDPOINTS = {
   BACKUP: `${API_BASE_URL}/api/backup`,
   BACKUP_SUMMARY: `${API_BASE_URL}/api/backup/summary`,
   BACKUP_RESTORE: `${API_BASE_URL}/api/backup/restore`,
+
+  // Grade-wise master subjects — super admin only. Define per grade, then assign
+  // to class sections across all campuses.
+  SUBJECT_GRADES: `${API_BASE_URL}/api/subjects/grades`,
+  SUBJECT_ASSIGN: `${API_BASE_URL}/api/subjects/assign`,
+  SUBJECTS: `${API_BASE_URL}/api/subjects`,
+  SUBJECT_BY_ID: (id) => `${API_BASE_URL}/api/subjects/${id}`,
+  SUBJECTS_FOR_GRADE: (gradeKey) =>
+    `${API_BASE_URL}/api/subjects/${encodeURIComponent(gradeKey)}`,
+  SUBJECT_SECTIONS: (gradeKey) =>
+    `${API_BASE_URL}/api/subjects/${encodeURIComponent(gradeKey)}/sections`,
 
   // Campuses (super admin)
   CAMPUSES: `${API_BASE_URL}/api/campuses`,  CAMPUS_OVERVIEW: `${API_BASE_URL}/api/campus-overview`,
@@ -79,6 +93,9 @@ export const API_ENDPOINTS = {
   DELETE_STAFF: (id) => `${API_BASE_URL}/api/staff/${id}`,
   UPDATE_STAFF: (id) => `${API_BASE_URL}/api/staff/${id}`,
   TOTAL_STAFF: `${API_BASE_URL}/api/staff/total`,
+  // Bulk staff import: preview validates and reports, commit writes.
+  STAFF_IMPORT_PREVIEW: `${API_BASE_URL}/api/staff/import/preview`,
+  STAFF_IMPORT_COMMIT: `${API_BASE_URL}/api/staff/import/commit`,
   
   // Users
   USERS: `${API_BASE_URL}/api/users`,
@@ -118,9 +135,30 @@ export const API_ENDPOINTS = {
 
   // Results
   BULK_ENTER_MARKS: (examId) => `${API_BASE_URL}/api/result/bulk/${examId}`,
+  // Per-subject marks entry — the teacher path. Saves one subject's column
+  // without disturbing the others; also usable by admins.
+  RESULT_SUBJECT_MARKS: (examId) =>
+    `${API_BASE_URL}/api/result/subject/${examId}`,
   CLASS_RESULTS: (examId) => `${API_BASE_URL}/api/result/class/${examId}`,
   STUDENT_RESULT: (examId, studentId) => `${API_BASE_URL}/api/result/student/${examId}/${studentId}`,
   STUDENT_RESULT_HISTORY: (studentId) => `${API_BASE_URL}/api/result/student-history/${studentId}`,
+
+  // Exam administration (super admin, cross-campus). Creates one exam for a
+  // grade and fans it out across every campus's sections; marks entry and
+  // publishing happen here too. Reuses SUBJECT_GRADES / SUBJECT_SECTIONS /
+  // SUBJECTS_FOR_GRADE for the grade → subjects → sections pickers.
+  EXAM_ADMIN_BATCHES: `${API_BASE_URL}/api/exam-admin/batches`,
+  EXAM_ADMIN_BATCH: `${API_BASE_URL}/api/exam-admin/batch`,
+  EXAM_ADMIN_BATCH_PUBLISH: (batchId) =>
+    `${API_BASE_URL}/api/exam-admin/batch/${batchId}/publish`,
+  EXAM_ADMIN_BATCH_BY_ID: (batchId) =>
+    `${API_BASE_URL}/api/exam-admin/batch/${batchId}`,
+  EXAM_ADMIN_MARKS_SHEET: (examId) =>
+    `${API_BASE_URL}/api/exam-admin/exam/${examId}/marks-sheet`,
+  EXAM_ADMIN_SAVE_MARKS: (examId) =>
+    `${API_BASE_URL}/api/exam-admin/exam/${examId}/marks`,
+  EXAM_ADMIN_EXAM_PUBLISH: (examId) =>
+    `${API_BASE_URL}/api/exam-admin/exam/${examId}/publish`,
 
   // Parent
   PARENT_DASHBOARD: `${API_BASE_URL}/api/parent/dashboard`,
