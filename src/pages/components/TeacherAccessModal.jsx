@@ -163,11 +163,31 @@ const TeacherAccessModal = ({ staff, classes = [], onClose }) => {
   };
 
   const saveAssignments = async () => {
+    // An in-charge may also teach specific subject(s), recorded so the class
+    // schedule can show them against their subject. When the class actually has
+    // subjects defined, at least one must be ticked for an in-charge — otherwise
+    // there is nothing to show on the schedule. (A class with no subjects yet is
+    // exempt: there is nothing to pick.)
+    for (const classId of Object.keys(incharge)) {
+      if (!incharge[classId]) continue;
+      const cls = classes.find((c) => c._id === classId);
+      const classSubjects = cls?.subjects || [];
+      const picked = assignments[classId] || [];
+      if (classSubjects.length > 0 && picked.length === 0) {
+        toast.error(
+          `Pick at least one subject the in-charge teaches in ${
+            cls ? `${cls.grade}-${cls.section}` : "this class"
+          }`
+        );
+        return;
+      }
+    }
     try {
       setSaving(true);
-      // One entry per class that grants something: in-charge classes send
-      // isIncharge (subjects are implied and ignored by the backend); others
-      // send their ticked subjects. Classes with neither are omitted.
+      // One entry per class that grants something: in-charge classes send both
+      // isIncharge and their ticked subjects (in-charge still grants the whole
+      // class; the subjects record what they personally teach). Others send just
+      // their ticked subjects. Classes with neither are omitted.
       const cids = new Set([
         ...Object.keys(assignments),
         ...Object.keys(incharge),
@@ -175,7 +195,11 @@ const TeacherAccessModal = ({ staff, classes = [], onClose }) => {
       const payload = [];
       cids.forEach((classId) => {
         if (incharge[classId]) {
-          payload.push({ classId, isIncharge: true, subjects: [] });
+          payload.push({
+            classId,
+            isIncharge: true,
+            subjects: assignments[classId] || [],
+          });
         } else if ((assignments[classId] || []).length > 0) {
           payload.push({ classId, subjects: assignments[classId] });
         }
@@ -198,22 +222,14 @@ const TeacherAccessModal = ({ staff, classes = [], onClose }) => {
   const toggleExpand = (classId) =>
     setExpanded((prev) => ({ ...prev, [classId]: !prev[classId] }));
 
-  // In-charge is exclusive of the subject checklist: turning it on clears any
-  // ticked subjects for that class (they are implied), turning it off leaves the
-  // class with no subjects for the admin to pick fresh.
+  // In-charge and the subject checklist COEXIST: an in-charge runs the whole
+  // class AND records which subject(s) they personally teach. Toggling in-charge
+  // leaves the ticked subjects untouched.
   const toggleIncharge = (classId) =>
     setIncharge((prev) => {
       const copy = { ...prev };
-      if (copy[classId]) {
-        delete copy[classId];
-      } else {
-        copy[classId] = true;
-        setAssignments((prevA) => {
-          const c = { ...prevA };
-          delete c[classId];
-          return c;
-        });
-      }
+      if (copy[classId]) delete copy[classId];
+      else copy[classId] = true;
       return copy;
     });
 
@@ -470,17 +486,16 @@ const TeacherAccessModal = ({ staff, classes = [], onClose }) => {
                             <span className="text-sm font-medium text-gray-800">
                               Class {cls.grade} - {cls.section}
                             </span>
-                            {isIncharge ? (
+                            {isIncharge && (
                               <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
                                 In-charge
                               </span>
-                            ) : (
-                              picked.length > 0 && (
-                                <span className="text-xs font-semibold text-[#2F5DAA] bg-blue-100 px-2 py-0.5 rounded-full">
-                                  {picked.length} subject
-                                  {picked.length === 1 ? "" : "s"}
-                                </span>
-                              )
+                            )}
+                            {picked.length > 0 && (
+                              <span className="text-xs font-semibold text-[#2F5DAA] bg-blue-100 px-2 py-0.5 rounded-full">
+                                {picked.length} subject
+                                {picked.length === 1 ? "" : "s"}
+                              </span>
                             )}
                             <span className="text-xs text-gray-400 ml-auto">
                               {cls.studentCount ?? 0} students
@@ -509,21 +524,26 @@ const TeacherAccessModal = ({ staff, classes = [], onClose }) => {
                                 </span>
                               </label>
 
-                              {isIncharge ? (
+                              {isIncharge && (
                                 <p className="text-xs text-emerald-600 pl-5 pt-1">
                                   Full access to attendance, diary and marks for
                                   all subjects of this class.
                                 </p>
-                              ) : noSubjects ? (
-                                <p className="text-xs text-amber-600 pl-5">
-                                  No subjects added to this class yet. Add them on
-                                  the class's diary page first, or mark them
-                                  in-charge above.
-                                </p>
+                              )}
+                              {noSubjects ? (
+                                !isIncharge && (
+                                  <p className="text-xs text-amber-600 pl-5">
+                                    No subjects added to this class yet. Add them
+                                    on the class's diary page first, or mark them
+                                    in-charge above.
+                                  </p>
+                                )
                               ) : (
                                 <>
                                   <div className="pl-5 pt-1 pb-0.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-                                    Or pick individual subjects
+                                    {isIncharge
+                                      ? "Subjects this in-charge teaches (required)"
+                                      : "Or pick individual subjects"}
                                   </div>
                                   <label className="flex items-center gap-2 pl-5 py-1 cursor-pointer">
                                     <input

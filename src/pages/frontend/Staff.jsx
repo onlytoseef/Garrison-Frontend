@@ -320,9 +320,10 @@ const Staff = () => {
             label="Role"
             rules={[{ required: true, message: "Please select the role" }]}
           >
+            {/* Principal and Admin are not added here: a principal is created
+                with its campus, and a campus admin via the super admin's
+                "Campus Admins" screen. This form is for on-campus staff. */}
             <Select placeholder="Select a role">
-              <Option value="admin">Admin</Option>
-              <Option value="principal">Principal</Option>
               <Option value="teacher">Teacher</Option>
               <Option value="security guard">Security Guard</Option>
               <Option value="peon">Peon</Option>

@@ -1058,9 +1058,21 @@ const Classess = () => {
                                 <span className="truncate">{s.subjectName}</span>
                               </span>
                               {assigned ? (
-                                <span className="flex items-center gap-1.5 text-sm text-gray-700 text-right">
+                                <span className="flex items-center gap-2 flex-wrap justify-end text-sm text-gray-700 text-right">
                                   <FaChalkboardTeacher className="text-green-600 shrink-0" />
-                                  {s.teachers.join(", ")}
+                                  {s.teachers.map((t, i) => (
+                                    <span
+                                      key={`${t.name}-${i}`}
+                                      className="flex items-center gap-1.5"
+                                    >
+                                      {t.name}
+                                      {t.isIncharge && (
+                                        <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">
+                                          In-charge
+                                        </span>
+                                      )}
+                                    </span>
+                                  ))}
                                 </span>
                               ) : (
                                 <span className="flex items-center gap-1.5 text-xs font-medium text-red-500 shrink-0">
