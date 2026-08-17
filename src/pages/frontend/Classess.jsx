@@ -8,7 +8,7 @@ import {
   updateClass,
   fetchClassById,
 } from "../../store/slices/classSlice";
-import { FaPlus, FaTrash, FaEdit, FaEye, FaPrint, FaBook, FaDoorOpen, FaUserTie, FaGraduationCap, FaUsers, FaUserGraduate, FaArrowRight, FaCheckCircle, FaTimesCircle, FaWhatsapp } from "react-icons/fa";
+import { FaPlus, FaTrash, FaEdit, FaEye, FaPrint, FaBook, FaDoorOpen, FaUserTie, FaGraduationCap, FaUsers, FaUserGraduate, FaArrowRight, FaCheckCircle, FaTimesCircle, FaWhatsapp, FaChalkboardTeacher } from "react-icons/fa";
 import { MdDelete, MdClass, MdSchool } from "react-icons/md";
 import ClassPrint from "../components/ClassPrint";
 import axios from "axios";
@@ -44,6 +44,10 @@ const Classess = () => {
   const [whatsappMessage, setWhatsappMessage] = useState("");
   const [whatsappTarget, setWhatsappTarget] = useState(null);
   const [whatsappSending, setWhatsappSending] = useState(false);
+  // Teachers-schedule modal: which class, its data, and the in-flight flag.
+  const [scheduleModal, setScheduleModal] = useState(null);
+  const [scheduleData, setScheduleData] = useState(null);
+  const [scheduleLoading, setScheduleLoading] = useState(false);
   const [formData, setFormData] = useState({
     grade: "",
     section: "",
@@ -140,6 +144,24 @@ const Classess = () => {
     dispatch(fetchClassById(id)).then(() => {
       setClassDetailsModal(true);
     });
+  };
+
+  // Open the teachers-schedule modal for a class and load its subject→teacher
+  // mapping. The modal opens immediately with a spinner; a load failure closes
+  // it with a toast rather than leaving an empty shell.
+  const openScheduleModal = async (cls) => {
+    setScheduleModal(cls);
+    setScheduleData(null);
+    setScheduleLoading(true);
+    try {
+      const res = await axios.get(API_ENDPOINTS.CLASS_SCHEDULE(cls._id));
+      setScheduleData(res.data);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to load schedule");
+      setScheduleModal(null);
+    } finally {
+      setScheduleLoading(false);
+    }
   };
 
   const handleOpenWhatsAppModal = (cls) => {
@@ -481,6 +503,16 @@ const Classess = () => {
                           <FaUserTie className="text-blue-600" />
                           <span className="text-sm"><strong>In-charge:</strong> {cls.inCharge}</span>
                         </div>
+
+                        {/* Teachers schedule — who teaches which subject in this
+                            class. Open to every role that can see the card. */}
+                        <button
+                          onClick={() => openScheduleModal(cls)}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-medium text-sm border-2 border-blue-100 text-blue-700 hover:bg-blue-50 transition-all duration-300"
+                        >
+                          <FaChalkboardTeacher />
+                          Teachers Schedule
+                        </button>
 
                         <div className="flex gap-2 pt-3 border-t border-gray-100">
                           <button
@@ -956,11 +988,115 @@ const Classess = () => {
           </div>
         )}
 
+        {/* Teachers Schedule Modal */}
+        {scheduleModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden animate-fadeIn">
+              <div
+                className="p-6 rounded-t-2xl flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)' }}
+              >
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <FaChalkboardTeacher className="text-2xl" />
+                  Teachers Schedule
+                </h2>
+                <p className="text-white/80 text-sm mt-1">
+                  Class {scheduleModal.grade} - {scheduleModal.section}
+                </p>
+              </div>
+
+              <div className="p-6 flex-1 overflow-y-auto">
+                {scheduleLoading ? (
+                  <div className="flex justify-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600"></div>
+                  </div>
+                ) : scheduleData ? (
+                  <>
+                    {/* In-charge — the whole-class owner, shown on its own. */}
+                    <div className="mb-5 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-100">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-blue-500 p-2.5 rounded-lg shrink-0">
+                          <FaUserTie className="text-white text-lg" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Class In-charge
+                          </p>
+                          {scheduleData.incharges && scheduleData.incharges.length > 0 ? (
+                            <p className="text-base font-bold text-gray-800">
+                              {scheduleData.incharges.join(", ")}
+                            </p>
+                          ) : (
+                            <p className="text-sm font-medium text-amber-600">
+                              No in-charge assigned
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Subject -> teacher list. Every subject the class offers is
+                        listed; an empty one reads "Teacher not assigned". */}
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                      Subjects
+                    </p>
+                    {scheduleData.subjects && scheduleData.subjects.length > 0 ? (
+                      <div className="space-y-2">
+                        {scheduleData.subjects.map((s) => {
+                          const assigned = s.teachers && s.teachers.length > 0;
+                          return (
+                            <div
+                              key={s.subjectName}
+                              className="flex items-center justify-between gap-3 p-3 rounded-xl border border-gray-100 bg-white"
+                            >
+                              <span className="flex items-center gap-2 text-sm font-semibold text-gray-800 min-w-0">
+                                <FaBook className="text-blue-600 shrink-0" />
+                                <span className="truncate">{s.subjectName}</span>
+                              </span>
+                              {assigned ? (
+                                <span className="flex items-center gap-1.5 text-sm text-gray-700 text-right">
+                                  <FaChalkboardTeacher className="text-green-600 shrink-0" />
+                                  {s.teachers.join(", ")}
+                                </span>
+                              ) : (
+                                <span className="flex items-center gap-1.5 text-xs font-medium text-red-500 shrink-0">
+                                  <FaTimesCircle />
+                                  Teacher not assigned
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <FaBook className="text-4xl mx-auto mb-2 text-gray-300" />
+                        <p className="text-sm">No subjects set for this class yet.</p>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-gray-700 text-center py-8">No schedule available.</p>
+                )}
+              </div>
+
+              <div className="p-4 border-t border-gray-100 flex justify-end flex-shrink-0">
+                <button
+                  onClick={() => setScheduleModal(null)}
+                  className="px-6 py-2.5 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Delete Confirmation Modal */}
         {deleteModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
             <div className="glass-card w-full max-w-md animate-fadeIn">
-              <div 
+              <div
                 className="p-6 rounded-t-2xl"
                 style={{
                   background: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)'

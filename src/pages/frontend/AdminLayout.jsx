@@ -109,10 +109,41 @@ const menuItems = [
 const TEACHER_PATHS = ["/", "/classes", "/exams", "/diary", "/resources"];
 const TEACHER_INCHARGE_PATHS = [...TEACHER_PATHS, "/manual-attendance"];
 
+/**
+ * What an academic head may reach. Like the super admin they work across
+ * campuses, but their data is scoped to a grade band and excludes money and
+ * audit: no Fees, no Attendance Records / QR feed, no Activity Logs, no user
+ * management. Staff is present but read-only (the API refuses their writes), and
+ * Manual Attendance lets them mark their band's registers.
+ */
+const ACADEMIC_HEAD_PATHS = [
+  "/",
+  "/staff",
+  "/students",
+  "/classes",
+  "/manual-attendance",
+  "/exams",
+  "/diary",
+  "/resources",
+];
+
+// Human labels for the band shown in the campus banner.
+const BAND_LABEL = {
+  primary: "Primary (Play Group–5)",
+  middle: "Middle (6–8)",
+  matric: "Matric (9–10)",
+  intermediate: "Intermediate (11–12)",
+};
+
 const menuItemsForRole = (role, isInchargeAnywhere) => {
-  if (role !== "teacher") return menuItems;
-  const paths = isInchargeAnywhere ? TEACHER_INCHARGE_PATHS : TEACHER_PATHS;
-  return menuItems.filter((item) => paths.includes(item.path));
+  if (role === "teacher") {
+    const paths = isInchargeAnywhere ? TEACHER_INCHARGE_PATHS : TEACHER_PATHS;
+    return menuItems.filter((item) => paths.includes(item.path));
+  }
+  if (role === "academic_head") {
+    return menuItems.filter((item) => ACADEMIC_HEAD_PATHS.includes(item.path));
+  }
+  return menuItems;
 };
 
 const AdminLayout = () => {
@@ -125,9 +156,12 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
-  // Only a super admin browses a campus they don't own, so only they need the
-  // "you are inside campus X" banner and a way back to the picker.
+  // A super admin, and now an academic head, browse a campus they don't own, so
+  // both get the "you are inside campus X" banner and a way back to the picker.
+  // The academic head's banner also names their grade band.
   const isSuperAdmin = user?.role === "super_admin";
+  const isAcademicHead = user?.role === "academic_head";
+  const canSwitchCampus = isSuperAdmin || isAcademicHead;
   const [campusName, setCampusName] = useState("");
 
   // A teacher who is in-charge of any class also gets the Manual Attendance nav
@@ -157,7 +191,7 @@ const AdminLayout = () => {
   }, [user?.role]);
 
   useEffect(() => {
-    if (!isSuperAdmin) return;
+    if (!canSwitchCampus) return;
     const campusId = getActiveCampusId();
     if (!campusId) return;
 
@@ -170,7 +204,7 @@ const AdminLayout = () => {
       .catch(() => {
         // Banner is informational; a failure here must not block the layout.
       });
-  }, [isSuperAdmin]);
+  }, [canSwitchCampus]);
 
   const exitCampus = () => {
     setActiveCampusId(null);
@@ -443,9 +477,11 @@ const AdminLayout = () => {
           </Dropdown>
         </Header>
         <Content className="admin-content">
-          {/* Super admins are browsing someone else's campus — make that
-              obvious, and give them one click back to the picker. */}
-          {isSuperAdmin && (
+          {/* Super admins and academic heads are browsing a campus they don't
+              own — make that obvious, and give them one click back to the
+              picker. The academic head's banner also states their grade band, so
+              it is clear the data on screen is limited to it. */}
+          {canSwitchCampus && (
             <div
               style={{
                 display: "flex",
@@ -463,6 +499,14 @@ const AdminLayout = () => {
               <span style={{ color: "#92400E", fontSize: 14 }}>
                 Viewing campus:{" "}
                 <strong>{campusName || "Loading..."}</strong>
+                {isAcademicHead && user?.academicBand && (
+                  <>
+                    {" · "}
+                    <strong>
+                      {BAND_LABEL[user.academicBand] || user.academicBand}
+                    </strong>
+                  </>
+                )}
               </span>
               <Button size="small" onClick={exitCampus}>
                 Switch campus

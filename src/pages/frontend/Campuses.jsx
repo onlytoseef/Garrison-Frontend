@@ -25,6 +25,7 @@ import {
   FaUserGraduate,
   FaDatabase,
   FaBook,
+  FaUserTie,
 } from "react-icons/fa";
 import { API_BASE_URL, API_ENDPOINTS } from "../../config/api";
 import { setActiveCampusId } from "../../config/axiosSetup";
@@ -33,6 +34,7 @@ import LogsModal from "../components/LogsModal";
 import BackupModal from "../components/BackupModal";
 import SubjectsModal from "../components/SubjectsModal";
 import ExamsModal from "../components/ExamsModal";
+import AcademicHeadsModal from "../components/AcademicHeadsModal";
 import { logoutUser } from "../../store/slices/authSlice";
 import logo from "../../assets/images/logo.webp";
 import Loader from "../components/Loader";
@@ -385,6 +387,7 @@ const Campuses = () => {
   const [showBackupModal, setShowBackupModal] = useState(false);
   const [showSubjectsModal, setShowSubjectsModal] = useState(false);
   const [showExamsModal, setShowExamsModal] = useState(false);
+  const [showAcademicHeadsModal, setShowAcademicHeadsModal] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -590,6 +593,14 @@ const Campuses = () => {
               >
                 <FaUserGraduate className="text-xs" />
                 <span className="hidden sm:inline">Exams</span>
+              </button>
+
+              <button
+                onClick={() => setShowAcademicHeadsModal(true)}
+                className="flex items-center gap-1.5 text-[13px] text-white/85 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200"
+              >
+                <FaUserTie className="text-xs" />
+                <span className="hidden sm:inline">Academic Heads</span>
               </button>
 
               <button
@@ -1402,6 +1413,14 @@ const Campuses = () => {
       <AnimatePresence>
         {showExamsModal && (
           <ExamsModal onClose={() => setShowExamsModal(false)} />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showAcademicHeadsModal && (
+          <AcademicHeadsModal
+            onClose={() => setShowAcademicHeadsModal(false)}
+          />
         )}
       </AnimatePresence>
 

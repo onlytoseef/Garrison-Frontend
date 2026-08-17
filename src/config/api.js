@@ -76,6 +76,13 @@ export const API_ENDPOINTS = {
   // Campuses (super admin)
   CAMPUSES: `${API_BASE_URL}/api/campuses`,  CAMPUS_OVERVIEW: `${API_BASE_URL}/api/campus-overview`,
   TOTAL_STUDENTS: `${API_BASE_URL}/api/total-students`,
+
+  // Academic heads — cross-campus, grade-band-scoped role. Managed by the super
+  // admin (create / list / change band / reset password / revoke).
+  ACADEMIC_HEADS: `${API_BASE_URL}/api/academic-heads`,
+  ACADEMIC_HEAD_BY_ID: (id) => `${API_BASE_URL}/api/academic-heads/${id}`,
+  ACADEMIC_HEAD_RESET_PASSWORD: (id) =>
+    `${API_BASE_URL}/api/academic-heads/${id}/reset-password`,
   
   // Classes
   CLASSES: `${API_BASE_URL}/api/classes`,
@@ -117,6 +124,8 @@ export const API_ENDPOINTS = {
 
   // Diary
   CLASS_SUBJECTS: (id) => `${API_BASE_URL}/api/class/${id}/subjects`,
+  // Teaching schedule for one class: subjects -> assigned teachers + in-charge.
+  CLASS_SCHEDULE: (id) => `${API_BASE_URL}/api/class/${id}/schedule`,
   DIARY: `${API_BASE_URL}/api/diary`,
   DIARY_BULK: `${API_BASE_URL}/api/diary/bulk`,
   DIARY_BY_ID: (id) => `${API_BASE_URL}/api/diary/${id}`,

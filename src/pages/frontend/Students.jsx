@@ -108,6 +108,14 @@ const Students = () => {
   // actions and strips parent credentials from the payload, so the controls are
   // hidden rather than left to fail on click.
   const isTeacher = user?.role === "teacher";
+  // Bulk import is restricted to the office roles on the backend (an academic
+  // head may add students one by one within their band, but not import). Match
+  // that allowlist so the button is not offered when it would only 403.
+  const canImport = ["super_admin", "principal", "admin"].includes(user?.role);
+  // Parent portal credentials are stripped from the payload for an academic head
+  // (like a teacher), and resetting them is an office action, so the credential
+  // controls are hidden for both.
+  const canSeeParentCreds = !isTeacher && user?.role !== "academic_head";
 
   const [statusTarget, setStatusTarget] = useState(null); // student pending confirm
   const [statusSaving, setStatusSaving] = useState(false);
@@ -641,14 +649,16 @@ const Students = () => {
                   </button>
                   {!isTeacher && (
                     <>
-                      <button
-                        onClick={() => setIsImportOpen(true)}
-                        className="flex items-center justify-center bg-white text-gray-700 border border-gray-300 px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-300"
-                        title="Import students from an Excel or CSV file"
-                      >
-                        <FaFileExcel className="mr-2 text-green-600" />
-                        Import
-                      </button>
+                      {canImport && (
+                        <button
+                          onClick={() => setIsImportOpen(true)}
+                          className="flex items-center justify-center bg-white text-gray-700 border border-gray-300 px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-300"
+                          title="Import students from an Excel or CSV file"
+                        >
+                          <FaFileExcel className="mr-2 text-green-600" />
+                          Import
+                        </button>
+                      )}
                       <button
                         onClick={openAddModal}
                         className="flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border-0"
@@ -764,7 +774,7 @@ const Students = () => {
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-700">
                         <div className="flex justify-center">
-                          {isTeacher ? (
+                          {!canSeeParentCreds ? (
                             <span className="text-xs text-gray-400">—</span>
                           ) : (
                             <button

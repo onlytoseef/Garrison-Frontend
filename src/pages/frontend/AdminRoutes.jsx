@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
+import { useSelector } from "react-redux";
 import AdminLayout from "./AdminLayout";
 import ProtectedRoute from "../../utils/ProtectedRoute";
 import RouteLoader from "../components/RouteLoader";
@@ -9,6 +10,8 @@ import RouteLoader from "../components/RouteLoader";
 // spinner, which then handed over to the page's own crest loader: two loaders
 // for one arrival. Importing it directly leaves exactly one.
 import Campuses from "./Campuses";
+// The academic head's landing route, eager for the same reason as Campuses.
+import AcademicHeadCampuses from "./AcademicHeadCampuses";
 
 /**
  * Every page here is code-split.
@@ -53,6 +56,22 @@ const CAMPUS_ROLES = ["super_admin", "principal", "admin", "teacher", "user"];
 // screen that only produces 403s.
 const OFFICE_ROLES = CAMPUS_ROLES.filter((role) => role !== "teacher");
 
+// An academic head works inside a campus like the office, but scoped to a grade
+// band and without money/audit. They reach the same teacher-open pages plus the
+// student roster and a read-only staff directory — but NOT fees, users,
+// attendance records or the QR feed. So they join the class-scoped group and a
+// dedicated students/staff group, and are absent from the office-only group.
+const CAMPUS_ROLES_WITH_HEAD = [...CAMPUS_ROLES, "academic_head"];
+const STUDENT_STAFF_ROLES = [...OFFICE_ROLES, "academic_head"];
+
+// The campus picker differs by role: the super admin gets the full network
+// dashboard, the academic head a plain campus chooser (no network figures,
+// which the overview API refuses them anyway).
+const CampusPicker = () => {
+  const role = useSelector((state) => state.auth.user?.role);
+  return role === "academic_head" ? <AcademicHeadCampuses /> : <Campuses />;
+};
+
 export default function AdminRoutes() {
   return (
     // One Suspense around the whole tree rather than one per route: the
@@ -60,15 +79,21 @@ export default function AdminRoutes() {
     // stays put and only the content area shows the loader.
     <Suspense fallback={<RouteLoader />}>
       <Routes>
-        {/* Campus picker — super admin only, and deliberately outside
-            AdminLayout: there is no campus context to render a sidebar for. */}
-        <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
-          <Route path="/campuses" element={<Campuses />} />
+        {/* Campus picker — the two campus-less roles land here and choose a
+            campus before entering AdminLayout. Deliberately outside the layout:
+            there is no campus context to render a sidebar for. The element
+            branches on role. */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["super_admin", "academic_head"]} />
+          }
+        >
+          <Route path="/campuses" element={<CampusPicker />} />
         </Route>
 
         {/* Audit trail. Outside the campus guard because a super admin reads it
             across every campus without opening one; a principal is pinned to
-            their own campus by the API. Teachers are excluded.
+            their own campus by the API. Teachers and academic heads are excluded.
             (Own-password changes are NOT here: the super admin gets a modal on
             the campus picker, so they never leave that screen.) */}
         <Route
@@ -85,13 +110,17 @@ export default function AdminRoutes() {
 
         <Route
           element={
-            <ProtectedRoute allowedRoles={CAMPUS_ROLES} requireCampus />
+            <ProtectedRoute
+              allowedRoles={CAMPUS_ROLES_WITH_HEAD}
+              requireCampus
+            />
           }
         >
           <Route element={<AdminLayout />}>
-            {/* Open to teachers. The class page is read-only for them, and the
-                exam pages let them enter marks for their own subject and view
-                results — all scoped by the API to their assigned classes. */}
+            {/* Open to teachers and academic heads. The class page is read-only
+                for teachers; the exam pages let them enter marks and view
+                results — all scoped by the API (teachers to their assigned
+                classes, academic heads to their band). */}
             <Route path="/" element={<Home />} />
             <Route path="/classes" element={<Classes />} />
             <Route path="/diary" element={<Diary />} />
@@ -103,16 +132,30 @@ export default function AdminRoutes() {
               path="/exams/:examId/result/:studentId"
               element={<ResultCard />}
             />
-            {/* Marking a class register. Open to teachers because a class
-                in-charge marks their own class's attendance; the page shows a
-                teacher only their in-charge classes, and the API refuses any
-                other class. Office roles reach it the same way. */}
+            {/* Marking a class register. Open to teachers (a class in-charge
+                marks their own class) and academic heads (their band). The API
+                refuses any class outside the caller's scope. */}
             <Route path="/manual-attendance" element={<ManualAttendance />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
         </Route>
 
-        {/* Office-only pages: same layout, stricter guard. */}
+        {/* Student roster + read-only staff directory: the office, plus academic
+            heads (band-scoped by the API). */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={STUDENT_STAFF_ROLES} requireCampus />
+          }
+        >
+          <Route element={<AdminLayout />}>
+            <Route path="/staff" element={<Staff />} />
+            <Route path="/students" element={<Students />} />
+          </Route>
+        </Route>
+
+        {/* Office-only pages: same layout, stricter guard — no academic heads.
+            Fees and user management are off-limits to them, and staff details,
+            attendance records and the QR feed have no band-scoped view. */}
         <Route
           element={
             <ProtectedRoute allowedRoles={OFFICE_ROLES} requireCampus />
@@ -120,8 +163,6 @@ export default function AdminRoutes() {
         >
           <Route element={<AdminLayout />}>
             <Route path="/staff/:id" element={<StaffDetails />} />
-            <Route path="/staff" element={<Staff />} />
-            <Route path="/students" element={<Students />} />
             <Route path="/users" element={<Users />} />
             {/* Fees are office work: the money is the office's business, and the
                 API refuses teachers outright. */}

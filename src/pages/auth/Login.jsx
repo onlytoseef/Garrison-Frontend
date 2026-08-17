@@ -25,7 +25,12 @@ const Login = () => {
 
         if (result.user.role === "parent") {
           navigate("/parent");
-        } else if (result.user.role === "super_admin") {
+        } else if (
+          result.user.role === "super_admin" ||
+          result.user.role === "academic_head"
+        ) {
+          // Both are campus-less roles that pick a campus first, so both land on
+          // the campus picker (the picker itself branches on role).
           navigate("/campuses");
         } else {
           navigate("/");
