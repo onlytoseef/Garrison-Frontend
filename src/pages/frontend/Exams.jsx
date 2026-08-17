@@ -21,6 +21,7 @@ import {
 } from "react-icons/fa";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
+import { isReadOnlyRole } from "../../utils/permissions";
 
 const NAVY = "#2F5DAA";
 const currentYear = new Date().getFullYear();
@@ -41,6 +42,9 @@ const Exams = () => {
   // those controls are hidden (and the API refuses them anyway).
   const { user } = useSelector((state) => state.auth);
   const isTeacher = user?.role === "teacher";
+  // A principal is read-only: they may open exams, enter-marks views and results
+  // (reads), but Create / Publish / Delete are hidden. Teachers already are.
+  const readOnly = isTeacher || isReadOnlyRole(user?.role);
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -202,7 +206,7 @@ const Exams = () => {
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-3">
             <FaBook style={{ color: NAVY }} /> Examinations
           </h1>
-          {!isTeacher && (
+          {!readOnly && (
             <button
               onClick={openAdd}
               className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all"
@@ -319,7 +323,7 @@ const Exams = () => {
                   >
                     <FaListOl /> Results
                   </button>
-                  {!isTeacher && (
+                  {!readOnly && (
                     <>
                       <button
                         onClick={() => handlePublish(exam)}

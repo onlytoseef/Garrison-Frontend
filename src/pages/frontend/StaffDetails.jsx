@@ -7,6 +7,7 @@ import { Spin, Input, Modal } from "antd";
 import toast from "react-hot-toast";
 import moment from "moment";
 import SalarySlip from "../components/SalarySlip";
+import { isReadOnlyRole } from "../../utils/permissions";
 import {
   FaMoneyBill,
   FaPrint,
@@ -20,6 +21,8 @@ const StaffDetails = () => {
   const { staffDetails, status, salaryPaymentStatus } = useSelector(
     (state) => state.staff
   );
+  const { user } = useSelector((state) => state.auth);
+  const isReadOnly = isReadOnlyRole(user?.role);
   const [loading, setLoading] = useState(true);
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState("");
@@ -242,17 +245,19 @@ const StaffDetails = () => {
                 </div>
                 <div className="flex justify-center">
                   {!paid ? (
-                    <button
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600 transition-all"
-                      onClick={() => {
-                        setSelectedMonth(month);
-                        setAmount(staffDetails.salary);
-                        setIsPaymentModalVisible(true);
-                      }}
-                    >
-                      <FaMoneyBill />
-                      <span>Pay Salary</span>
-                    </button>
+                    !isReadOnly && (
+                      <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600 transition-all"
+                        onClick={() => {
+                          setSelectedMonth(month);
+                          setAmount(staffDetails.salary);
+                          setIsPaymentModalVisible(true);
+                        }}
+                      >
+                        <FaMoneyBill />
+                        <span>Pay Salary</span>
+                      </button>
+                    )
                   ) : (
                     <button
                       className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-green-600 transition-all"

@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import moment from "moment-timezone";
 import { API_ENDPOINTS, API_BASE_URL } from "../../config/api";
+import { isReadOnlyRole } from "../../utils/permissions";
 
 const AttendancePage = () => {
+  const { user } = useSelector((state) => state.auth);
+  const isReadOnly = isReadOnlyRole(user?.role);
   const [scannedData, setScannedData] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAlreadyMarkedModalVisible, setIsAlreadyMarkedModalVisible] =
@@ -125,6 +129,7 @@ const AttendancePage = () => {
           type="text"
           placeholder="Enter Student ID"
           value={scannedData}
+          disabled={isReadOnly}
           onChange={(e) => {
             const value = e.target.value;
             setScannedData(value);
@@ -132,11 +137,17 @@ const AttendancePage = () => {
               handleScan(value.trim());
             }
           }}
-          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F5DAA]"
+          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F5DAA] disabled:bg-gray-100 disabled:cursor-not-allowed"
         />
-        <p className="mt-2 text-xs sm:text-sm text-gray-600">
-          Student ID: {scannedData}
-        </p>
+        {isReadOnly ? (
+          <p className="mt-2 text-xs sm:text-sm text-gray-500">
+            Read-only access — attendance marking is disabled.
+          </p>
+        ) : (
+          <p className="mt-2 text-xs sm:text-sm text-gray-600">
+            Student ID: {scannedData}
+          </p>
+        )}
       </div>
 
       {isModalVisible && (

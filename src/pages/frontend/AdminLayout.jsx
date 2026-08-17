@@ -5,6 +5,7 @@ import {
   HomeOutlined,
   TeamOutlined,
   UserOutlined,
+  EyeOutlined,
   ReadOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -27,6 +28,7 @@ import logo from "../../assets/images/logo.webp";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../store/slices/authSlice";
 import { API_BASE_URL, API_ENDPOINTS } from "../../config/api";
+import { isReadOnlyRole } from "../../utils/permissions";
 import { getActiveCampusId, setActiveCampusId } from "../../config/axiosSetup";
 import "./AdminLayout.css";
 
@@ -162,6 +164,9 @@ const AdminLayout = () => {
   const isSuperAdmin = user?.role === "super_admin";
   const isAcademicHead = user?.role === "academic_head";
   const canSwitchCampus = isSuperAdmin || isAcademicHead;
+  // A principal has read-only access — surface it in the header so the mode is
+  // obvious on every page (the write controls themselves are hidden per page).
+  const isReadOnly = isReadOnlyRole(user?.role);
   const [campusName, setCampusName] = useState("");
 
   // A teacher who is assigned any class gets the Manual Attendance nav item —
@@ -453,28 +458,40 @@ const AdminLayout = () => {
               className="lg:hidden h-8 w-auto"
             />
           </div>
-          <Dropdown
-            overlay={
-              <Menu>
-                <Menu.Item key="profile" onClick={() => navigate("/profile")}>
-                  Profile
-                </Menu.Item>
-                <Menu.Item key="logout" onClick={handleLogout}>
-                  Logout
-                </Menu.Item>
-              </Menu>
-            }
-            trigger={["click"]}
-          >
-            <Avatar
-              icon={<UserOutlined />}
-              style={{
-                cursor: "pointer",
-                backgroundColor: "var(--color-primary, #2F5DAA)",
-                color: "#fff",
-              }}
-            />
-          </Dropdown>
+          <div className="flex items-center gap-3">
+            {isReadOnly && (
+              <span
+                className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full"
+                style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}
+                title="Your account has read-only access"
+              >
+                <EyeOutlined />
+                Read-only
+              </span>
+            )}
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item key="profile" onClick={() => navigate("/profile")}>
+                    Profile
+                  </Menu.Item>
+                  <Menu.Item key="logout" onClick={handleLogout}>
+                    Logout
+                  </Menu.Item>
+                </Menu>
+              }
+              trigger={["click"]}
+            >
+              <Avatar
+                icon={<UserOutlined />}
+                style={{
+                  cursor: "pointer",
+                  backgroundColor: "var(--color-primary, #2F5DAA)",
+                  color: "#fff",
+                }}
+              />
+            </Dropdown>
+          </div>
         </Header>
         <Content className="admin-content">
           {/* Super admins and academic heads are browsing a campus they don't

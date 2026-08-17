@@ -18,6 +18,7 @@ import { toast } from "react-hot-toast";
 import StudentCard from "../components/StudentCard";
 import ImportStudentsModal from "../components/ImportStudentsModal";
 import ExportStudentsModal from "../components/ExportStudentsModal";
+import { isReadOnlyRole } from "../../utils/permissions";
 
 
 const SkeletonCard = () => (
@@ -99,22 +100,33 @@ const Students = () => {
   );
   const { classes } = useSelector((state) => state.classes);
 
-  // Only these two roles may block or unblock a student. The backend enforces
-  // this as well (requireRole on the route) — this just hides a control that
-  // would always 403.
+  // The campus-level administrators may block or unblock a student. 'admin' (a
+  // campus admin) has the same rights as 'principal' here. The backend enforces
+  // this too (requireRole on the route) — this just hides a control that would
+  // otherwise 403.
   const { user } = useSelector((state) => state.auth);
-  const canChangeStatus = ["super_admin", "principal"].includes(user?.role);
+  // A principal is read-only: they read the roster (with parent credentials) but
+  // cannot add, edit, delete, block, reset or import. The backend enforces it;
+  // this hides the controls. 'admin' (campus admin) keeps every write.
+  const isReadOnly = isReadOnlyRole(user?.role);
+  const canChangeStatus =
+    !isReadOnly && ["super_admin", "principal", "admin"].includes(user?.role);
   // Teachers get a read-only roster of their own classes: the API refuses these
   // actions and strips parent credentials from the payload, so the controls are
   // hidden rather than left to fail on click.
   const isTeacher = user?.role === "teacher";
+  // A principal, a teacher and an academic head all get a read-only roster. Add /
+  // Edit / Delete hang off this.
+  const canWrite = !isTeacher && !isReadOnly;
   // Bulk import is restricted to the office roles on the backend (an academic
   // head may add students one by one within their band, but not import). Match
   // that allowlist so the button is not offered when it would only 403.
-  const canImport = ["super_admin", "principal", "admin"].includes(user?.role);
+  const canImport =
+    !isReadOnly && ["super_admin", "principal", "admin"].includes(user?.role);
   // Parent portal credentials are stripped from the payload for an academic head
   // (like a teacher), and resetting them is an office action, so the credential
-  // controls are hidden for both.
+  // controls are hidden for both. A principal may still SEE them (read), but not
+  // reset (write) — the reset button carries its own !isReadOnly check.
   const canSeeParentCreds = !isTeacher && user?.role !== "academic_head";
 
   const [statusTarget, setStatusTarget] = useState(null); // student pending confirm
@@ -647,7 +659,7 @@ const Students = () => {
                     <FaDownload className="mr-2 text-blue-600" />
                     Export
                   </button>
-                  {!isTeacher && (
+                  {canWrite && (
                     <>
                       {canImport && (
                         <button
@@ -855,7 +867,7 @@ const Students = () => {
                               )}
                             </button>
                           )}
-                          {!isTeacher && (
+                          {canWrite && (
                             <>
                               <button
                                 className="p-2.5 rounded-lg transition-all duration-300 hover:scale-110 shadow-sm"
@@ -1529,12 +1541,14 @@ const Students = () => {
                 <div className="flex gap-2">
                   {credStudent.parentEmail && !confirmReset && (
                     <>
-                      <button
-                        onClick={() => setConfirmReset(true)}
-                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-xl font-medium transition-colors"
-                      >
-                        <FaRedo /> Reset Password
-                      </button>
+                      {!isReadOnly && (
+                        <button
+                          onClick={() => setConfirmReset(true)}
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-xl font-medium transition-colors"
+                        >
+                          <FaRedo /> Reset Password
+                        </button>
+                      )}
                       <button
                         onClick={copyCredentials}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-medium transition-colors"

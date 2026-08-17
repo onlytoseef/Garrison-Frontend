@@ -83,6 +83,14 @@ export const API_ENDPOINTS = {
   ACADEMIC_HEAD_BY_ID: (id) => `${API_BASE_URL}/api/academic-heads/${id}`,
   ACADEMIC_HEAD_RESET_PASSWORD: (id) =>
     `${API_BASE_URL}/api/academic-heads/${id}/reset-password`,
+
+  // Campus admins — a campus-level administrator (role 'admin') with the same
+  // rights as the campus principal, pinned to one campus. Managed by the super
+  // admin (create / list / reset password / revoke).
+  CAMPUS_ADMINS: `${API_BASE_URL}/api/campus-admins`,
+  CAMPUS_ADMIN_BY_ID: (id) => `${API_BASE_URL}/api/campus-admins/${id}`,
+  CAMPUS_ADMIN_RESET_PASSWORD: (id) =>
+    `${API_BASE_URL}/api/campus-admins/${id}/reset-password`,
   
   // Classes
   CLASSES: `${API_BASE_URL}/api/classes`,

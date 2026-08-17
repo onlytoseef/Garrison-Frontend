@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
 import API_BASE_URL from "../../config/api";
@@ -23,6 +24,7 @@ import {
   FaUserTie,
 } from "react-icons/fa";
 import { MdFolderSpecial } from "react-icons/md";
+import { isReadOnlyRole } from "../../utils/permissions";
 
 const CATEGORIES = [
   "Notes",
@@ -67,6 +69,8 @@ const formatSize = (bytes = 0) => {
 };
 
 const Resources = () => {
+  const { user } = useSelector((state) => state.auth);
+  const isReadOnly = isReadOnlyRole(user?.role);
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
   const [subjects, setSubjects] = useState([]);
@@ -316,16 +320,18 @@ const Resources = () => {
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => {
-                resetForm();
-                setShowUpload(true);
-              }}
-              className="flex items-center justify-center gap-2 text-white px-5 py-2.5 rounded-xl font-medium transition-all hover:scale-105 shadow-md"
-              style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}
-            >
-              <FaPlus /> Upload Resource
-            </button>
+            {!isReadOnly && (
+              <button
+                onClick={() => {
+                  resetForm();
+                  setShowUpload(true);
+                }}
+                className="flex items-center justify-center gap-2 text-white px-5 py-2.5 rounded-xl font-medium transition-all hover:scale-105 shadow-md"
+                style={{ background: "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)" }}
+              >
+                <FaPlus /> Upload Resource
+              </button>
+            )}
           </div>
         </div>
 
@@ -390,13 +396,15 @@ const Resources = () => {
                       <p className="text-sm text-gray-600 mt-1">{r.description}</p>
                     )}
                   </div>
-                  <button
-                    onClick={() => setDeleteId(r._id)}
-                    className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex-shrink-0"
-                    title="Delete"
-                  >
-                    <FaTrash />
-                  </button>
+                  {!isReadOnly && (
+                    <button
+                      onClick={() => setDeleteId(r._id)}
+                      className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex-shrink-0"
+                      title="Delete"
+                    >
+                      <FaTrash />
+                    </button>
+                  )}
                 </div>
 
                 <div className="mt-3 space-y-2">

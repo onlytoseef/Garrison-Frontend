@@ -3,6 +3,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { API_ENDPOINTS } from "../../config/api";
 import API_BASE_URL from "../../config/api";
+import { isReadOnlyRole } from "../../utils/permissions";
 import toast from "react-hot-toast";
 import {
   FaArrowLeft,
@@ -25,6 +26,10 @@ const Diary = () => {
   // API enforces the same, so a teacher can never write another subject's diary.
   const { user } = useSelector((state) => state.auth);
   const isTeacher = user?.role === "teacher";
+  // A principal may read every class diary, but cannot edit text or upload an
+  // attachment. The backend guard is authoritative; these disabled controls are
+  // the read-only UX. A campus admin remains writable.
+  const isReadOnly = isReadOnlyRole(user?.role);
 
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
@@ -453,11 +458,12 @@ const Diary = () => {
                           <input
                             type="text"
                             value={description}
+                            disabled={isReadOnly}
                             onChange={(e) =>
                               updateDiaryForm(subject, e.target.value)
                             }
                             placeholder={`Enter ${subject} homework...`}
-                            className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-xl outline-none transition-all duration-300 text-sm"
+                            className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-xl outline-none transition-all duration-300 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                           />
                         </div>
                       </div>
@@ -501,6 +507,7 @@ const Diary = () => {
                         type="file"
                         accept="image/*,application/pdf"
                         className="hidden"
+                        disabled={isReadOnly}
                         onChange={(e) =>
                           setClassAttachment(e.target.files[0] || null)
                         }
@@ -519,26 +526,28 @@ const Diary = () => {
 
                 {/* Save All button */}
                 <div className="mt-6 flex items-center gap-4">
-                  <button
-                    onClick={saveAllDiary}
-                    disabled={savingAll}
-                    className="px-6 py-3 rounded-xl text-white font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)",
-                    }}
-                  >
-                    {savingAll ? (
-                      <span className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                        Saving...
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-2">
-                        <FaSave /> Save All Diary
-                      </span>
-                    )}
-                  </button>
+                  {!isReadOnly && (
+                    <button
+                      onClick={saveAllDiary}
+                      disabled={savingAll}
+                      className="px-6 py-3 rounded-xl text-white font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)",
+                      }}
+                    >
+                      {savingAll ? (
+                        <span className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                          Saving...
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <FaSave /> Save All Diary
+                        </span>
+                      )}
+                    </button>
+                  )}
                   {Object.keys(diaryEntries).length > 0 && (
                     <span className="text-sm text-green-600 font-medium">
                       {Object.keys(diaryEntries).length} of {subjects.length} subjects saved

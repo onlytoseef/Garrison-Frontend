@@ -3,10 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers, addUser, deleteUser } from "../../store/slices/userSlice";
 import { FaTrash, FaPlus } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { isReadOnlyRole } from "../../utils/permissions";
 
 const Users = () => {
   const dispatch = useDispatch();
   const { users, loading } = useSelector((state) => state.users);
+  const { user } = useSelector((state) => state.auth);
+  const isReadOnly = isReadOnlyRole(user?.role);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -90,50 +93,52 @@ const Users = () => {
           Manage Users
         </h1>
 
-        <motion.form
-          onSubmit={handleSubmit}
-          className="mb-6 flex flex-wrap gap-4 justify-center"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Email"
-            required
-            className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-          />
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Password"
-            required
-            className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-          />
-          <select
-            value={formData.role}
-            onChange={(e) => handleRoleChange(e.target.value)}
-            className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+        {!isReadOnly && (
+          <motion.form
+            onSubmit={handleSubmit}
+            className="mb-6 flex flex-wrap gap-4 justify-center"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
           >
-            <option value="admin">Admin</option>
-            <option value="teacher">Teacher</option>
-            <option value="principal">Principal</option>
-          </select>
-          <motion.button
-            type="submit"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600 transition-all"
-          >
-            <FaPlus className="mr-2" />
-            Add User
-          </motion.button>
-        </motion.form>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Email"
+              required
+              className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+            />
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Password"
+              required
+              className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+            />
+            <select
+              value={formData.role}
+              onChange={(e) => handleRoleChange(e.target.value)}
+              className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+            >
+              <option value="admin">Admin</option>
+              <option value="teacher">Teacher</option>
+              <option value="principal">Principal</option>
+            </select>
+            <motion.button
+              type="submit"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600 transition-all"
+            >
+              <FaPlus className="mr-2" />
+              Add User
+            </motion.button>
+          </motion.form>
+        )}
 
         {loading ? (
           <div className="flex justify-center">
@@ -173,14 +178,16 @@ const Users = () => {
                         {user.role}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-700">
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all"
-                          onClick={() => showDeleteModal(user._id)}
-                        >
-                          <FaTrash />
-                        </motion.button>
+                        {!isReadOnly && (
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all"
+                            onClick={() => showDeleteModal(user._id)}
+                          >
+                            <FaTrash />
+                          </motion.button>
+                        )}
                       </td>
                     </tr>
                   ))}

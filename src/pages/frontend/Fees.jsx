@@ -19,6 +19,7 @@ import {
 } from "../../store/slices/feeSlice";
 import { fetchClasses } from "../../store/slices/classSlice";
 import ImportFeesModal from "../components/ImportFeesModal";
+import { isReadOnlyRole } from "../../utils/permissions";
 
 /**
  * Fee overview: what each student has paid and what they still owe.
@@ -45,6 +46,8 @@ const Fees = () => {
   const { students, pagination, summary, status, selected, detailStatus } =
     useSelector((state) => state.fees);
   const { classes } = useSelector((state) => state.classes);
+  const { user } = useSelector((state) => state.auth);
+  const isReadOnly = isReadOnlyRole(user?.role);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -199,32 +202,36 @@ const Fees = () => {
           </select>
 
           <div className="flex gap-2">
-            <button
-              onClick={() => setImportKind("payments")}
-              title="Import the Payment Detail spreadsheet"
-              className="flex items-center justify-center bg-white text-gray-700 border border-gray-300 px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-300"
-            >
-              <FaFileExcel className="mr-2 text-green-600" />
-              Payments
-            </button>
-            <button
-              onClick={() => setImportKind("dues")}
-              title="Import the Dues List spreadsheet"
-              className="flex items-center justify-center bg-white text-gray-700 border border-gray-300 px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-300"
-            >
-              <FaFileExcel className="mr-2 text-red-500" />
-              Dues
-            </button>
-            <button
-              onClick={() => setConfirmClear(true)}
-              title="Remove every outstanding balance in this campus"
-              className="flex items-center justify-center px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 text-white"
-              style={{
-                background: "linear-gradient(135deg, #DC2626 0%, #EF4444 100%)",
-              }}
-            >
-              <FaTrash />
-            </button>
+            {!isReadOnly && (
+              <>
+                <button
+                  onClick={() => setImportKind("payments")}
+                  title="Import the Payment Detail spreadsheet"
+                  className="flex items-center justify-center bg-white text-gray-700 border border-gray-300 px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-300"
+                >
+                  <FaFileExcel className="mr-2 text-green-600" />
+                  Payments
+                </button>
+                <button
+                  onClick={() => setImportKind("dues")}
+                  title="Import the Dues List spreadsheet"
+                  className="flex items-center justify-center bg-white text-gray-700 border border-gray-300 px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-300"
+                >
+                  <FaFileExcel className="mr-2 text-red-500" />
+                  Dues
+                </button>
+                <button
+                  onClick={() => setConfirmClear(true)}
+                  title="Remove every outstanding balance in this campus"
+                  className="flex items-center justify-center px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 text-white"
+                  style={{
+                    background: "linear-gradient(135deg, #DC2626 0%, #EF4444 100%)",
+                  }}
+                >
+                  <FaTrash />
+                </button>
+              </>
+            )}
           </div>
         </div>
 

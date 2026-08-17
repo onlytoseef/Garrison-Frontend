@@ -26,6 +26,9 @@ import {
   FaDatabase,
   FaBook,
   FaUserTie,
+  FaShieldAlt,
+  FaPencilAlt,
+  FaUserShield,
 } from "react-icons/fa";
 import { API_BASE_URL, API_ENDPOINTS } from "../../config/api";
 import { setActiveCampusId } from "../../config/axiosSetup";
@@ -35,6 +38,7 @@ import BackupModal from "../components/BackupModal";
 import SubjectsModal from "../components/SubjectsModal";
 import ExamsModal from "../components/ExamsModal";
 import AcademicHeadsModal from "../components/AcademicHeadsModal";
+import CampusAdminsModal from "../components/CampusAdminsModal";
 import { logoutUser } from "../../store/slices/authSlice";
 import logo from "../../assets/images/logo.webp";
 import Loader from "../components/Loader";
@@ -226,7 +230,13 @@ const AttendanceRing = ({ rate, size = 48 }) => {
 // ---------------------------------------------------------------------------
 const ActivityRow = ({ entry }) => {
   const failed = entry.outcome === "failure";
-  const icon = failed ? "!" : entry.category === "security" ? "s" : "d";
+  // An icon by kind rather than a bare letter: a warning for anything that
+  // failed, a shield for security events, a pencil for routine data changes.
+  const Icon = failed
+    ? FaExclamationTriangle
+    : entry.category === "security"
+    ? FaShieldAlt
+    : FaPencilAlt;
 
   const when = (() => {
     const mins = Math.floor((Date.now() - new Date(entry.createdAt)) / 60000);
@@ -242,13 +252,13 @@ const ActivityRow = ({ entry }) => {
   return (
     <div className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50/60 transition-colors">
       <span
-        className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+        className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] shrink-0 ${
           failed
             ? "bg-red-100 text-red-600"
             : "bg-gray-100 text-gray-500"
         }`}
       >
-        {icon}
+        <Icon />
       </span>
       <span className="flex-1 min-w-0">
         <span className="text-[13px] text-gray-700 truncate block leading-tight">
@@ -388,6 +398,7 @@ const Campuses = () => {
   const [showSubjectsModal, setShowSubjectsModal] = useState(false);
   const [showExamsModal, setShowExamsModal] = useState(false);
   const [showAcademicHeadsModal, setShowAcademicHeadsModal] = useState(false);
+  const [showCampusAdminsModal, setShowCampusAdminsModal] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -601,6 +612,14 @@ const Campuses = () => {
               >
                 <FaUserTie className="text-xs" />
                 <span className="hidden sm:inline">Academic Heads</span>
+              </button>
+
+              <button
+                onClick={() => setShowCampusAdminsModal(true)}
+                className="flex items-center gap-1.5 text-[13px] text-white/85 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-200"
+              >
+                <FaUserShield className="text-xs" />
+                <span className="hidden sm:inline">Campus Admins</span>
               </button>
 
               <button
@@ -1420,6 +1439,14 @@ const Campuses = () => {
         {showAcademicHeadsModal && (
           <AcademicHeadsModal
             onClose={() => setShowAcademicHeadsModal(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showCampusAdminsModal && (
+          <CampusAdminsModal
+            onClose={() => setShowCampusAdminsModal(false)}
           />
         )}
       </AnimatePresence>

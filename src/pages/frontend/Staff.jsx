@@ -26,6 +26,7 @@ import {
 } from "react-icons/fa";
 import TeacherAccessModal from "../components/TeacherAccessModal";
 import ImportStaffModal from "../components/ImportStaffModal";
+import { isReadOnlyRole } from "../../utils/permissions";
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -41,6 +42,12 @@ const Staff = () => {
   // are the office's job (the API refuses those for them). Hide the controls so
   // the page never offers an action that would only 403.
   const readOnly = role === "academic_head";
+  // A principal is also read-only, but — unlike an academic head — may open a
+  // staff member's detail page (salary history etc.) to READ it. So the write
+  // controls below are hidden for a principal too, while the name stays a link.
+  const isReadOnly = isReadOnlyRole(role);
+  // No write controls (Add / Import bar, and the Actions column) for either.
+  const noWrites = readOnly || isReadOnly;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingStaff, setEditingStaff] = useState(null);
   // Staff member whose portal access is being managed.
@@ -124,8 +131,8 @@ const Staff = () => {
     { title: "Phone", dataIndex: "phone", key: "phone", align: "center" },
     { title: "Salary", dataIndex: "salary", key: "salary", align: "center" },
     // The Actions column is dropped entirely for a read-only viewer (academic
-    // head): with no Access/Edit/Delete there is nothing to render in it.
-    ...(readOnly
+    // head or principal): with no Access/Edit/Delete there is nothing to render.
+    ...(noWrites
       ? []
       : [
           {
@@ -186,7 +193,7 @@ const Staff = () => {
         Staff Management
       </Title>
       <hr className="border-t-2 border-gray-200 mb-6 sm:mb-8" />
-      {!readOnly && (
+      {!noWrites && (
         <div className="flex flex-wrap items-center justify-center gap-3 mb-6 sm:mb-8">
           <motion.button
             whileHover={{ scale: 1.03 }}

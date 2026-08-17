@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { API_ENDPOINTS } from "../../config/api";
+import { isReadOnlyRole } from "../../utils/permissions";
 import toast from "react-hot-toast";
 import {
   FaArrowLeft,
@@ -22,6 +23,10 @@ const ManualAttendance = () => {
   // class as before.
   const { user } = useSelector((state) => state.auth);
   const isTeacher = user?.role === "teacher";
+  // A principal may open the register to READ it, but marking is a write. Hide the
+  // Mark-All shortcuts and Save button and disable the per-student status buttons.
+  // The backend refuses the write regardless; a campus admin still marks.
+  const isReadOnly = isReadOnlyRole(user?.role);
 
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
@@ -373,38 +378,40 @@ const ManualAttendance = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="flex flex-wrap gap-2 sm:gap-3 mb-6">
-        <button
-          onClick={() => markAll("Present")}
-          className="px-4 py-2 rounded-xl text-white font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:scale-105"
-          style={{
-            background: "linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)",
-          }}
-        >
-          <FaCheck className="inline mr-2" />
-          Mark All Present
-        </button>
-        <button
-          onClick={() => markAll("Absent")}
-          className="px-4 py-2 rounded-xl text-white font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:scale-105"
-          style={{
-            background: "linear-gradient(135deg, #DC2626 0%, #EF4444 100%)",
-          }}
-        >
-          <FaTimes className="inline mr-2" />
-          Mark All Absent
-        </button>
-        <button
-          onClick={() => markAll("Leave")}
-          className="px-4 py-2 rounded-xl text-white font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:scale-105"
-          style={{
-            background: "linear-gradient(135deg, #CA8A04 0%, #EAB308 100%)",
-          }}
-        >
-          <FaCalendarAlt className="inline mr-2" />
-          Mark All Leave
-        </button>
-      </div>
+      {!isReadOnly && (
+        <div className="flex flex-wrap gap-2 sm:gap-3 mb-6">
+          <button
+            onClick={() => markAll("Present")}
+            className="px-4 py-2 rounded-xl text-white font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:scale-105"
+            style={{
+              background: "linear-gradient(135deg, #0A8F4F 0%, #3AC97C 100%)",
+            }}
+          >
+            <FaCheck className="inline mr-2" />
+            Mark All Present
+          </button>
+          <button
+            onClick={() => markAll("Absent")}
+            className="px-4 py-2 rounded-xl text-white font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:scale-105"
+            style={{
+              background: "linear-gradient(135deg, #DC2626 0%, #EF4444 100%)",
+            }}
+          >
+            <FaTimes className="inline mr-2" />
+            Mark All Absent
+          </button>
+          <button
+            onClick={() => markAll("Leave")}
+            className="px-4 py-2 rounded-xl text-white font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:scale-105"
+            style={{
+              background: "linear-gradient(135deg, #CA8A04 0%, #EAB308 100%)",
+            }}
+          >
+            <FaCalendarAlt className="inline mr-2" />
+            Mark All Leave
+          </button>
+        </div>
+      )}
 
       {/* Student Table */}
       {loading ? (
@@ -477,7 +484,8 @@ const ManualAttendance = () => {
                             onClick={() =>
                               setStatus(student.studentId, "Present")
                             }
-                            className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 ${
+                            disabled={isReadOnly}
+                            className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed ${
                               attendanceData[student.studentId] === "Present"
                                 ? "text-white shadow-md scale-105"
                                 : "text-green-700 bg-green-50 hover:bg-green-100 border border-green-200"
@@ -497,7 +505,8 @@ const ManualAttendance = () => {
                             onClick={() =>
                               setStatus(student.studentId, "Absent")
                             }
-                            className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 ${
+                            disabled={isReadOnly}
+                            className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed ${
                               attendanceData[student.studentId] === "Absent"
                                 ? "text-white shadow-md scale-105"
                                 : "text-red-700 bg-red-50 hover:bg-red-100 border border-red-200"
@@ -517,7 +526,8 @@ const ManualAttendance = () => {
                             onClick={() =>
                               setStatus(student.studentId, "Leave")
                             }
-                            className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 ${
+                            disabled={isReadOnly}
+                            className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed ${
                               attendanceData[student.studentId] === "Leave"
                                 ? "text-white shadow-md scale-105"
                                 : "text-yellow-700 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200"
@@ -543,27 +553,33 @@ const ManualAttendance = () => {
 
           {/* Submit Button */}
           <div className="p-4 sm:p-6 border-t border-gray-100">
-            <button
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="w-full sm:w-auto px-8 py-3 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-              style={{
-                background:
-                  "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
-              }}
-            >
-              {submitting ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                  Saving...
-                </span>
-              ) : (
-                <span className="flex items-center justify-center gap-2">
-                  <MdHowToReg className="text-xl" />
-                  Save Attendance
-                </span>
-              )}
-            </button>
+            {isReadOnly ? (
+              <p className="text-sm text-gray-400">
+                Read-only access — attendance marking is disabled.
+              </p>
+            ) : (
+              <button
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="w-full sm:w-auto px-8 py-3 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #2F5DAA 0%, #1E3F72 100%)",
+                }}
+              >
+                {submitting ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                    Saving...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    <MdHowToReg className="text-xl" />
+                    Save Attendance
+                  </span>
+                )}
+              </button>
+            )}
           </div>
         </div>
       )}

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
+import { isReadOnlyRole } from "../../utils/permissions";
 import { fetchExamById } from "../../store/slices/examSlice";
 import {
   bulkEnterMarks,
@@ -26,6 +27,9 @@ const MarksEntry = () => {
   // touching any other subject's marks. Admins keep the full-grid save.
   const { user } = useSelector((state) => state.auth);
   const isTeacher = user?.role === "teacher";
+  // A principal is read-only: they may open the marks sheet to READ it, but the
+  // mark inputs are disabled and the Save button is hidden. Admins keep saving.
+  const isReadOnly = isReadOnlyRole(user?.role);
 
   const [students, setStudents] = useState([]);
   const [marks, setMarks] = useState({}); // { studentId: { subjectName: value } }
@@ -199,14 +203,16 @@ const MarksEntry = () => {
               </p>
             </div>
           </div>
-          <button
-            onClick={handleSave}
-            disabled={saving || loading || students.length === 0}
-            className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-60"
-            style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
-          >
-            <FaSave /> {saving ? "Saving..." : "Save All Marks"}
-          </button>
+          {!isReadOnly && (
+            <button
+              onClick={handleSave}
+              disabled={saving || loading || students.length === 0}
+              className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-60"
+              style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
+            >
+              <FaSave /> {saving ? "Saving..." : "Save All Marks"}
+            </button>
+          )}
         </div>
 
         {loading ? (
@@ -265,6 +271,7 @@ const MarksEntry = () => {
                             type="number"
                             min={0}
                             max={sub.totalMarks}
+                            disabled={isReadOnly}
                             value={
                               (marks[st._id] && marks[st._id][sub.subjectName] !== undefined)
                                 ? marks[st._id][sub.subjectName]
@@ -273,7 +280,7 @@ const MarksEntry = () => {
                             onChange={(e) =>
                               handleMarkChange(st._id, sub, e.target.value)
                             }
-                            className="w-16 px-2 py-1.5 text-center border-2 border-gray-200 focus:border-[#2F5DAA] rounded-lg outline-none"
+                            className="w-16 px-2 py-1.5 text-center border-2 border-gray-200 focus:border-[#2F5DAA] rounded-lg outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
                           />
                         </td>
                       ))}
@@ -292,11 +299,12 @@ const MarksEntry = () => {
                           <input
                             type="text"
                             value={remarks[st._id] || ""}
+                            disabled={isReadOnly}
                             onChange={(e) =>
                               setRemarks((prev) => ({ ...prev, [st._id]: e.target.value }))
                             }
                             placeholder="Optional"
-                            className="w-32 px-2 py-1.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-lg outline-none text-sm"
+                            className="w-32 px-2 py-1.5 border-2 border-gray-200 focus:border-[#2F5DAA] rounded-lg outline-none text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                           />
                         </td>
                       )}

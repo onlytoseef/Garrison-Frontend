@@ -13,6 +13,7 @@ import { MdDelete, MdClass, MdSchool } from "react-icons/md";
 import ClassPrint from "../components/ClassPrint";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
+import { isReadOnlyRole } from "../../utils/permissions";
 import toast from "react-hot-toast";
 
 // What the bulk importer writes into room number and in-charge, since a
@@ -27,9 +28,12 @@ const Classess = () => {
   );
   // Teachers get a read-only view: they may open a class to see its students and
   // data, but every mutating control (add / edit / delete / promote / WhatsApp)
-  // is hidden. The API refuses them regardless; this keeps the screen honest.
+  // is hidden. A principal is read-only in the same way (a campus admin is not).
+  // The API refuses these regardless; this keeps the screen honest.
   const { user } = useSelector((state) => state.auth);
   const isTeacher = user?.role === "teacher";
+  const isReadOnly = isReadOnlyRole(user?.role);
+  const readOnly = isTeacher || isReadOnly;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [teachers, setTeachers] = useState([]);
   const [classDetailsModal, setClassDetailsModal] = useState(false);
@@ -371,7 +375,7 @@ const Classess = () => {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              {isTeacher ? (
+              {readOnly ? (
                 <span className="text-xs sm:text-sm text-gray-400 self-center">
                   View only
                 </span>
@@ -437,7 +441,7 @@ const Classess = () => {
                 ? "You have not been assigned to any classes yet."
                 : "Get started by adding your first class"}
             </p>
-            {!isTeacher && (
+            {!readOnly && (
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105"
@@ -523,7 +527,7 @@ const Classess = () => {
                             <FaEye />
                             View
                           </button>
-                          {!isTeacher && (
+                          {!readOnly && (
                             <>
                               <button
                                 onClick={() => openEditModal(cls)}
