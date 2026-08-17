@@ -16,9 +16,10 @@ import {
 import { MdHowToReg } from "react-icons/md";
 
 const ManualAttendance = () => {
-  // A teacher only reaches this page as a class IN-CHARGE, and then only for
-  // the classes they run — so the class grid is sourced from /teacher/my-classes
-  // filtered to those. Office roles see every class as before.
+  // A teacher may mark the register for ANY class they are assigned to — a
+  // subject teacher too, not only a class in-charge — so the class grid is
+  // sourced from /teacher/my-classes (all of them). Office roles see every
+  // class as before.
   const { user } = useSelector((state) => state.auth);
   const isTeacher = user?.role === "teacher";
 
@@ -41,10 +42,11 @@ const ManualAttendance = () => {
     try {
       setClassLoading(true);
       if (isTeacher) {
-        // Only classes this teacher is in-charge of — my-classes already carries
-        // grade/section/room/studentCount and the isIncharge flag.
+        // Every class this teacher is assigned to — my-classes already carries
+        // grade/section/room/studentCount. No in-charge filter: a subject
+        // teacher may mark the register too.
         const res = await axios.get(API_ENDPOINTS.TEACHER_MY_CLASSES);
-        setClasses((res.data || []).filter((c) => c.isIncharge));
+        setClasses(res.data || []);
       } else {
         const res = await axios.get(API_ENDPOINTS.CLASSES);
         setClasses(res.data);

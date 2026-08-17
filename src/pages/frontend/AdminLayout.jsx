@@ -100,14 +100,14 @@ const menuItems = [
  * showing it would only produce dead links and 403s.
  *
  * Base is five items: Dashboard, Classes (read-only), Exams (enter their
- * subject's marks), Diary and Resources. A teacher who is IN-CHARGE of at least
- * one class additionally gets Manual Attendance, so they can mark the register
- * for those classes — that item is appended only when they hold an in-charge
- * assignment. The student list, fees, attendance records and the QR scan feed
- * stay absent: a teacher's access is scoped to their classes.
+ * subject's marks), Diary and Resources. A teacher who is assigned ANY class
+ * additionally gets Manual Attendance, so they can mark that class's register —
+ * a subject teacher may now do this too, not only a class in-charge. That item
+ * is appended once they have at least one assigned class. The student list,
+ * fees, attendance records and the QR scan feed stay absent.
  */
 const TEACHER_PATHS = ["/", "/classes", "/exams", "/diary", "/resources"];
-const TEACHER_INCHARGE_PATHS = [...TEACHER_PATHS, "/manual-attendance"];
+const TEACHER_ATTENDANCE_PATHS = [...TEACHER_PATHS, "/manual-attendance"];
 
 /**
  * What an academic head may reach. Like the super admin they work across
@@ -135,9 +135,9 @@ const BAND_LABEL = {
   intermediate: "Intermediate (11–12)",
 };
 
-const menuItemsForRole = (role, isInchargeAnywhere) => {
+const menuItemsForRole = (role, hasAnyClass) => {
   if (role === "teacher") {
-    const paths = isInchargeAnywhere ? TEACHER_INCHARGE_PATHS : TEACHER_PATHS;
+    const paths = hasAnyClass ? TEACHER_ATTENDANCE_PATHS : TEACHER_PATHS;
     return menuItems.filter((item) => paths.includes(item.path));
   }
   if (role === "academic_head") {
@@ -164,14 +164,15 @@ const AdminLayout = () => {
   const canSwitchCampus = isSuperAdmin || isAcademicHead;
   const [campusName, setCampusName] = useState("");
 
-  // A teacher who is in-charge of any class also gets the Manual Attendance nav
-  // item. We learn that from /teacher/my-classes, the same endpoint the pages
-  // use, so the sidebar never disagrees with what they can actually open.
-  const [isInchargeAnywhere, setIsInchargeAnywhere] = useState(false);
+  // A teacher who is assigned any class gets the Manual Attendance nav item —
+  // they may mark that class's register (subject teacher or in-charge alike).
+  // We learn that from /teacher/my-classes, the same endpoint the page uses, so
+  // the sidebar never disagrees with what they can actually open.
+  const [hasAnyClass, setHasAnyClass] = useState(false);
 
   // Teachers get a reduced sidebar; the API refuses the rest regardless, so
   // rendering those links would only produce dead ends.
-  const visibleMenuItems = menuItemsForRole(user?.role, isInchargeAnywhere);
+  const visibleMenuItems = menuItemsForRole(user?.role, hasAnyClass);
 
   useEffect(() => {
     if (user?.role !== "teacher") return;
@@ -179,8 +180,7 @@ const AdminLayout = () => {
     axios
       .get(API_ENDPOINTS.TEACHER_MY_CLASSES)
       .then((res) => {
-        if (alive)
-          setIsInchargeAnywhere((res.data || []).some((c) => c.isIncharge));
+        if (alive) setHasAnyClass((res.data || []).length > 0);
       })
       .catch(() => {
         // A failure here just leaves attendance hidden; the API still guards it.
