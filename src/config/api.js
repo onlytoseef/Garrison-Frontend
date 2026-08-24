@@ -75,6 +75,9 @@ export const API_ENDPOINTS = {
 
   // Campuses (super admin)
   CAMPUSES: `${API_BASE_URL}/api/campuses`,  CAMPUS_OVERVIEW: `${API_BASE_URL}/api/campus-overview`,
+  // DELETE takes { confirmCode } in the body — the API refuses without the campus
+  // code, because this removes the campus and every record under it.
+  CAMPUS_BY_ID: (id) => `${API_BASE_URL}/api/campus/${id}`,
   TOTAL_STUDENTS: `${API_BASE_URL}/api/total-students`,
 
   // Academic heads — cross-campus, grade-band-scoped role. Managed by the super
@@ -127,8 +130,6 @@ export const API_ENDPOINTS = {
   
   // Dashboard
   DASHBOARD_SUMMARY: `${API_BASE_URL}/api/dashboard-summary`,
-  
-  WHATSAPP_CLASS_MESSAGE: `${API_BASE_URL}/api/whatsapp/class-message`,
 
   // Diary
   CLASS_SUBJECTS: (id) => `${API_BASE_URL}/api/class/${id}/subjects`,

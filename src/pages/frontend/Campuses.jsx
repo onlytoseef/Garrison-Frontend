@@ -29,6 +29,7 @@ import {
   FaShieldAlt,
   FaPencilAlt,
   FaUserShield,
+  FaTrashAlt,
 } from "react-icons/fa";
 import { API_BASE_URL, API_ENDPOINTS } from "../../config/api";
 import { setActiveCampusId } from "../../config/axiosSetup";
@@ -39,6 +40,7 @@ import SubjectsModal from "../components/SubjectsModal";
 import ExamsModal from "../components/ExamsModal";
 import AcademicHeadsModal from "../components/AcademicHeadsModal";
 import CampusAdminsModal from "../components/CampusAdminsModal";
+import CampusDeleteModal from "../components/CampusDeleteModal";
 import { logoutUser } from "../../store/slices/authSlice";
 import logo from "../../assets/images/logo.webp";
 import Loader from "../components/Loader";
@@ -399,6 +401,7 @@ const Campuses = () => {
   const [showExamsModal, setShowExamsModal] = useState(false);
   const [showAcademicHeadsModal, setShowAcademicHeadsModal] = useState(false);
   const [showCampusAdminsModal, setShowCampusAdminsModal] = useState(false);
+  const [campusToDelete, setCampusToDelete] = useState(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -873,11 +876,47 @@ const Campuses = () => {
                             <h3 className="text-[15px] font-bold text-gray-900 leading-snug line-clamp-2">
                               {campus.name}
                             </h3>
-                            {!campus.isActive && (
-                              <span className="text-[10px] bg-red-50 text-red-600 px-2 py-0.5 rounded-md font-semibold shrink-0 mt-0.5">
-                                Inactive
-                              </span>
-                            )}
+                            <div className="flex items-center gap-1 shrink-0 mt-0.5">
+                              {!campus.isActive && (
+                                <span className="text-[10px] bg-red-50 text-red-600 px-2 py-0.5 rounded-md font-semibold mr-0.5">
+                                  Inactive
+                                </span>
+                              )}
+
+                              {/* Both buttons stopPropagation: the whole card is a
+                                  link into the campus, so without it each of these
+                                  would also navigate behind its own modal.
+
+                                  They live HERE, in normal flow, rather than the key
+                                  being `absolute top-5 right-4` as it was — that
+                                  positioned it on top of the delete button instead of
+                                  beside it. Same row, credentials first, delete last:
+                                  the destructive one sits at the edge where it is
+                                  least likely to be hit by a mis-tap. */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  viewCredentials(campus);
+                                }}
+                                title="Principal credentials"
+                                aria-label={`Principal credentials for ${campus.name}`}
+                                className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-[#2F5DAA] transition-colors"
+                              >
+                                <FaKey className="text-[12px]" />
+                              </button>
+
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCampusToDelete(campus);
+                                }}
+                                title={`Delete ${campus.name}`}
+                                aria-label={`Delete campus ${campus.name}`}
+                                className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                              >
+                                <FaTrashAlt className="text-[13px]" />
+                              </button>
+                            </div>
                           </div>
                           <p className="text-[11px] text-gray-400 mt-1 flex items-center gap-1.5">
                             <FaBuilding className="text-[9px]" />
@@ -977,19 +1016,6 @@ const Campuses = () => {
                         Open campus
                         <FaArrowRight className="text-[10px] group-hover:translate-x-1 transition-transform duration-200" />
                       </div>
-
-                      {/* Key icon — stops the card's own click so the credentials
-                          modal opens instead of navigating into the campus. */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          viewCredentials(campus);
-                        }}
-                        title="Principal credentials"
-                        className="absolute top-5 right-4 p-2 rounded-lg text-gray-400 hover:text-white hover:bg-[#2F5DAA] transition-all duration-200 z-10"
-                      >
-                        <FaKey className="text-[10px]" />
-                      </button>
                     </motion.div>
                   );
                 })}
@@ -1447,6 +1473,19 @@ const Campuses = () => {
         {showCampusAdminsModal && (
           <CampusAdminsModal
             onClose={() => setShowCampusAdminsModal(false)}
+          />
+        )}
+
+        {/* Removed from local state rather than refetched: the list is already
+            correct once the row is gone, and a refetch would flash a loader over
+            a page the user is still reading. */}
+        {campusToDelete && (
+          <CampusDeleteModal
+            campus={campusToDelete}
+            onClose={() => setCampusToDelete(null)}
+            onDeleted={(id) =>
+              setCampuses((prev) => prev.filter((c) => c._id !== id))
+            }
           />
         )}
       </AnimatePresence>

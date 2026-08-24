@@ -8,7 +8,7 @@ import {
   updateClass,
   fetchClassById,
 } from "../../store/slices/classSlice";
-import { FaPlus, FaTrash, FaEdit, FaEye, FaPrint, FaBook, FaDoorOpen, FaUserTie, FaGraduationCap, FaUsers, FaUserGraduate, FaArrowRight, FaCheckCircle, FaTimesCircle, FaWhatsapp, FaChalkboardTeacher } from "react-icons/fa";
+import { FaPlus, FaTrash, FaEdit, FaEye, FaPrint, FaBook, FaDoorOpen, FaUserTie, FaGraduationCap, FaUsers, FaUserGraduate, FaArrowRight, FaCheckCircle, FaTimesCircle, FaChalkboardTeacher } from "react-icons/fa";
 import { MdDelete, MdClass, MdSchool } from "react-icons/md";
 import ClassPrint from "../components/ClassPrint";
 import axios from "axios";
@@ -27,8 +27,8 @@ const Classess = () => {
     (state) => state.classes
   );
   // Teachers get a read-only view: they may open a class to see its students and
-  // data, but every mutating control (add / edit / delete / promote / WhatsApp)
-  // is hidden. A principal is read-only in the same way (a campus admin is not).
+  // data, but every mutating control (add / edit / delete / promote) is hidden.
+  // A principal is read-only in the same way (a campus admin is not).
   // The API refuses these regardless; this keeps the screen honest.
   const { user } = useSelector((state) => state.auth);
   const isTeacher = user?.role === "teacher";
@@ -44,10 +44,6 @@ const Classess = () => {
   const [editClass, setEditClass] = useState(null);
   const [editForm, setEditForm] = useState({ grade: "", section: "", roomNumber: "", inCharge: "" });
   const [editSaving, setEditSaving] = useState(false);
-  const [whatsappModal, setWhatsappModal] = useState(false);
-  const [whatsappMessage, setWhatsappMessage] = useState("");
-  const [whatsappTarget, setWhatsappTarget] = useState(null);
-  const [whatsappSending, setWhatsappSending] = useState(false);
   // Teachers-schedule modal: which class, its data, and the in-flight flag.
   const [scheduleModal, setScheduleModal] = useState(null);
   const [scheduleData, setScheduleData] = useState(null);
@@ -165,36 +161,6 @@ const Classess = () => {
       setScheduleModal(null);
     } finally {
       setScheduleLoading(false);
-    }
-  };
-
-  const handleOpenWhatsAppModal = (cls) => {
-    setWhatsappTarget(cls);
-    setWhatsappMessage("");
-    setWhatsappModal(true);
-  };
-
-  const handleSendWhatsApp = async () => {
-    if (!whatsappTarget?._id) return;
-    if (!whatsappMessage.trim()) {
-      toast.error("Please enter an announcement message");
-      return;
-    }
-
-    setWhatsappSending(true);
-    try {
-      const res = await axios.post(API_ENDPOINTS.WHATSAPP_CLASS_MESSAGE, {
-        classId: whatsappTarget._id,
-        message: whatsappMessage.trim(),
-        delayMs: 3000,
-      });
-
-      toast.success(`Sent ${res.data.sent}/${res.data.total} messages`);
-      setWhatsappModal(false);
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to send WhatsApp message");
-    } finally {
-      setWhatsappSending(false);
     }
   };
 
@@ -543,13 +509,6 @@ const Classess = () => {
                                 style={{ background: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)' }}
                               >
                                 <FaTrash />
-                              </button>
-                              <button
-                                onClick={() => handleOpenWhatsAppModal(cls)}
-                                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-110 text-white"
-                                style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}
-                              >
-                                <FaWhatsapp />
                               </button>
                             </>
                           )}
@@ -1143,67 +1102,6 @@ const Classess = () => {
                     }}
                   >
                     Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* WhatsApp Announcement Modal */}
-        {whatsappModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-fadeIn">
-              <div
-                className="p-6 rounded-t-2xl"
-                style={{
-                  background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)'
-                }}
-              >
-                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                  <FaWhatsapp className="text-2xl" />
-                  WhatsApp Announcement
-                </h2>
-                <p className="text-white/80 text-sm mt-1">
-                  Class {whatsappTarget?.grade}-{whatsappTarget?.section}
-                </p>
-              </div>
-
-              <div className="p-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Message
-                </label>
-                <textarea
-                  value={whatsappMessage}
-                  onChange={(e) => setWhatsappMessage(e.target.value)}
-                  rows={6}
-                  className="w-full px-4 py-2.5 border-2 border-gray-200 focus:border-emerald-500 rounded-xl outline-none transition-all duration-300"
-                  placeholder="Type your announcement message here"
-                />
-
-                <div className="mt-3 text-xs text-gray-500">
-                  Make sure WhatsApp Web is already logged in on this machine.
-                </div>
-
-                <div className="flex justify-end gap-3 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setWhatsappModal(false)}
-                    className="px-6 py-2.5 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-xl font-medium transition-all duration-300 hover:scale-105"
-                    disabled={whatsappSending}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSendWhatsApp}
-                    disabled={whatsappSending}
-                    className="px-6 py-2.5 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105"
-                    style={{
-                      background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)'
-                    }}
-                  >
-                    {whatsappSending ? "Sending..." : "Send"}
                   </button>
                 </div>
               </div>
