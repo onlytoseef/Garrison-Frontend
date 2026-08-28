@@ -19,6 +19,7 @@ import {
   BookOutlined,
   FolderOpenOutlined,
   FileSearchOutlined,
+  SwapOutlined,
 } from "@ant-design/icons";
 
 import { AiOutlineRobot } from "react-icons/ai";
@@ -137,6 +138,15 @@ const BAND_LABEL = {
   intermediate: "Intermediate (11–12)",
 };
 
+/**
+ * Height of the "viewing campus" top bar, in px.
+ *
+ * A constant because two places must agree on it: the bar's own height, and the
+ * Header's sticky `top`. If they drift, the header either overlaps the bar or
+ * leaves a gap under it while scrolling.
+ */
+const CAMPUS_BAR_H = 44;
+
 const menuItemsForRole = (role, hasAnyClass) => {
   if (role === "teacher") {
     const paths = hasAnyClass ? TEACHER_ATTENDANCE_PATHS : TEACHER_PATHS;
@@ -243,6 +253,123 @@ const AdminLayout = () => {
 
   return (
     <Layout style={{ minHeight: "100vh", fontFamily: "Poppins, sans-serif" }}>
+      {/* Super admins and academic heads are browsing a campus they don't own —
+          make that obvious, and give them one click back to the picker. The
+          academic head's bar also states their grade band, so it is clear the data
+          on screen is limited to it.
+
+          FIXED and at the outermost level, spanning the sidebar too. It began life
+          as a strip inside <Content>, which indented it with the page and scrolled
+          it away — wrong for something that says "everything you see belongs to
+          another campus". Sitting inside the inner <Layout> was not enough either:
+          that layout carries a marginLeft for the sidebar, so the bar started after
+          it.
+
+          Because it is out of flow, the Sider and the inner Layout are pushed down
+          by exactly its height (CAMPUS_BAR_H) — otherwise it would cover the top of
+          the sidebar logo and the header. */}
+      {canSwitchCampus && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: CAMPUS_BAR_H,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            padding: "0 18px",
+            background:
+              "linear-gradient(100deg, #2F5DAA 0%, #1E3F72 55%, #16325C 100%)",
+            color: "#fff",
+            // Bottom corners only: the bar is flush with the top of the window, so
+            // rounding the top edge would leave two slivers of page above it.
+            borderBottomLeftRadius: 18,
+            borderBottomRightRadius: 18,
+            boxShadow: "0 4px 16px rgba(30,63,114,0.32)",
+            // Above the Sider (which antd puts at 100 when fixed) and the Header.
+            zIndex: 1002,
+          }}
+        >
+          <span
+            style={{
+              fontSize: 13,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              minWidth: 0,
+            }}
+          >
+            <EyeOutlined style={{ fontSize: 13, opacity: 0.7 }} />
+            <span style={{ opacity: 0.72 }} className="hidden sm:inline">
+              Viewing campus
+            </span>
+            <strong
+              style={{
+                fontSize: 13.5,
+                letterSpacing: 0.2,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {campusName || "Loading…"}
+            </strong>
+            {isAcademicHead && user?.academicBand && (
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  padding: "2px 9px",
+                  borderRadius: 999,
+                  background: "rgba(255,255,255,0.16)",
+                  border: "1px solid rgba(255,255,255,0.22)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {BAND_LABEL[user.academicBand] || user.academicBand}
+              </span>
+            )}
+          </span>
+
+          <button
+            onClick={exitCampus}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 7,
+              flexShrink: 0,
+              height: 30,
+              padding: "0 14px",
+              borderRadius: 999,
+              border: "1px solid rgba(255,255,255,0.28)",
+              background: "rgba(255,255,255,0.13)",
+              color: "#fff",
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "background 0.18s, border-color 0.18s, color 0.18s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#fff";
+              e.currentTarget.style.color = "#1E3F72";
+              e.currentTarget.style.borderColor = "#fff";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.13)";
+              e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.28)";
+            }}
+          >
+            <SwapOutlined style={{ fontSize: 12 }} />
+            <span className="hidden sm:inline">Switch campus</span>
+            <span className="sm:hidden">Switch</span>
+          </button>
+        </div>
+      )}
+
       {/* Desktop Sidebar */}
       {!isMobile && (
         <Sider
@@ -259,7 +386,9 @@ const AdminLayout = () => {
             flexDirection: "column",
             position: "fixed",
             left: 0,
-            top: 0,
+            // Starts below the campus bar so the bar can span the full width
+            // without covering the sidebar's logo.
+            top: canSwitchCampus ? CAMPUS_BAR_H : 0,
             bottom: 0,
             zIndex: 100,
             height: "100vh",
@@ -408,11 +537,14 @@ const AdminLayout = () => {
         </div>
       </Drawer>
 
-      <Layout 
+      <Layout
         className="site-layout transition-all duration-300"
-        style={{ 
+        style={{
           minHeight: "100vh",
-          marginLeft: isMobile ? 0 : (collapsed ? 80 : 250)
+          marginLeft: isMobile ? 0 : (collapsed ? 80 : 250),
+          // The campus bar is fixed and out of flow, so the page has to make room
+          // for it or the header would start underneath it.
+          marginTop: canSwitchCampus ? CAMPUS_BAR_H : 0,
         }}
       >
         <Header
@@ -425,7 +557,9 @@ const AdminLayout = () => {
             color: "#fff",
             boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
             position: "sticky",
-            top: 0,
+            // Pushed below the campus bar when it is showing, so the two stick
+            // one under the other instead of on top of each other.
+            top: canSwitchCampus ? CAMPUS_BAR_H : 0,
             zIndex: 99,
           }}
         >
@@ -494,42 +628,6 @@ const AdminLayout = () => {
           </div>
         </Header>
         <Content className="admin-content">
-          {/* Super admins and academic heads are browsing a campus they don't
-              own — make that obvious, and give them one click back to the
-              picker. The academic head's banner also states their grade band, so
-              it is clear the data on screen is limited to it. */}
-          {canSwitchCampus && (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-                gap: 8,
-                background: "#FEF3C7",
-                border: "1px solid #FDE68A",
-                borderRadius: 8,
-                padding: "8px 14px",
-                marginBottom: 16,
-              }}
-            >
-              <span style={{ color: "#92400E", fontSize: 14 }}>
-                Viewing campus:{" "}
-                <strong>{campusName || "Loading..."}</strong>
-                {isAcademicHead && user?.academicBand && (
-                  <>
-                    {" · "}
-                    <strong>
-                      {BAND_LABEL[user.academicBand] || user.academicBand}
-                    </strong>
-                  </>
-                )}
-              </span>
-              <Button size="small" onClick={exitCampus}>
-                Switch campus
-              </Button>
-            </div>
-          )}
           <Outlet />
         </Content>
         <Footer
