@@ -18,10 +18,14 @@ import {
   FaCheckCircle,
   FaTimes,
   FaBook,
+  FaFileExcel,
+  FaDownload,
 } from "react-icons/fa";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../config/api";
 import { isReadOnlyRole } from "../../utils/permissions";
+import ResultImportModal from "../components/ResultImportModal";
+import ResultExportModal from "../components/ResultExportModal";
 
 const NAVY = "#2F5DAA";
 const currentYear = new Date().getFullYear();
@@ -47,6 +51,8 @@ const Exams = () => {
   const readOnly = isTeacher || isReadOnlyRole(user?.role);
 
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [filterClass, setFilterClass] = useState("");
   const [filterYear, setFilterYear] = useState("");
@@ -206,15 +212,48 @@ const Exams = () => {
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-3">
             <FaBook style={{ color: NAVY }} /> Examinations
           </h1>
-          {!readOnly && (
+          <div className="flex items-center gap-2">
+            {/* Export is a READ, so it is outside the !readOnly guard — a principal
+                or academic head can pull a sheet even though they cannot create or
+                publish an exam. The API agrees: GET is never blocked for them. */}
             <button
-              onClick={openAdd}
-              className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all"
-              style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
+              onClick={() => setIsExportOpen(true)}
+              disabled={exams.length === 0}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              title={
+                exams.length === 0 ? "No exams yet" : "Export a class result sheet"
+              }
             >
-              <FaPlus /> Create Exam
+              <FaDownload style={{ color: NAVY }} /> Export Results
             </button>
-          )}
+
+            {!readOnly && (
+              <>
+                {/* Import sits beside Create rather than on each exam card: one
+                    sheet can cover every section of a grade, so the action belongs
+                    to the page, not to one class's exam. */}
+                <button
+                  onClick={() => setIsImportOpen(true)}
+                  disabled={exams.length === 0}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  title={
+                    exams.length === 0
+                      ? "Create an exam first"
+                      : "Import results from a spreadsheet"
+                  }
+                >
+                  <FaFileExcel className="text-green-600" /> Import Results
+                </button>
+                <button
+                  onClick={openAdd}
+                  className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all"
+                  style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1E3F72 100%)` }}
+                >
+                  <FaPlus /> Create Exam
+                </button>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Filters */}
@@ -540,6 +579,24 @@ const Exams = () => {
             </div>
           </div>
         </div>
+      )}
+      {isExportOpen && (
+        <ResultExportModal
+          exams={exams}
+          classes={classes}
+          onClose={() => setIsExportOpen(false)}
+        />
+      )}
+
+      {isImportOpen && (
+        <ResultImportModal
+          exams={exams}
+          onClose={() => setIsImportOpen(false)}
+          // Refetched rather than patched locally: an import touches results
+          // across several exams, and the cards show subject counts and publish
+          // state that the server is the only source of truth for.
+          onImported={() => dispatch(fetchExams())}
+        />
       )}
     </div>
   );

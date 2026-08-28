@@ -152,6 +152,15 @@ export const API_ENDPOINTS = {
   DELETE_EXAM: (id) => `${API_BASE_URL}/api/exam/${id}`,
 
   // Results
+  // Spreadsheet import of a whole exam batch. Both take multipart: `file` plus
+  // examName / examType / academicYear to identify which exam the sheet is for.
+  // Commit also takes `overwrite` — false skips marks that already exist.
+  RESULT_IMPORT_PREVIEW: `${API_BASE_URL}/api/result/import/preview`,
+  RESULT_IMPORT_COMMIT: `${API_BASE_URL}/api/result/import/commit`,
+  // One endpoint, three renderings. xlsx/csv stream a file; json returns the same
+  // rows so the print-to-PDF view shows identical numbers to the spreadsheet.
+  RESULT_EXPORT: (examId, format = "xlsx") =>
+    `${API_BASE_URL}/api/result/export/${examId}?format=${format}`,
   BULK_ENTER_MARKS: (examId) => `${API_BASE_URL}/api/result/bulk/${examId}`,
   // Per-subject marks entry — the teacher path. Saves one subject's column
   // without disturbing the others; also usable by admins.
