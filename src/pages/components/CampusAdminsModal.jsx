@@ -11,6 +11,10 @@ import {
   FaCopy,
   FaBuilding,
   FaArrowLeft,
+  FaEye,
+  FaEyeSlash,
+  FaExclamationTriangle,
+  FaSpinner,
 } from "react-icons/fa";
 import { API_BASE_URL, API_ENDPOINTS } from "../../config/api";
 import { overlayFade, modalPop } from "../../utils/animations";
@@ -33,6 +37,11 @@ const CampusAdminsModal = ({ onClose }) => {
   const [form, setForm] = useState({ name: "", email: "", campusId: "" });
   // The one-time credentials shown right after a create or reset.
   const [credentials, setCredentials] = useState(null);
+  /** Whose password is currently revealed — one at a time, id or null. */
+  const [shownPassword, setShownPassword] = useState(null);
+  /** The admin awaiting reset confirmation; null when the dialog is closed. */
+  const [resetTarget, setResetTarget] = useState(null);
+  const [resetting, setResetting] = useState(false);
 
   const load = async () => {
     try {
@@ -78,15 +87,30 @@ const CampusAdminsModal = ({ onClose }) => {
     }
   };
 
+  /**
+   * Resets the password. Only ever called from the confirm dialog below — never
+   * straight off the row.
+   *
+   * The old password stops working the instant this returns, so a mis-click used to
+   * lock a campus admin out with no warning at all. Nothing here can undo it: the
+   * plaintext copy is overwritten too.
+   */
   const resetPassword = async (admin) => {
+    setResetTarget(null);
+    setResetting(true);
     try {
       const res = await axios.post(
         API_ENDPOINTS.CAMPUS_ADMIN_RESET_PASSWORD(admin._id)
       );
       setCredentials(res.data.credentials);
+      // Reloaded so the row's stored password matches the new one — otherwise the
+      // eye icon would keep revealing the password that no longer works.
+      await load();
       toast.success("Password reset");
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to reset password");
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -324,10 +348,50 @@ const CampusAdminsModal = ({ onClose }) => {
                         {admin.campusCode ? ` (${admin.campusCode})` : ""}
                       </span>
 
+                      {/* Reveal the current password.
+                          The plaintext is already in this row — getCampusAdmins
+                          decrypts password_enc — so this only toggles whether it is
+                          on screen. Hidden by default because this list is opened
+                          in front of other people. */}
+                      {admin.password ? (
+                        <button
+                          onClick={() =>
+                            setShownPassword((id) =>
+                              id === admin._id ? null : admin._id
+                            )
+                          }
+                          title={
+                            shownPassword === admin._id
+                              ? "Hide password"
+                              : "View password"
+                          }
+                          aria-label={
+                            shownPassword === admin._id
+                              ? `Hide password for ${admin.name}`
+                              : `View password for ${admin.name}`
+                          }
+                          className="p-2 rounded-lg text-gray-400 hover:text-[#2F5DAA] hover:bg-blue-50"
+                        >
+                          {shownPassword === admin._id ? (
+                            <FaEyeSlash className="text-[13px]" />
+                          ) : (
+                            <FaEye className="text-[13px]" />
+                          )}
+                        </button>
+                      ) : (
+                        <span
+                          title="No stored password — reset it to get one"
+                          className="p-2 text-gray-200"
+                        >
+                          <FaEye className="text-[13px]" />
+                        </span>
+                      )}
+
                       <button
-                        onClick={() => resetPassword(admin)}
+                        onClick={() => setResetTarget(admin)}
+                        disabled={resetting}
                         title="Reset password"
-                        className="p-2 rounded-lg text-gray-400 hover:text-[#2F5DAA] hover:bg-blue-50"
+                        className="p-2 rounded-lg text-gray-400 hover:text-[#2F5DAA] hover:bg-blue-50 disabled:opacity-40"
                       >
                         <FaKey className="text-[13px]" />
                       </button>
@@ -338,6 +402,31 @@ const CampusAdminsModal = ({ onClose }) => {
                       >
                         <FaTrash className="text-[13px]" />
                       </button>
+
+                      {/* Full-width so a long password is not squeezed by the row's
+                          other items. */}
+                      {shownPassword === admin._id && admin.password && (
+                        <div className="w-full flex items-center gap-2 pt-2 border-t border-gray-100">
+                          <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+                            Password
+                          </span>
+                          <code className="flex-1 font-mono text-[13px] text-gray-900 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 select-all break-all">
+                            {admin.password}
+                          </code>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(
+                                `Email: ${admin.email}\nPassword: ${admin.password}`
+                              );
+                              toast.success("Login details copied");
+                            }}
+                            title="Copy email and password"
+                            className="p-2 rounded-lg text-gray-400 hover:text-[#2F5DAA] hover:bg-blue-50 shrink-0"
+                          >
+                            <FaCopy className="text-[13px]" />
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -346,6 +435,80 @@ const CampusAdminsModal = ({ onClose }) => {
           )}
         </div>
       </motion.div>
+
+      {/* Reset confirmation.
+          A separate layer on top of the list, not a replacement for it — the name
+          and email being reset stay visible behind the dialog.
+
+          This exists because the key icon used to reset immediately: one stray click
+          and a campus admin was locked out, with no warning and nothing to undo. */}
+      {resetTarget && (
+        <motion.div
+          variants={overlayFade}
+          initial="hidden"
+          animate="show"
+          exit="hidden"
+          className="absolute inset-0 z-[90] flex items-center justify-center bg-black/45 p-4"
+          onClick={() => setResetTarget(null)}
+        >
+          <motion.div
+            variants={modalPop}
+            initial="hidden"
+            animate="show"
+            exit="hidden"
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                <FaExclamationTriangle className="text-amber-500" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-[14px] font-bold text-gray-900">
+                  Reset this password?
+                </h4>
+                <p className="text-[12px] text-gray-500 mt-0.5 truncate">
+                  {resetTarget.name} · {resetTarget.email}
+                </p>
+              </div>
+            </div>
+
+            <p className="text-[12px] text-gray-600 mt-3 leading-relaxed">
+              A new password is generated straight away and{" "}
+              <b>the current one stops working</b>. If they are signed in they will
+              be able to keep working until their session ends, but will need the
+              new password to sign in again.
+            </p>
+            <p className="text-[12px] text-gray-500 mt-2">
+              You will need to pass the new password on to them.
+            </p>
+
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={() => setResetTarget(null)}
+                className="flex-1 py-2.5 rounded-xl text-[13px] font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => resetPassword(resetTarget)}
+                disabled={resetting}
+                className="flex-1 py-2.5 rounded-xl text-[13px] font-semibold text-white bg-amber-500 hover:bg-amber-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {resetting ? (
+                  <>
+                    <FaSpinner className="animate-spin" /> Resetting…
+                  </>
+                ) : (
+                  <>
+                    <FaKey /> Reset password
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </motion.div>
   );
 };
