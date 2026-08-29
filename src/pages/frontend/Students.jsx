@@ -18,6 +18,7 @@ import { toast } from "react-hot-toast";
 import StudentCard from "../components/StudentCard";
 import ImportStudentsModal from "../components/ImportStudentsModal";
 import ExportStudentsModal from "../components/ExportStudentsModal";
+import CredentialSlipsModal from "../components/CredentialSlipsModal";
 import { isReadOnlyRole } from "../../utils/permissions";
 
 
@@ -135,6 +136,7 @@ const Students = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isSlipsOpen, setIsSlipsOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState(null);
   const [cardStudent, setCardStudent] = useState(null); // student whose ID card modal is open
@@ -659,6 +661,19 @@ const Students = () => {
                     <FaDownload className="mr-2 text-blue-600" />
                     Export
                   </button>
+                  {/* Reading a parent password is already possible one pupil at a
+                      time for these roles; this prints the class's slips in one
+                      pass so the office stops opening records one by one. */}
+                  {canSeeParentCreds && (
+                    <button
+                      onClick={() => setIsSlipsOpen(true)}
+                      className="flex items-center justify-center bg-white text-gray-700 border border-gray-300 px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-300"
+                      title="Print parent login slips for a whole class"
+                    >
+                      <FaKey className="mr-2 text-amber-500" />
+                      Login slips
+                    </button>
+                  )}
                   {canWrite && (
                     <>
                       {canImport && (
@@ -1632,6 +1647,13 @@ const Students = () => {
           // is looking at, so it is the sensible default to export.
           initialClassId={filterClass}
           onClose={() => setIsExportOpen(false)}
+        />
+      )}
+      {isSlipsOpen && (
+        <CredentialSlipsModal
+          classes={classes}
+          initialClassId={filterClass}
+          onClose={() => setIsSlipsOpen(false)}
         />
       )}
     </div>

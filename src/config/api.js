@@ -27,6 +27,11 @@ export const API_ENDPOINTS = {
   // responseType: "blob". Takes ?format=xlsx|csv and an optional ?classId.
   STUDENTS_EXPORT: `${API_BASE_URL}/api/students/export`,
 
+  // Parent login slips for one class. xlsx/csv stream a file; json feeds the
+  // printable slips so paper and spreadsheet cannot drift apart.
+  STUDENT_CREDENTIALS_EXPORT: (classId, format = "xlsx") =>
+    `${API_BASE_URL}/api/students/credentials/${classId}?format=${format}`,
+
   // Fees — payments and outstanding balances, mirrored from the office's Excel.
   // Nothing here creates a payment; :kind is "payments" or "dues".
   FEES: `${API_BASE_URL}/api/fees`,
